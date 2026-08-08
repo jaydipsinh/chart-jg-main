@@ -17,7 +17,6 @@ FORMULAS = [
             "day": 19,
             "win_rate": "88%",
             "risk_reward": "1:2.5 to 1:4.0",
-            "video_url": "https://www.facebook.com/reel/1388332009936799",
             "single_line": "When a strong 15-minute candle breaks key resistance and retests the rising 9 EMA with a green confirmation candle + volume > 1.5x, enter for high-probability momentum.",
         }
     ),

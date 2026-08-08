@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import {
   ExpandMore, School, Search, TrendingUp, TrendingDown,
-  Bolt, PlayCircle, CheckCircle, Warning, AutoAwesome,
-  FilterList, ViewModule, ViewList, TableRows, OpenInNew,
+  Bolt, CheckCircle, Warning, AutoAwesome,
+  FilterList, ViewModule, ViewList, TableRows,
   Bookmark, ArrowForward, Verified, Whatshot, Security,
   Timeline, Speed, MonetizationOn, BarChart,
 } from '@mui/icons-material';
@@ -42,7 +42,6 @@ export interface MasterclassStrategy {
   mistakes_to_avoid: string[];
   example: string;
   scanner_path: string;
-  video_url: string;
 }
 
 export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
@@ -78,7 +77,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     ],
     example: 'NIFTY 15m breaks 24,500 resistance, pulls back to test 9 EMA at 24,485, prints strong green hammer with 1.8x volume → rallies to 24,620.',
     scanner_path: '/quant-screener',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 1,
@@ -107,7 +105,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trading hammer in the middle of a sideways consolidation range without support.'],
     example: 'HDFCBANK drops to ₹1,600 support, prints 15m Hammer with 2.2x volume, confirms above ₹1,608 → rallies to ₹1,640.',
     scanner_path: '/top-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 2,
@@ -135,7 +132,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Ignoring high-impact economic news releases during setup formation.'],
     example: 'RELIANCE prints 1-hour Bullish Engulfing at ₹2,850 support with 3x volume → rallies to ₹2,940.',
     scanner_path: '/top-buyers',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 3,
@@ -162,7 +158,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Entering before the 3rd candle has officially closed.'],
     example: 'TCS prints Morning Star on Daily chart at ₹3,800 → surges to ₹4,020 in 6 sessions.',
     scanner_path: '/swing-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 4,
@@ -187,7 +182,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trading piercing patterns in low-volume illiquid stocks.'],
     example: 'ICICIBANK Piercing pattern on Daily at ₹1,120 → rallies to ₹1,180.',
     scanner_path: '/top-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 5,
@@ -212,7 +206,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Chasing when the 3rd candle has an extremely extended long wick.'],
     example: 'TATASTEEL Three White Soldiers on 15m breaking ₹150 → rallies to ₹162.',
     scanner_path: '/momentum',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 6,
@@ -237,7 +230,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trading dojis inside a narrow consolidation chop.'],
     example: 'SBIN prints Dragonfly Doji at ₹780 on 200 EMA → surges to ₹835.',
     scanner_path: '/breakout',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 7,
@@ -262,7 +254,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Failing to check higher timeframe trend.'],
     example: 'INFY breaks 3-week resistance at ₹1,800 on 2.8x volume → reaches ₹1,910.',
     scanner_path: '/price-shockers',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 8,
@@ -287,7 +278,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Anticipating the pattern before the neckline has officially broken.'],
     example: 'KOTAKBANK W-pattern neckline at ₹1,780 breaks with 2.1x volume → target ₹1,860 hit.',
     scanner_path: '/weekly-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 9,
@@ -312,7 +302,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Entering inside the head before the right shoulder forms.'],
     example: 'LT Inverse H&S neckline at ₹3,450 breaks with 3.2x volume → achieves ₹3,720 target.',
     scanner_path: '/monthly-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 10,
@@ -337,7 +326,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Buying before handle forms and breaks.'],
     example: 'BHARTIARTL Cup & Handle on Daily at ₹1,200 rim breakout → rallies to ₹1,450.',
     scanner_path: '/future-stocks',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 11,
@@ -362,7 +350,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trading before breakout occurs near apex.'],
     example: 'BAJFINANCE Ascending triangle breaks ₹7,200 → surges to ₹7,650.',
     scanner_path: '/breakout',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 12,
@@ -387,7 +374,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Confusing a deep multi-week correction for a tight flag.'],
     example: 'TRENT 15m Bull Flag pole from ₹6,200 to ₹6,500, flags to ₹6,440, breaks out → hits ₹6,740.',
     scanner_path: '/momentum',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 13,
@@ -412,7 +398,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Entering solely on RSI without price action candle confirmation.'],
     example: 'NIFTY Daily: Price makes Lower Low at 24,000 but RSI makes Higher Low at 38 → rallies 800 points.',
     scanner_path: '/indicators',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 14,
@@ -437,7 +422,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Shorting strong momentum stocks that stay overbought during secular bull runs.'],
     example: 'TITAN makes new high at ₹3,850 with RSI Divergence at 68 vs 78 → drops to ₹3,620.',
     scanner_path: '/top-sellers',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 15,
@@ -462,7 +446,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trading 9 EMA bounces in sideways range-bound market.'],
     example: 'BANKNIFTY on 5m: touches 9 EMA at 51,200, prints hammer, rallies to 51,450.',
     scanner_path: '/top-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 16,
@@ -487,7 +470,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Buying when moving averages are flat and tangled.'],
     example: 'BEL 20 EMA crosses 50 EMA at ₹280 → stock rallies to ₹340 over 4 weeks.',
     scanner_path: '/ema-screener',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 17,
@@ -512,7 +494,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Exiting too early on minor intraday noise.'],
     example: 'COALINDIA Supertrend turns Green at ₹460 above 200 EMA → runs to ₹525 without touching stop.',
     scanner_path: '/momentum',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 18,
@@ -537,7 +518,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Shorting a stock that is steadily riding above its rising VWAP line.'],
     example: 'MARUTI opens at ₹12,100, crosses VWAP with 3.5x volume at 9:30 AM → rallies to ₹12,480.',
     scanner_path: '/volume-best',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 20,
@@ -562,7 +542,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Using every random candle as an Order Block without imbalance.'],
     example: 'NIFTY 15m creates FVG at 24,350 and rallies to 24,550. Later drops to 24,360 OB, prints hammer → rockets to 24,700.',
     scanner_path: '/target-matrix',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 21,
@@ -587,7 +566,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Confusing a liquidity sweep wick for a confirmed CHoCH.'],
     example: 'SUNPHARMA breaks 1-hour CHoCH at ₹1,720, pulls back to ₹1,725 OB → achieves ₹1,810 BOS target.',
     scanner_path: '/quant-screener',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 22,
@@ -612,7 +590,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Catching a real breakdown that closes strongly below support with no rejection.'],
     example: 'BANKNIFTY sweeps 51,000 round number support to 50,940, reclaims 51,020 on massive green candle → rallies 600 points.',
     scanner_path: '/top-buyers',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 23,
@@ -637,7 +614,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Buying high volume spikes caused by earnings rumors without price confirmation.'],
     example: 'DIXON prints 5.2x volume surge at ₹11,500 with 62% delivery → surges to ₹13,800 over 8 sessions.',
     scanner_path: '/volume-3d-shockers',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 24,
@@ -662,7 +638,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Ignoring expiry day rollover shifts.'],
     example: 'TATAMOTORS Price +3.5% with OI +22% → Long Buildup confirmed → continues rally for 4 days.',
     scanner_path: '/long-buildup',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 25,
@@ -687,7 +662,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Buying immediately at low PCR before price action stops falling.'],
     example: 'NIFTY PCR drops to 0.58 during panic selloff at 23,900 → rebounds to 24,400 in 3 sessions.',
     scanner_path: '/oi-analysis',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 26,
@@ -712,7 +686,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trading before the 09:30 AM 15-minute candle has closed.'],
     example: 'RELIANCE 15m ORB range ₹2,900–₹2,920. Breaks ₹2,920 at 09:35 with 2x volume → reaches ₹2,965.',
     scanner_path: '/top-buy',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 27,
@@ -737,7 +710,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Trying to fade a strong institutional runaway gap on global cues.'],
     example: 'TCS gaps up +2% on earnings, holds VWAP at 9:30 AM → rallies another +3% intraday.',
     scanner_path: '/top-buyers',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 28,
@@ -762,7 +734,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Overtrading lower timeframe 1-minute noise.'],
     example: 'BHARTIARTL: Monthly/Weekly in strong uptrend, Daily pulls back to ₹1,550, 15m triggers buy → surges to ₹1,720.',
     scanner_path: '/quant-screener',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 29,
@@ -790,7 +761,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Averaging down on losing trades (adding to losers is fatal).'],
     example: 'Account ₹5,00,000 → Max Risk = ₹5,000. Risk ₹20/share → Buy 250 shares. Target ₹60/share → Profit ₹15,000.',
     scanner_path: '/today-result',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
   {
     day: 30,
@@ -819,7 +789,6 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     mistakes_to_avoid: ['Ignoring market trend regime while picking individual stocks.'],
     example: 'Quant Screener flags HAL with 94/100 AI Score at ₹4,650 → stock hits T1, T2, T3 to reach ₹5,180 in 5 sessions.',
     scanner_path: '/quant-screener',
-    video_url: 'https://www.facebook.com/reel/1388332009936799',
   },
 ];
 
@@ -886,7 +855,7 @@ export default function FormulaPage() {
 
   return (
     <Box sx={{ pb: 6 }}>
-      {/* ── Top Hero Banner with Chetan Verma Day 19 Highlight ── */}
+      {/* ── Top Hero Banner (Study Purpose Only) ── */}
       <Paper
         elevation={0}
         sx={{
@@ -913,13 +882,12 @@ export default function FormulaPage() {
               />
               <Chip
                 icon={<Verified sx={{ fontSize: 14 }} />}
-                label="Verified Institutional Formulas"
+                label="Personal Study &amp; Learning Reference"
                 size="small"
                 variant="outlined"
                 sx={{ fontWeight: 800, fontSize: '0.68rem', height: 22 }}
               />
               <Chip
-                icon={<PlayCircle sx={{ fontSize: 14, color: '#ff1744' }} />}
                 label="Day 19 Featured"
                 size="small"
                 sx={{ fontWeight: 900, bgcolor: 'rgba(255,23,68,0.12)', color: '#ff1744', height: 22 }}
@@ -931,7 +899,7 @@ export default function FormulaPage() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 850, lineHeight: 1.5, mb: 1.5 }}>
-              Comprehensive master library of high-probability Indian market trading formulas, candlestick patterns, Smart Money Concepts (SMC), and exact entry/exit/stop-loss mechanics from Chetan Verma's 100-day series.
+              Comprehensive master library of high-probability Indian market trading formulas, candlestick patterns, Smart Money Concepts (SMC), and exact entry/exit/stop-loss mechanics from Chetan Verma's 100-day series — organized for personal study and analysis.
             </Typography>
 
             {/* Featured Day 19 Callout Card */}
@@ -963,18 +931,6 @@ export default function FormulaPage() {
               </Box>
 
               <Stack direction="row" spacing={1}>
-                <Button
-                  variant="outlined"
-                  color="success"
-                  size="small"
-                  startIcon={<PlayCircle />}
-                  href="https://www.facebook.com/reel/1388332009936799"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'none', borderRadius: 2 }}
-                >
-                  Watch Day 19 Reel
-                </Button>
                 <Button
                   variant="contained"
                   color="success"
@@ -1232,32 +1188,18 @@ export default function FormulaPage() {
                       </Stack>
                     </Stack>
 
-                    {/* Action Buttons */}
-                    <Stack direction="row" spacing={1}>
-                      {item.video_url && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          startIcon={<PlayCircle sx={{ fontSize: 15 }} />}
-                          href={item.video_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          sx={{ flex: 1, fontSize: '0.7rem', fontWeight: 800, textTransform: 'none', py: 0.4 }}
-                        >
-                          Reel Link
-                        </Button>
-                      )}
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="primary"
-                        endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
-                        onClick={() => navigate(item.scanner_path)}
-                        sx={{ flex: 1.2, fontSize: '0.7rem', fontWeight: 800, textTransform: 'none', py: 0.4 }}
-                      >
-                        Scan Stocks
-                      </Button>
-                    </Stack>
+                    {/* Action Button */}
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
+                      onClick={() => navigate(item.scanner_path)}
+                      sx={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'none', py: 0.5 }}
+                    >
+                      Scan Stocks with this Formula
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -1436,31 +1378,15 @@ export default function FormulaPage() {
                           </Typography>
                         </Box>
 
-                        <Stack direction="row" spacing={1} alignSelf={{ xs: 'flex-start', sm: 'center' }}>
-                          {item.video_url && (
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              color="success"
-                              startIcon={<PlayCircle />}
-                              href={item.video_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none' }}
-                            >
-                              Watch Reel
-                            </Button>
-                          )}
-                          <Button
-                            size="small"
-                            variant="contained"
-                            endIcon={<ArrowForward />}
-                            onClick={() => navigate(item.scanner_path)}
-                            sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none' }}
-                          >
-                            Launch Screener
-                          </Button>
-                        </Stack>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          endIcon={<ArrowForward />}
+                          onClick={() => navigate(item.scanner_path)}
+                          sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', alignSelf: { xs: 'flex-start', sm: 'center' } }}
+                        >
+                          Launch Screener
+                        </Button>
                       </Stack>
                     </Paper>
                   </Grid>
