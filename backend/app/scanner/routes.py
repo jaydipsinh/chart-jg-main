@@ -1533,4 +1533,37 @@ def get_events_feed(category: Optional[str] = None):
     }
 
 
+# ── GET /upcoming-events ─────────────────────────────────────────────────────
+@router.get("/upcoming-events")
+def get_upcoming_events_feed(event_type: Optional[str] = None):
+    """
+    Returns upcoming quarterly results, earnings dates, board meetings,
+    dividends, and defense tenders for the next 30-60 days.
+    """
+    from app.scanner.events_data import get_upcoming_events
+    events = get_upcoming_events(event_type)
+    return {
+        "upcoming_events": events,
+        "total": len(events),
+        "timestamp": _now(),
+    }
+
+
+# ── GET /stock-news ──────────────────────────────────────────────────────────
+@router.get("/stock-news")
+def get_stock_news_feed(news_type: Optional[str] = None):
+    """
+    Returns stock news technical impact feed:
+    +ve results, -ve results (margin warnings), contract wins, and regulatory updates.
+    """
+    from app.scanner.events_data import get_stock_news
+    news = get_stock_news(news_type)
+    return {
+        "news": news,
+        "total": len(news),
+        "timestamp": _now(),
+    }
+
+
+
 

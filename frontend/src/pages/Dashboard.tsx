@@ -12,11 +12,12 @@ import {
   Equalizer, Search, Download, Refresh, Bolt,
   BarChart, Star, CalendarToday, DateRange, School,
   EventAvailable, BusinessCenter, AccountBalance, Whatshot,
+  Feed, CalendarMonth, Verified,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import {
   fetchMarketOverview, fetchTopBuy, fetchFutureStocks,
-  exportCSV, fetchEngineOverview,
+  exportCSV, fetchEngineOverview, fetchStockNews, fetchUpcomingEvents,
 } from '../services/api';
 import { StockTable } from '../components/StockTable';
 import { LiveBadge } from '../components/LiveBadge';
@@ -443,6 +444,110 @@ export default function DashboardPage() {
           )}
         </Grid>
       </Grid>
+
+      {/* ── Live Stock News & Event Analysis Spotlight ── */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 1.5, sm: 2.5 },
+          mb: 3,
+          borderRadius: 3,
+          border: '1.5px solid',
+          borderColor: isDark ? 'rgba(56,189,248,0.3)' : 'rgba(56,189,248,0.4)',
+          background: isDark
+            ? 'linear-gradient(135deg, rgba(11,17,32,0.95) 0%, rgba(15,23,42,0.9) 100%)'
+            : 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
+        }}
+      >
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1.5} mb={2}>
+          <Box>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Chip
+                icon={<Feed sx={{ fontSize: 16 }} />}
+                label="LIVE NEWS &amp; EVENTS"
+                color="primary"
+                size="small"
+                sx={{ fontWeight: 900, fontSize: '0.68rem', height: 24 }}
+              />
+              <Typography variant="subtitle1" fontWeight={900}>
+                📰 Stock News &amp; Event Technical Analysis
+              </Typography>
+            </Stack>
+            <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" mt={0.3}>
+              Real-time catalyst updates: +ve earnings surges, -ve margin caution warnings, and upcoming event dates.
+            </Typography>
+          </Box>
+
+          <Button
+            size="small"
+            variant="outlined"
+            endIcon={<ArrowForward sx={{ fontSize: 13 }} />}
+            onClick={() => navigate('/latest-events')}
+            sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', borderRadius: 2 }}
+          >
+            View All Catalysts &amp; Calendar
+          </Button>
+        </Stack>
+
+        <Grid container spacing={2}>
+          {/* Item 1: Trent +130% PAT */}
+          <Grid item xs={12} md={4}>
+            <Card elevation={0} sx={{ height: '100%', p: 1.5, borderRadius: 2.5, border: '1px solid rgba(0,230,118,0.3)', bgcolor: isDark ? 'rgba(0,230,118,0.04)' : '#f0fdf4' }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.8}>
+                <Typography variant="subtitle2" fontWeight={900}>TRENT</Typography>
+                <Chip label="+VE RESULT" size="small" color="success" sx={{ fontSize: '0.62rem', height: 19, fontWeight: 900 }} />
+              </Stack>
+              <Typography variant="caption" fontWeight={800} color="text.primary" display="block" mb={0.6}>
+                Zudio Standalone Revenue +54%, PAT Soars +130% to ₹420 Cr
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ fontSize: '0.7rem' }}>
+                Technical Reaction: Broke out above ₹6,600 on 3.4x volume. Support at ₹6,550.
+              </Typography>
+              <Button size="small" variant="text" color="success" endIcon={<ArrowForward sx={{ fontSize: 12 }} />} onClick={() => navigate('/stock/TRENT')} sx={{ fontWeight: 800, fontSize: '0.68rem', p: 0 }}>
+                Analyze Trent
+              </Button>
+            </Card>
+          </Grid>
+
+          {/* Item 2: IndusInd Bank NIM Caution */}
+          <Grid item xs={12} md={4}>
+            <Card elevation={0} sx={{ height: '100%', p: 1.5, borderRadius: 2.5, border: '1px solid rgba(255,23,68,0.3)', bgcolor: isDark ? 'rgba(255,23,68,0.04)' : '#fff1f2' }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.8}>
+                <Typography variant="subtitle2" fontWeight={900}>INDUSINDBK</Typography>
+                <Chip label="-VE MARGIN" size="small" color="error" sx={{ fontSize: '0.62rem', height: 19, fontWeight: 900 }} />
+              </Stack>
+              <Typography variant="caption" fontWeight={800} color="text.primary" display="block" mb={0.6}>
+                NIM Compresses to 4.08%; Microfinance Delinquency Caution
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ fontSize: '0.7rem' }}>
+                Technical Reaction: Slipped below 50/200 EMA at ₹1,420. Avoid until ₹1,320 base.
+              </Typography>
+              <Button size="small" variant="text" color="error" endIcon={<ArrowForward sx={{ fontSize: 12 }} />} onClick={() => navigate('/stock/INDUSINDBK')} sx={{ fontWeight: 800, fontSize: '0.68rem', p: 0 }}>
+                Analyze IndusInd
+              </Button>
+            </Card>
+          </Grid>
+
+          {/* Item 3: L&T ₹25,000+ Cr Mega Order */}
+          <Grid item xs={12} md={4}>
+            <Card elevation={0} sx={{ height: '100%', p: 1.5, borderRadius: 2.5, border: '1px solid rgba(56,189,248,0.3)', bgcolor: isDark ? 'rgba(56,189,248,0.04)' : '#f0f9ff' }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.8}>
+                <Typography variant="subtitle2" fontWeight={900}>LT</Typography>
+                <Chip label="MEGA ORDER" size="small" color="primary" sx={{ fontSize: '0.62rem', height: 19, fontWeight: 900 }} />
+              </Stack>
+              <Typography variant="caption" fontWeight={800} color="text.primary" display="block" mb={0.6}>
+                Secures ₹25,000+ Cr Middle East Aramco &amp; Bullet Train Packages
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" mb={1} sx={{ fontSize: '0.7rem' }}>
+                Technical Reaction: Retested 9 EMA at ₹3,580 and bounced strongly. Target ₹4,250.
+              </Typography>
+              <Button size="small" variant="text" color="primary" endIcon={<ArrowForward sx={{ fontSize: 12 }} />} onClick={() => navigate('/stock/LT')} sx={{ fontWeight: 800, fontSize: '0.68rem', p: 0 }}>
+                Analyze L&amp;T
+              </Button>
+            </Card>
+          </Grid>
+        </Grid>
+      </Paper>
 
       {/* ── Full Directory ── */}
       <Paper

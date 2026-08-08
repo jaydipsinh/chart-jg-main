@@ -469,5 +469,68 @@ export const fetchLatestEvents = async (params?: { category?: string }): Promise
   return (await api.get(`/latest-events${qs ? `?${qs}` : ''}`)).data;
 };
 
+export interface UpcomingEventItem {
+  id: string;
+  symbol: string;
+  company_name: string;
+  sector: string;
+  event_type: string;
+  event_date: string;
+  days_left: string;
+  badge_icon: string;
+  expected_impact: string;
+  consensus_metrics: string;
+  technical_setup: string;
+  cmp: number;
+  support_level: float;
+  resistance_level: float;
+  action_verdict: string;
+}
+
+export interface UpcomingEventsResponse {
+  upcoming_events: UpcomingEventItem[];
+  total: number;
+  timestamp: string;
+}
+
+export const fetchUpcomingEvents = async (params?: { event_type?: string }): Promise<UpcomingEventsResponse> => {
+  const q = new URLSearchParams();
+  if (params?.event_type && params.event_type !== 'All') q.set('event_type', params.event_type);
+  const qs = q.toString();
+  return (await api.get(`/upcoming-events${qs ? `?${qs}` : ''}`)).data;
+};
+
+export interface StockNewsItem {
+  id: string;
+  symbol: string;
+  company_name: string;
+  sector: string;
+  news_type: string;
+  sentiment: 'positive' | 'negative' | 'neutral';
+  badge_icon: string;
+  headline: string;
+  time_period: string;
+  summary: string;
+  key_takeaway: string;
+  technical_impact: string;
+  support_level: number;
+  resistance_level: number;
+  action_suggestion: string;
+}
+
+export interface StockNewsResponse {
+  news: StockNewsItem[];
+  total: number;
+  timestamp: string;
+}
+
+export const fetchStockNews = async (params?: { news_type?: string }): Promise<StockNewsResponse> => {
+  const q = new URLSearchParams();
+  if (params?.news_type && params.news_type !== 'All') q.set('news_type', params.news_type);
+  const qs = q.toString();
+  return (await api.get(`/stock-news${qs ? `?${qs}` : ''}`)).data;
+};
+
+
 
 
