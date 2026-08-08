@@ -191,7 +191,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, themeMode, onToggleThe
       { label: 'Target Matrix', path: '/target-matrix', icon: <TableChart />,   badge: 'LIVE' },
       { label: 'IPO Assistant', path: '/ipo',           icon: <RocketLaunch />, badge: 'LIVE' },
       { label: 'All Stocks',    path: '/all-stocks',    icon: <GridView /> },
-      { label: 'Formula Guide', path: '/formula-understanding', icon: <School />, badge: 'DAY 1-19+' },
+      { label: 'Formula Guide', path: '/formula-understanding', icon: <School />, badge: 'DAY 1–30' },
       { label: 'F&O Stocks',    path: '/future-stocks', icon: <Analytics /> },
       { label: 'Heat Map',      path: '/heatmap',       icon: <Whatshot /> },
     ],
@@ -214,7 +214,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, themeMode, onToggleThe
       { label: 'Monthly',           path: '/monthly-buy',        icon: <CalendarMonth /> },
     ],
     analysis: [
-      { label: 'Formula Masterclass', path: '/formula-understanding', icon: <School />, badge: 'DAY 1-19+' },
+      { label: 'Formula Masterclass', path: '/formula-understanding', icon: <School />, badge: 'DAY 1-30' },
       { label: 'Signal',     path: '/signal',     icon: <Assessment /> },
       { label: 'Indicators', path: '/indicators', icon: <Biotech /> },
       { label: 'History',    path: '/history',    icon: <HistoryIcon /> },

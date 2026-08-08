@@ -313,16 +313,16 @@ export default function DashboardPage() {
           />
           <Box>
             <Typography variant="subtitle2" fontWeight={800} sx={{ lineHeight: 1.2 }}>
-              🎓 Chetan Verma 100-Day Trading Series &amp; Formula Study Guide (Day 1 – Day 19+)
+              🎓 Trading Strategy Masterclass &amp; Indicator Mathematical Formula Library (Day 1 – Day 30)
             </Typography>
             <Typography variant="caption" color="text.secondary" fontWeight={600}>
-              Single-line rules, Bullish/Bearish triggers, Stop Loss &amp; 1:3+ Targets — Purely for personal study &amp; analysis.
+              Single-line rules, Bullish/Bearish mathematical formulas, Stop Loss &amp; 1:3+ Targets — Purely for personal study.
             </Typography>
           </Box>
         </Stack>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          <Chip label="Day 19 Featured" size="small" sx={{ fontWeight: 800, fontSize: '0.65rem', bgcolor: 'rgba(255,23,68,0.12)', color: '#ff1744' }} />
+          <Chip label="Sequential 1–30" size="small" sx={{ fontWeight: 800, fontSize: '0.65rem', bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676' }} />
           <Button
             size="small"
             variant="contained"
@@ -736,7 +736,7 @@ export default function DashboardPage() {
             { title: 'Custom Factor Scanner', desc: 'Build customized stock scans with user-defined thresholds', path: '/scanner', badge: 'CUSTOM SCAN', color: '#2979ff' },
             { title: 'Personal Watchlist', desc: 'Track personalized portfolios, target alerts & custom notes', path: '/watchlist', badge: 'WATCHLIST', color: '#00e5ff' },
             { title: 'Portfolio Tracker', desc: 'Track your holdings, unrealized P&L, allocation & risk', path: '/portfolio', badge: 'PORTFOLIO', color: '#ab47bc' },
-            { title: 'Formula & Strategy Masterclass', desc: 'Chetan Verma 100-Day Series, Day 19 9 EMA Retest, single-line rules & buy formulas', path: '/formula-understanding', badge: 'DAY 1-19+', color: '#00e676' },
+            { title: 'Formula & Strategy Masterclass', desc: 'Sequential 1–30 strategy rules, mathematical indicators, single-line rules & buy formulas', path: '/formula-understanding', badge: 'DAY 1-30', color: '#00e676' },
             { title: 'System Settings', desc: 'Configure refresh intervals, dark/light themes & API keys', path: '/settings', badge: 'CONFIG', color: '#78909c' },
           ].map(hub => (
             <Grid item xs={12} sm={6} md={2.4} key={hub.title}>

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import {
   ExpandMore, School, Search, TrendingUp, TrendingDown,
-  Bolt, CheckCircle, Warning, AutoAwesome, ViewModule,
+  CheckCircle, Warning, AutoAwesome, ViewModule,
   ViewList, TableRows, ArrowForward, Verified, Whatshot,
   Speed, Calculate, Functions, Psychology, Insights,
 } from '@mui/icons-material';
@@ -18,8 +18,9 @@ import {
 export interface MasterclassStrategy {
   day: number;
   day_tag: string;
+  symbol_icon: string;
   title: string;
-  category: 'Chetan Verma Series' | 'Candlesticks & Price Action' | 'EMA & Indicators' | 'Smart Money & Order Flow';
+  category: 'Candlestick Patterns' | 'Chart Formations' | 'EMA & Indicators' | 'Smart Money (SMC) & Flow';
   single_line: string;
   is_bullish: boolean;
   is_bearish: boolean;
@@ -42,26 +43,28 @@ export interface MasterclassStrategy {
 
 export interface IndicatorFormula {
   name: string;
+  symbol_icon: string;
   acronym: string;
   category: 'Momentum' | 'Trend' | 'Volatility' | 'Volume / Flow' | 'Derivatives & OI';
   math_formula: string;
   calculation_steps: string[];
   single_line: string;
-  bullish_rule: string;
-  bearish_rule: string;
+  bullish_math: string;
+  bearish_math: string;
   ideal_parameters: string;
   interpretation: string;
   pro_tip: string;
   scanner_path: string;
 }
 
-// ── 1. Chetan Verma 100-Day Series (Days 1 to 30 in Strict Ascending Sequence) ──
-export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
+// ── 1. Complete Sequential Trading Strategy Masterclass (Day 1 to Day 30) ──
+export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   {
     day: 1,
-    day_tag: 'Day 1: Candlestick Foundation',
+    day_tag: 'Day 1',
+    symbol_icon: '🔨',
     title: 'Hammer & Inverted Hammer at Key Support Zone',
-    category: 'Candlesticks & Price Action',
+    category: 'Candlestick Patterns',
     single_line: 'Long lower shadow at least 2x the body at major support signifies institutional liquidity sweep and aggressive buyer absorption.',
     is_bullish: true,
     is_bearish: false,
@@ -87,9 +90,10 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 2,
-    day_tag: 'Day 2: Order Flow Dominance',
+    day_tag: 'Day 2',
+    symbol_icon: '🔄',
     title: 'Bullish & Bearish Engulfing Master Setup',
-    category: 'Candlesticks & Price Action',
+    category: 'Candlestick Patterns',
     single_line: 'A massive body candle completely engulfing the prior opposite candle demonstrates total institutional control over order flow.',
     is_bullish: true,
     is_bearish: true,
@@ -114,9 +118,10 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 3,
-    day_tag: 'Day 3: 3-Candle Reversal',
-    title: 'Morning Star (Bullish) & Evening Star (Bearish) Master Pattern',
-    category: 'Candlesticks & Price Action',
+    day_tag: 'Day 3',
+    symbol_icon: '☀️',
+    title: 'Morning Star (Bullish) & Evening Star (Bearish)',
+    category: 'Candlestick Patterns',
     single_line: '3-Candle structure: strong impulse candle, indecision doji/spinning top at extreme, followed by massive reversal candle closing past 50% of candle 1.',
     is_bullish: true,
     is_bearish: true,
@@ -140,9 +145,35 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 4,
-    day_tag: 'Day 4: Piercing & Cloud Formations',
-    title: 'Piercing Pattern (Bullish) & Dark Cloud Cover (Bearish)',
-    category: 'Candlesticks & Price Action',
+    day_tag: 'Day 4',
+    symbol_icon: '🏹',
+    title: 'Shooting Star & Hanging Man Reversal Formations',
+    category: 'Candlestick Patterns',
+    single_line: 'Long upper shadow at least 2x body height at swing resistance indicates buyers were completely exhausted and sellers reclaimed dominance.',
+    is_bullish: false,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH INVERSION: Hanging Man requires a strong green candle close above its high to invalidate and create a short squeeze.',
+    bearish_display: '🔴 BEARISH SHORT: Shooting Star forms after extended uptrend at R1 Pivot / Resistance with upper shadow ≥ 2x body length.',
+    entry_trigger: 'Short on breakdown below the Shooting Star low.',
+    stop_loss: 'SL 2 ticks above Shooting Star high.',
+    target_1: 'Target 1: 1:2.0 R:R (20 EMA support)',
+    target_2: 'Target 2: 1:3.0 R:R (Previous swing low)',
+    target_3: 'Target 3: 1:4.5 R:R',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '83% Win Rate',
+    risk_reward: '1:2.5 R:R',
+    indicators: ['Shooting Star', 'Resistance Ceiling', 'RSI > 70 Overbought', 'Volume Climax'],
+    rules: ['Upper shadow must be at least twice the height of the real body.'],
+    mistakes_to_avoid: ['Shorting a shooting star in the middle of an explosive secular rally without key resistance.'],
+    example: 'TITAN prints Shooting Star on Daily at ₹3,850 resistance with RSI 74 → drops to ₹3,620.',
+    scanner_path: '/top-sellers',
+  },
+  {
+    day: 5,
+    day_tag: 'Day 5',
+    symbol_icon: '⚔️',
+    title: 'Piercing Pattern & Dark Cloud Cover Formations',
+    category: 'Candlestick Patterns',
     single_line: 'Opening gap followed by aggressive institutional counter-drive closing beyond the 50% midpoint of the previous candle body.',
     is_bullish: true,
     is_bearish: true,
@@ -163,10 +194,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 5,
-    day_tag: 'Day 5: Institutional Momentum Waves',
-    title: 'Three White Soldiers (Bullish) & Three Black Crows (Bearish)',
-    category: 'Candlesticks & Price Action',
+    day: 6,
+    day_tag: 'Day 6',
+    symbol_icon: '🎖️',
+    title: 'Three White Soldiers & Three Black Crows',
+    category: 'Candlestick Patterns',
     single_line: 'Three consecutive strong full-body candles opening within previous body and making consecutive higher closes with expanding volume.',
     is_bullish: true,
     is_bearish: true,
@@ -187,10 +219,86 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/momentum',
   },
   {
-    day: 6,
-    day_tag: 'Day 6: Doji Liquidity Reversals',
-    title: 'Dragonfly Doji (Bullish) & Gravestone Doji (Bearish)',
-    category: 'Candlesticks & Price Action',
+    day: 7,
+    day_tag: 'Day 7',
+    symbol_icon: '🤰',
+    title: 'Bullish & Bearish Harami / Inside Bar Breakout',
+    category: 'Candlestick Patterns',
+    single_line: 'Small body candle completely enclosed within prior large mother candle indicates extreme volatility contraction ready to explode.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: Bullish Harami / Inside Bar at support. Buy when candle breaks and closes above mother bar high.',
+    bearish_display: '🔴 BEARISH SHORT: Bearish Harami / Inside Bar at resistance. Short when candle breaks and closes below mother bar low.',
+    entry_trigger: 'Buy on breakout above mother bar high.',
+    stop_loss: 'SL below mother bar low (or inside bar low for tighter risk).',
+    target_1: 'Target 1: 1:2.0 R:R',
+    target_2: 'Target 2: 1:3.5 R:R',
+    target_3: 'Target 3: 1:5.0 R:R',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '84% Win Rate',
+    risk_reward: '1:2.8 R:R',
+    indicators: ['Mother Bar Range', 'Inside Bar Compression', 'Volume Expansion on Breakout'],
+    rules: ['Inside candle body and wicks must remain completely inside mother candle.'],
+    mistakes_to_avoid: ['Entering before the mother bar range has been breached.'],
+    example: 'MARUTI Daily Inside Bar inside ₹12,000 mother candle breaks ₹12,150 → surges to ₹12,600.',
+    scanner_path: '/breakout',
+  },
+  {
+    day: 8,
+    day_tag: 'Day 8',
+    symbol_icon: '🪜',
+    title: 'Tweezer Bottom & Tweezer Top Price Action',
+    category: 'Candlestick Patterns',
+    single_line: 'Two consecutive candles with identical lows or highs show an impenetrable price floor/ceiling where market orders were completely absorbed.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: Tweezer Bottom (Two matching lows at major support/200 EMA). Buy on close above 2nd candle high.',
+    bearish_display: '🔴 BEARISH SHORT: Tweezer Top (Two matching highs at resistance). Short on close below 2nd candle low.',
+    entry_trigger: 'Buy on close of confirmation candle.',
+    stop_loss: 'SL 2 ticks below the matching tweezer lows.',
+    target_1: 'Target 1: 1:2.0 R:R',
+    target_2: 'Target 2: 1:3.0 R:R',
+    target_3: 'Target 3: 1:4.5 R:R',
+    timeframe: '15m, Daily',
+    win_rate: '83% Win Rate',
+    risk_reward: '1:2.5 R:R',
+    indicators: ['Matching Highs/Lows', 'Horizontal Pivot', 'RSI Divergence'],
+    rules: ['Lows of both candles must be within 0.05% of each other.'],
+    mistakes_to_avoid: ['Trading tweezer tops during strong opening momentum.'],
+    example: 'INFY Tweezer Bottom at ₹1,750 support on Daily → rallies to ₹1,840.',
+    scanner_path: '/top-buy',
+  },
+  {
+    day: 9,
+    day_tag: 'Day 9',
+    symbol_icon: '🌟',
+    title: 'Marubozu Full-Body Momentum Candles',
+    category: 'Candlestick Patterns',
+    single_line: 'Full body candle with virtually zero wicks (Open = Low, Close = High) signifies unstoppable institutional one-way directional aggression.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: Bullish Marubozu (Open = Low, Close = High) breaking out of multi-day range on 3x+ volume.',
+    bearish_display: '🔴 BEARISH SHORT: Bearish Marubozu (Open = High, Close = Low) breaking down below key support.',
+    entry_trigger: 'Enter on close of Marubozu or on 50% midpoint pullback.',
+    stop_loss: 'SL below 50% midpoint of Marubozu body.',
+    target_1: 'Target 1: 1:2.0 R:R',
+    target_2: 'Target 2: 1:3.5 R:R',
+    target_3: 'Target 3: 1:5.0 R:R',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '87% Win Rate',
+    risk_reward: '1:3.0 R:R',
+    indicators: ['Zero Wick Range', 'Volume Ratio > 3.0x', 'OBV Surge'],
+    rules: ['Wicks must be less than 5% of total candle length.'],
+    mistakes_to_avoid: ['Chasing when Marubozu is already 5% extended on intraday charts.'],
+    example: 'COALINDIA prints Daily Bullish Marubozu at ₹450 with 4x volume → trends to ₹510.',
+    scanner_path: '/price-shockers',
+  },
+  {
+    day: 10,
+    day_tag: 'Day 10',
+    symbol_icon: '🪰',
+    title: 'Dragonfly Doji & Gravestone Doji Reversals',
+    category: 'Candlestick Patterns',
     single_line: 'Open, high, and close near identical with a giant lower or upper shadow indicating extreme rejection of lower/higher prices.',
     is_bullish: true,
     is_bearish: true,
@@ -211,10 +319,36 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/breakout',
   },
   {
-    day: 7,
-    day_tag: 'Day 7: Key Level Breakouts',
+    day: 11,
+    day_tag: 'Day 11',
+    symbol_icon: '💫',
+    title: 'Spinning Top & High Wave Indecision Candles',
+    category: 'Candlestick Patterns',
+    single_line: 'Small real body with long upper and lower shadows reflects extreme tug-of-war where previous trend loses momentum before major reversal.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: Spinning Top at bottom of downtrend followed by strong green expansion candle breaking high.',
+    bearish_display: '🔴 BEARISH SHORT: Spinning Top at top of uptrend followed by red expansion candle breaking low.',
+    entry_trigger: 'Enter on the breakout direction of the high/low range.',
+    stop_loss: 'SL at opposite extreme of the spinning top.',
+    target_1: 'Target 1: 1:2.0 R:R',
+    target_2: 'Target 2: 1:3.0 R:R',
+    target_3: 'Target 3: 1:4.0 R:R',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '81% Win Rate',
+    risk_reward: '1:2.2 R:R',
+    indicators: ['High Wave Shadows', 'Volume Drop on Indecision', 'Breakout Volume Expansion'],
+    rules: ['Wait for confirmation candle before taking position.'],
+    mistakes_to_avoid: ['Entering during the formation of the spinning top itself.'],
+    example: 'BAJAJ-AUTO Spinning Top at ₹9,200 support breaks ₹9,300 → reaches ₹9,750.',
+    scanner_path: '/top-buy',
+  },
+  {
+    day: 12,
+    day_tag: 'Day 12',
+    symbol_icon: '🧱',
     title: 'Support & Resistance Breakout with Volume Expansion',
-    category: 'Candlesticks & Price Action',
+    category: 'Chart Formations',
     single_line: 'Price compresses against horizontal barrier 3+ times; when breakout candle closes beyond with 2x+ average volume, explosive continuation follows.',
     is_bullish: true,
     is_bearish: true,
@@ -235,10 +369,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/price-shockers',
   },
   {
-    day: 8,
-    day_tag: 'Day 8: Classical Chart Patterns',
+    day: 13,
+    day_tag: 'Day 13',
+    symbol_icon: '🪓',
     title: 'Double Bottom (W-Pattern) & Double Top (M-Pattern)',
-    category: 'Candlesticks & Price Action',
+    category: 'Chart Formations',
     single_line: 'Two tests of a support/resistance level forming a W or M structure; breakout through the central neckline confirms massive trend reversal.',
     is_bullish: true,
     is_bearish: true,
@@ -259,10 +394,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/weekly-buy',
   },
   {
-    day: 9,
-    day_tag: 'Day 9: Structural Reversals',
-    title: 'Inverse Head & Shoulders (Bullish) & Head & Shoulders (Bearish)',
-    category: 'Candlesticks & Price Action',
+    day: 14,
+    day_tag: 'Day 14',
+    symbol_icon: '👤',
+    title: 'Inverse Head & Shoulders & Regular Head & Shoulders',
+    category: 'Chart Formations',
     single_line: 'Three-trough structure (Left Shoulder, Lower Head, Higher Right Shoulder) indicating seller exhaustion and institutional accumulation.',
     is_bullish: true,
     is_bearish: true,
@@ -283,10 +419,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/monthly-buy',
   },
   {
-    day: 10,
-    day_tag: 'Day 10: Multi-Week Accumulation',
+    day: 15,
+    day_tag: 'Day 15',
+    symbol_icon: '☕',
     title: 'Cup & Handle Master Pattern (Institutional Shakeout)',
-    category: 'Candlesticks & Price Action',
+    category: 'Chart Formations',
     single_line: 'Rounded U-shaped accumulation base followed by a shallow downward handle shakeout; breakout above the rim signals massive multi-month rally.',
     is_bullish: true,
     is_bearish: false,
@@ -307,10 +444,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/future-stocks',
   },
   {
-    day: 11,
-    day_tag: 'Day 11: Volatility Compression',
+    day: 16,
+    day_tag: 'Day 16',
+    symbol_icon: '📐',
     title: 'Ascending Triangle & Symmetrical Triangle Breakout',
-    category: 'Candlesticks & Price Action',
+    category: 'Chart Formations',
     single_line: 'Flat horizontal resistance with rising higher lows creates intense volatility compression until price violently explodes upward.',
     is_bullish: true,
     is_bearish: true,
@@ -331,10 +469,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/breakout',
   },
   {
-    day: 12,
-    day_tag: 'Day 12: High-Momentum Continuation',
+    day: 17,
+    day_tag: 'Day 17',
+    symbol_icon: '🚩',
     title: 'Bull Flag & Bear Flag Fast-Trend Continuation',
-    category: 'Candlesticks & Price Action',
+    category: 'Chart Formations',
     single_line: 'Steep near-vertical flagpole impulse followed by tight 3-5 candle parallel channel pullback; breakout of channel continues impulse with equal flagpole length.',
     is_bullish: true,
     is_bearish: true,
@@ -355,154 +494,36 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/momentum',
   },
   {
-    day: 13,
-    day_tag: 'Day 13: Momentum Divergence',
-    title: 'RSI Bullish Divergence (Regular & Hidden Divergence)',
-    category: 'EMA & Indicators',
-    single_line: 'Price makes lower lows but RSI indicator makes higher lows at key support; indicates smart money is accumulating while retail sellers exhaust.',
-    is_bullish: true,
-    is_bearish: false,
-    bullish_display: '🟢 BULLISH BUY: Regular Divergence (Price Lower Low + RSI Higher Low) or Hidden Divergence (Price Higher Low + RSI Lower Low in uptrend).',
-    bearish_display: '🔴 BEARISH ALERT: Watch for RSI Bearish Divergence (Price Higher High + RSI Lower High) at overbought resistance.',
-    entry_trigger: 'Buy when price breaks above previous candle high following divergence confirmation and RSI crosses above 40/50.',
-    stop_loss: 'SL below the lowest price swing low.',
-    target_1: 'Target 1: 1:2.0 R:R (RSI reaching 60)',
-    target_2: 'Target 2: 1:3.0 R:R (RSI reaching 70)',
-    target_3: 'Target 3: Previous major swing high',
-    timeframe: '15m, 1H, Daily',
-    win_rate: '84% Win Rate',
-    risk_reward: '1:2.5 R:R',
-    indicators: ['RSI 14', 'Support Line', 'MACD Histogram Turn'],
-    rules: ['Divergence must be clearly visible between two distinct swing points.'],
-    mistakes_to_avoid: ['Entering solely on RSI without price action candle confirmation.'],
-    example: 'NIFTY Daily: Price makes Lower Low at 24,000 but RSI makes Higher Low at 38 → rallies 800 points.',
-    scanner_path: '/indicators',
-  },
-  {
-    day: 14,
-    day_tag: 'Day 14: Overbought Reversals',
-    title: 'RSI Bearish Divergence & Overbought Exhaustion',
-    category: 'EMA & Indicators',
-    single_line: 'Price pushes to new high but RSI fails to exceed previous high and rolls over below 70; signals smart money distribution.',
-    is_bullish: false,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH RECOVERY: When RSI resets to 50 support without breaking price structure, look for continuation.',
-    bearish_display: '🔴 BEARISH SHORT: Price makes Higher High at resistance while RSI makes Lower High below 70. Enter short on breakdown.',
-    entry_trigger: 'Short when price breaks below the low of the candle that formed the divergence.',
-    stop_loss: 'SL above the highest price swing high.',
-    target_1: 'Target 1: 1:2.0 R:R (RSI reaching 50)',
-    target_2: 'Target 2: 1:3.0 R:R (EMA 50 support)',
-    target_3: 'Target 3: Major swing low support',
-    timeframe: '15m, 1H, Daily',
-    win_rate: '83% Win Rate',
-    risk_reward: '1:2.5 R:R',
-    indicators: ['RSI 14 Overbought > 70', 'Resistance Zone', 'Bearish Engulfing'],
-    rules: ['Best when combined with bearish candlestick pattern at resistance.'],
-    mistakes_to_avoid: ['Shorting strong momentum stocks that stay overbought during secular bull runs.'],
-    example: 'TITAN makes new high at ₹3,850 with RSI Divergence at 68 vs 78 → drops to ₹3,620.',
-    scanner_path: '/top-sellers',
-  },
-  {
-    day: 15,
-    day_tag: 'Day 15: Intraday Scalping Engine',
-    title: '9 EMA Intraday Scalping & Pullback Strategy (5m & 15m)',
-    category: 'EMA & Indicators',
-    single_line: 'Fast-moving 9 EMA acts as dynamic support in strong trends; buy whenever price touches 9 EMA and prints a rejection candle with green close.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH SCALP: Price > 9 EMA > VWAP. Buy on 5m/15m dip to 9 EMA when green rejection candle confirms.',
-    bearish_display: '🔴 BEARISH SCALP: Price < 9 EMA < VWAP. Sell on 5m/15m rally to 9 EMA when red rejection candle confirms.',
-    entry_trigger: 'Enter at market upon close of candle bouncing off 9 EMA.',
-    stop_loss: 'SL 1 tick below the bounce candle low (typically 0.3% - 0.5%).',
-    target_1: 'Target 1: 1:1.5 R:R (quick scalp)',
-    target_2: 'Target 2: 1:2.5 R:R (day high)',
-    target_3: 'Target 3: Trail with 9 EMA till candle closes on wrong side',
-    timeframe: '3m, 5m, 15m',
-    win_rate: '85% Win Rate',
-    risk_reward: '1:2.0 R:R',
-    indicators: ['9 EMA', 'VWAP', 'Intraday Order Flow Delta'],
-    rules: ['Only trade in direction of the 15-minute and 1-hour trend.'],
-    mistakes_to_avoid: ['Trading 9 EMA bounces in sideways range-bound market.'],
-    example: 'BANKNIFTY on 5m: touches 9 EMA at 51,200, prints hammer, rallies to 51,450.',
-    scanner_path: '/top-buy',
-  },
-  {
-    day: 16,
-    day_tag: 'Day 16: Golden Cross & Moving Average Stack',
-    title: '20 EMA + 50 EMA Golden Cross & Alignment System',
-    category: 'EMA & Indicators',
-    single_line: 'When 20 EMA crosses above 50 EMA and both slope upward at 45 degrees with Price > 200 EMA, a powerful multi-week trend is initiated.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: 20 EMA crosses above 50 EMA (Golden Cross). Price pulls back to 20 EMA → Buy on green candle.',
-    bearish_display: '🔴 BEARISH SHORT: 20 EMA crosses below 50 EMA (Death Cross). Price rallies to 20 EMA → Sell on red candle.',
-    entry_trigger: 'Buy on pullback to 20 EMA following the cross.',
-    stop_loss: 'SL below 50 EMA or recent swing low.',
-    target_1: 'Target 1: 1:2.0 R:R',
-    target_2: 'Target 2: 1:3.5 R:R',
-    target_3: 'Target 3: 1:5.0+ R:R (Multi-week trend hold)',
-    timeframe: '15m, 1H, Daily',
-    win_rate: '86% Win Rate',
-    risk_reward: '1:3.0 R:R',
-    indicators: ['20 EMA', '50 EMA', '200 EMA', 'Volume Ratio > 1.5x'],
-    rules: ['Ensure 200 EMA is sloping in the same direction for maximum conviction.'],
-    mistakes_to_avoid: ['Buying when moving averages are flat and tangled.'],
-    example: 'BEL 20 EMA crosses 50 EMA at ₹280 → stock rallies to ₹340 over 4 weeks.',
-    scanner_path: '/ema-screener',
-  },
-  {
-    day: 17,
-    day_tag: 'Day 17: Trend Following Mastery',
-    title: 'Supertrend (10, 3) + 200 EMA Institutional Trend Engine',
-    category: 'EMA & Indicators',
-    single_line: 'Filter trades by 200 EMA (bias filter); only take Supertrend GREEN buy signals when Price > 200 EMA for effortless trend following.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Price > 200 EMA AND Supertrend (10,3) turns GREEN with volume confirmation.',
-    bearish_display: '🔴 BEARISH SHORT: Price < 200 EMA AND Supertrend (10,3) turns RED with volume confirmation.',
-    entry_trigger: 'Buy on the close of the candle where Supertrend flips to Green above 200 EMA.',
-    stop_loss: 'SL at Supertrend green line (dynamic trailing stop).',
-    target_1: 'Target 1: 1:2.0 R:R',
-    target_2: 'Target 2: 1:3.0 R:R',
-    target_3: 'Target 3: Exit only when Supertrend flips to Red',
-    timeframe: '15m, 1H, Daily',
-    win_rate: '83% Win Rate',
-    risk_reward: '1:2.5 R:R',
-    indicators: ['Supertrend (10, 3)', '200 EMA', 'ADX > 25'],
-    rules: ['Never take a Supertrend BUY signal if price is below 200 EMA.'],
-    mistakes_to_avoid: ['Exiting too early on minor intraday noise.'],
-    example: 'COALINDIA Supertrend turns Green at ₹460 above 200 EMA → runs to ₹525 without touching stop.',
-    scanner_path: '/momentum',
-  },
-  {
     day: 18,
-    day_tag: 'Day 18: Institutional Benchmark',
-    title: 'VWAP + Volume Spike Institutional Intraday Breakout',
-    category: 'EMA & Indicators',
-    single_line: 'VWAP represents the institutional average execution price; price breaking above VWAP with a 2x volume spike confirms massive institutional buying.',
+    day_tag: 'Day 18',
+    symbol_icon: '📊',
+    title: 'Falling Bullish Wedge & Rising Bearish Wedge',
+    category: 'Chart Formations',
+    single_line: 'Both trendlines converge in the same downward direction with drying volume; upside breakout triggers sharp explosive reversal.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Price crosses above VWAP + Upper Band with Volume > 2x average. Retest of VWAP holds as support.',
-    bearish_display: '🔴 BEARISH SHORT: Price breaks below VWAP with heavy volume and fails to re-cross above VWAP.',
-    entry_trigger: 'Buy on breakout above VWAP or on first pullback bounce at VWAP line.',
-    stop_loss: 'SL 0.25% below VWAP line.',
-    target_1: 'Target 1: VWAP + 1.0 Standard Deviation Band',
-    target_2: 'Target 2: VWAP + 2.0 Standard Deviation Band (1:2.5 R:R)',
-    target_3: 'Target 3: Day High / Resistance 2',
-    timeframe: '3m, 5m, 15m',
-    win_rate: '87% Win Rate',
-    risk_reward: '1:2.5 R:R',
-    indicators: ['VWAP', 'VWAP Bands (+1/+2)', 'Volume Surge > 2.0x', 'Order Book Buyer % > 75%'],
-    rules: ['Institutions benchmark performance against VWAP; staying above VWAP keeps buyers in control.'],
-    mistakes_to_avoid: ['Shorting a stock that is steadily riding above its rising VWAP line.'],
-    example: 'MARUTI opens at ₹12,100, crosses VWAP with 3.5x volume at 9:30 AM → rallies to ₹12,480.',
-    scanner_path: '/volume-best',
+    bullish_display: '🟢 BULLISH BUY: Falling Wedge converging downward after selloff. Buy when upper resistance trendline breaks with volume.',
+    bearish_display: '🔴 BEARISH SHORT: Rising Wedge converging upward in mature rally. Short when lower support trendline breaks.',
+    entry_trigger: 'Buy on candle close breaking above upper wedge trendline.',
+    stop_loss: 'SL below lowest point of the wedge pattern.',
+    target_1: 'Target 1: 1:2.0 R:R (Top of the wedge structure)',
+    target_2: 'Target 2: 1:3.5 R:R',
+    target_3: 'Target 3: 1:5.0 R:R',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '85% Win Rate',
+    risk_reward: '1:3.0 R:R',
+    indicators: ['Converging Trendlines', 'Volume Contraction', 'RSI Divergence at Apex'],
+    rules: ['Volume must consistently decline as price approaches apex.'],
+    mistakes_to_avoid: ['Confusing parallel channels with converging wedges.'],
+    example: 'TATASTEEL Falling Wedge on Daily breaks ₹152 → rallies to ₹168.',
+    scanner_path: '/breakout',
   },
   {
     day: 19,
-    day_tag: 'Day 19: Chetan Verma Featured Masterclass',
+    day_tag: 'Day 19',
+    symbol_icon: '⚡',
     title: '9 EMA + 15-Min Breakout & Retest with Order Flow Confirmation',
-    category: 'Chetan Verma Series',
+    category: 'EMA & Indicators',
     single_line: 'When a strong 15-minute candle breaks key resistance and retests the rising 9 EMA with a green confirmation candle + volume > 1.5x, enter for high-probability momentum.',
     is_bullish: true,
     is_bearish: true,
@@ -533,9 +554,85 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 20,
-    day_tag: 'Day 20: Smart Money Concept (SMC)',
+    day_tag: 'Day 20',
+    symbol_icon: '📈',
+    title: '20 EMA + 50 EMA Golden Cross & Alignment System',
+    category: 'EMA & Indicators',
+    single_line: 'When 20 EMA crosses above 50 EMA and both slope upward at 45 degrees with Price > 200 EMA, a powerful multi-week trend is initiated.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: 20 EMA crosses above 50 EMA (Golden Cross). Price pulls back to 20 EMA → Buy on green candle.',
+    bearish_display: '🔴 BEARISH SHORT: 20 EMA crosses below 50 EMA (Death Cross). Price rallies to 20 EMA → Sell on red candle.',
+    entry_trigger: 'Buy on pullback to 20 EMA following the cross.',
+    stop_loss: 'SL below 50 EMA or recent swing low.',
+    target_1: 'Target 1: 1:2.0 R:R',
+    target_2: 'Target 2: 1:3.5 R:R',
+    target_3: 'Target 3: 1:5.0+ R:R (Multi-week trend hold)',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '86% Win Rate',
+    risk_reward: '1:3.0 R:R',
+    indicators: ['20 EMA', '50 EMA', '200 EMA', 'Volume Ratio > 1.5x'],
+    rules: ['Ensure 200 EMA is sloping in the same direction for maximum conviction.'],
+    mistakes_to_avoid: ['Buying when moving averages are flat and tangled.'],
+    example: 'BEL 20 EMA crosses 50 EMA at ₹280 → stock rallies to ₹340 over 4 weeks.',
+    scanner_path: '/ema-screener',
+  },
+  {
+    day: 21,
+    day_tag: 'Day 21',
+    symbol_icon: '🧭',
+    title: 'Supertrend (10, 3) + 200 EMA Institutional Trend Engine',
+    category: 'EMA & Indicators',
+    single_line: 'Filter trades by 200 EMA (bias filter); only take Supertrend GREEN buy signals when Price > 200 EMA for effortless trend following.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: Price > 200 EMA AND Supertrend (10,3) turns GREEN with volume confirmation.',
+    bearish_display: '🔴 BEARISH SHORT: Price < 200 EMA AND Supertrend (10,3) turns RED with volume confirmation.',
+    entry_trigger: 'Buy on the close of the candle where Supertrend flips to Green above 200 EMA.',
+    stop_loss: 'SL at Supertrend green line (dynamic trailing stop).',
+    target_1: 'Target 1: 1:2.0 R:R',
+    target_2: 'Target 2: 1:3.0 R:R',
+    target_3: 'Target 3: Exit only when Supertrend flips to Red',
+    timeframe: '15m, 1H, Daily',
+    win_rate: '83% Win Rate',
+    risk_reward: '1:2.5 R:R',
+    indicators: ['Supertrend (10, 3)', '200 EMA', 'ADX > 25'],
+    rules: ['Never take a Supertrend BUY signal if price is below 200 EMA.'],
+    mistakes_to_avoid: ['Exiting too early on minor intraday noise.'],
+    example: 'COALINDIA Supertrend turns Green at ₹460 above 200 EMA → runs to ₹525 without touching stop.',
+    scanner_path: '/momentum',
+  },
+  {
+    day: 22,
+    day_tag: 'Day 22',
+    symbol_icon: '🌊',
+    title: 'VWAP + Volume Spike Institutional Intraday Breakout',
+    category: 'EMA & Indicators',
+    single_line: 'VWAP represents the institutional average execution price; price breaking above VWAP with a 2x volume spike confirms massive institutional buying.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: Price crosses above VWAP + Upper Band with Volume > 2x average. Retest of VWAP holds as support.',
+    bearish_display: '🔴 BEARISH SHORT: Price breaks below VWAP with heavy volume and fails to re-cross above VWAP.',
+    entry_trigger: 'Buy on breakout above VWAP or on first pullback bounce at VWAP line.',
+    stop_loss: 'SL 0.25% below VWAP line.',
+    target_1: 'Target 1: VWAP + 1.0 Standard Deviation Band',
+    target_2: 'Target 2: VWAP + 2.0 Standard Deviation Band (1:2.5 R:R)',
+    target_3: 'Target 3: Day High / Resistance 2',
+    timeframe: '3m, 5m, 15m',
+    win_rate: '87% Win Rate',
+    risk_reward: '1:2.5 R:R',
+    indicators: ['VWAP', 'VWAP Bands (+1/+2)', 'Volume Surge > 2.0x', 'Order Book Buyer % > 75%'],
+    rules: ['Institutions benchmark performance against VWAP; staying above VWAP keeps buyers in control.'],
+    mistakes_to_avoid: ['Shorting a stock that is steadily riding above its rising VWAP line.'],
+    example: 'MARUTI opens at ₹12,100, crosses VWAP with 3.5x volume at 9:30 AM → rallies to ₹12,480.',
+    scanner_path: '/volume-best',
+  },
+  {
+    day: 23,
+    day_tag: 'Day 23',
+    symbol_icon: '🏦',
     title: 'Order Block (OB) & Fair Value Gap (FVG) Retest Strategy',
-    category: 'Smart Money & Order Flow',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'Last down candle before a massive explosive upward impulse creates a Bullish Order Block (OB); when price returns to mitigate the FVG/OB, enter with institutional limit orders.',
     is_bullish: true,
     is_bearish: true,
@@ -556,10 +653,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/target-matrix',
   },
   {
-    day: 21,
-    day_tag: 'Day 21: Market Structure Shift',
+    day: 24,
+    day_tag: 'Day 24',
+    symbol_icon: '🔄',
     title: 'Break of Structure (BOS) & Change of Character (CHoCH)',
-    category: 'Smart Money & Order Flow',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'CHoCH signals the first structural trend reversal when a key swing point is breached; subsequent BOS confirms the continuation of the new institutional trend.',
     is_bullish: true,
     is_bearish: true,
@@ -580,10 +678,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/quant-screener',
   },
   {
-    day: 22,
-    day_tag: 'Day 22: Anti-Retail Traps',
+    day: 25,
+    day_tag: 'Day 25',
+    symbol_icon: '🪤',
     title: 'Liquidity Sweep & Stop Hunt False Breakdown Reversal',
-    category: 'Smart Money & Order Flow',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'Smart money forces price to breach popular retail support/resistance to trigger stop losses and collect liquidity, then violently reverses.',
     is_bullish: true,
     is_bearish: true,
@@ -604,10 +703,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buyers',
   },
   {
-    day: 23,
-    day_tag: 'Day 23: Volume Expansion Engine',
+    day: 26,
+    day_tag: 'Day 26',
+    symbol_icon: '💥',
     title: '3-Day / 5-Day / 7-Day Volume Shocker Breakout Rule',
-    category: 'Smart Money & Order Flow',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'When daily volume exceeds 3x to 7x the historical average along with a price surge, it indicates institutional block accumulation that persists for 3–10 sessions.',
     is_bullish: true,
     is_bearish: false,
@@ -628,10 +728,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/volume-3d-shockers',
   },
   {
-    day: 24,
-    day_tag: 'Day 24: Derivatives & OI Engine',
+    day: 27,
+    day_tag: 'Day 27',
+    symbol_icon: '📊',
     title: 'Open Interest (OI) Long Buildup & Short Covering Squeeze',
-    category: 'Smart Money & Order Flow',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'Long Buildup (Price ↑ + OI ↑) signals fresh institutional capital inflow; Short Covering (Price ↑ + OI ↓) triggers explosive short squeezes.',
     is_bullish: true,
     is_bearish: true,
@@ -652,10 +753,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/long-buildup',
   },
   {
-    day: 25,
-    day_tag: 'Day 25: Contrarian Sentiment Engine',
+    day: 28,
+    day_tag: 'Day 28',
+    symbol_icon: '⚖️',
     title: 'Option Chain PCR (Put-Call Ratio) Contrarian Turnaround',
-    category: 'Smart Money & Order Flow',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'Extreme Put-Call Ratio readings indicate retail panic or complacency; PCR < 0.60 signals extreme oversold buy opportunity, PCR > 1.40 signals top.',
     is_bullish: true,
     is_bearish: true,
@@ -676,10 +778,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/oi-analysis',
   },
   {
-    day: 26,
-    day_tag: 'Day 26: Session Open Strategy',
+    day: 29,
+    day_tag: 'Day 29',
+    symbol_icon: '⏰',
     title: 'Opening Range Breakout (ORB 15-Minute Rule)',
-    category: 'Chetan Verma Series',
+    category: 'Candlestick Patterns',
     single_line: 'Mark the High and Low of the first 15-minute candle (09:15–09:30 IST); when candle 2 or 3 breaks and closes outside the range, trade the expansion in that direction.',
     is_bullish: true,
     is_bearish: true,
@@ -700,85 +803,11 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 27,
-    day_tag: 'Day 27: Gap Dynamics',
-    title: 'Gap Up & Gap Down Institutional Fill vs Runway Rule',
-    category: 'Chetan Verma Series',
-    single_line: 'Small gaps (<0.7%) typically fill within 45 minutes; large institutional runaway gaps (>1.5% with massive opening volume) never fill and trend aggressively.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH RUNWAY: Gap Up holds above opening low for first 15 mins AND stays above VWAP → Buy for runaway trend day.',
-    bearish_display: '🔴 BEARISH GAP FILL: Gap Up fails to break opening high, falls below VWAP → Short for complete gap fill back to yesterday close.',
-    entry_trigger: 'Runway: Buy on breakout of 15m High. Gap Fill: Short on breakdown below VWAP.',
-    stop_loss: 'Runway: SL below Day Low. Gap Fill: SL above Day High.',
-    target_1: 'Target 1: Gap Fill = Yesterday Close | Runway = 1:2.0 R:R',
-    target_2: 'Target 2: 1:3.0 R:R',
-    target_3: 'Target 3: Full expansion day',
-    timeframe: '5m & 15m',
-    win_rate: '85% Win Rate',
-    risk_reward: '1:2.5 R:R',
-    indicators: ['Yesterday Close Reference', 'Opening Gap %', 'VWAP Status', 'Tick Momentum'],
-    rules: ['Check pre-open volume and sector breadth to classify gap type.'],
-    mistakes_to_avoid: ['Trying to fade a strong institutional runaway gap on global cues.'],
-    example: 'TCS gaps up +2% on earnings, holds VWAP at 9:30 AM → rallies another +3% intraday.',
-    scanner_path: '/top-buyers',
-  },
-  {
-    day: 28,
-    day_tag: 'Day 28: Multi-Timeframe Confluence',
-    title: 'Top-Down Alignment Formula (Monthly + Weekly + Daily + 15m)',
-    category: 'Chetan Verma Series',
-    single_line: 'Never trade against higher timeframe trend; when Monthly is Bullish, Weekly is Bullish, Daily is in Pullback, and 15m triggers Buy, win rate exceeds 90%.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 PERFECT BULLISH ALIGNMENT: Monthly > 20 EMA + Weekly > 20 EMA + Daily at 20 EMA Support + 15m Green Confirmation.',
-    bearish_display: '🔴 PERFECT BEARISH ALIGNMENT: Monthly < 20 EMA + Weekly < 20 EMA + Daily at 20 EMA Resistance + 15m Breakdown.',
-    entry_trigger: 'Enter on 15m trigger candle aligned with Daily and Weekly trend.',
-    stop_loss: 'SL below 15m swing low (ultra-tight risk on higher timeframe move).',
-    target_1: 'Target 1: Daily swing high (1:3.0 R:R)',
-    target_2: 'Target 2: Weekly swing high (1:5.0 R:R)',
-    target_3: 'Target 3: Monthly structural breakout (1:8.0+ R:R)',
-    timeframe: '15m entry based on Weekly/Daily analysis',
-    win_rate: '91% Win Rate',
-    risk_reward: '1:4.0 to 1:8.0 R:R',
-    indicators: ['Multi-Timeframe EMA Stack', 'Sector Confluence', 'Relative Strength vs Nifty'],
-    rules: ['If higher timeframe is Bearish, IGNORE all lower timeframe buy signals.'],
-    mistakes_to_avoid: ['Overtrading lower timeframe 1-minute noise.'],
-    example: 'BHARTIARTL: Monthly/Weekly in strong uptrend, Daily pulls back to ₹1,550, 15m triggers buy → surges to ₹1,720.',
-    scanner_path: '/quant-screener',
-  },
-  {
-    day: 29,
-    day_tag: 'Day 29: Risk Management & R:R',
-    title: '1:3+ Risk-to-Reward & 1.5x ATR Dynamic Trailing Stop Rule',
-    category: 'Chetan Verma Series',
-    single_line: 'Risk only 1% to 1.5% of total trading capital per trade; maintain minimum 1:2.5 Risk-to-Reward so even a 50% win rate generates immense profitability.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH CAPITAL RULE: Max Risk = 1% Capital. Stop Loss = 1.5× ATR below entry. Target = 3× ATR above entry (1:2 minimum).',
-    bearish_display: '🔴 RISK WARNING: Never enter a trade where Risk-to-Reward is worse than 1:1.5. Cut losing trades ruthlessly.',
-    entry_trigger: 'Calculate Position Size = (Account Capital × 1%) ÷ (Entry Price − Stop Loss Price).',
-    stop_loss: 'Trailing SL moves to Breakeven once Target 1 (1:1.5) is achieved.',
-    target_1: 'Target 1: Book 50% profits at 1:1.5 R:R, move SL to Cost',
-    target_2: 'Target 2: Book 30% profits at 1:2.5 R:R',
-    target_3: 'Target 3: Let remaining 20% ride with 1.5x ATR trailing stop',
-    timeframe: 'Universal (All Timeframes)',
-    win_rate: 'Capital Protection Rule',
-    risk_reward: '1:3.0 R:R Standard',
-    indicators: ['ATR (Average True Range)', 'Position Size Calculator', 'Trailing Stop Metric'],
-    rules: [
-      'Never risk more than 1.5% of total portfolio on a single trade setup.',
-      'Always trail stop loss to breakeven after hitting Target 1.',
-    ],
-    mistakes_to_avoid: ['Averaging down on losing trades (adding to losers is fatal).'],
-    example: 'Account ₹5,00,000 → Max Risk = ₹5,000. Risk ₹20/share → Buy 250 shares. Target ₹60/share → Profit ₹15,000.',
-    scanner_path: '/today-result',
-  },
-  {
     day: 30,
-    day_tag: 'Day 30: Institutional 200-Point AI Master Engine',
+    day_tag: 'Day 30',
+    symbol_icon: '🏆',
     title: '200-Point Institutional AI Master Buy Checklist (All-in-One Rule)',
-    category: 'Chetan Verma Series',
+    category: 'Smart Money (SMC) & Flow',
     single_line: 'Combines 12 multi-factor pillars (Technicals 50, Fundamentals 40, Derivatives 35, Volume 20, Relative Strength 15, SMC 15) to identify 90%+ institutional high-conviction buys.',
     is_bullish: true,
     is_bearish: false,
@@ -804,62 +833,65 @@ export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
   },
 ];
 
-// ── 2. Technical Indicator Mathematical Formulas & Library (RSI, MACD, PCR, ADX, VWAP, Supertrend, etc.) ──
+// ── 2. Technical Indicator Mathematical Formula Library (Detailed Mathematics & Derivations) ──
 export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
   {
     name: 'Relative Strength Index',
+    symbol_icon: '📈',
     acronym: 'RSI (14)',
     category: 'Momentum',
-    math_formula: 'RSI = 100 - [100 / (1 + RS)]  where RS = (Smoothed Avg 14-Day Gain) / (Smoothed Avg 14-Day Loss)',
+    math_formula: 'RSI = 100 - [100 / (1 + RS)]   where RS = (Smoothed Avg 14-Day Gain) / (Smoothed Avg 14-Day Loss)',
     calculation_steps: [
-      '1. Calculate price changes: ΔP = Close(t) - Close(t-1)',
+      '1. Price Change: ΔP = Close(t) - Close(t-1)',
       '2. Gain = max(ΔP, 0), Loss = max(-ΔP, 0)',
-      '3. Average Gain = [Prior Avg Gain * 13 + Current Gain] / 14',
-      '4. Average Loss = [Prior Avg Loss * 13 + Current Loss] / 14',
-      '5. RS = Avg Gain / Avg Loss → RSI oscillates between 0 and 100.',
+      '3. Smoothed Avg Gain = [Prior Avg Gain * 13 + Current Gain] / 14',
+      '4. Smoothed Avg Loss = [Prior Avg Loss * 13 + Current Loss] / 14',
+      '5. RS = Avg Gain / Avg Loss → RSI oscillates strictly between 0 and 100.',
     ],
-    single_line: 'Measures the velocity and magnitude of directional price movements; 55–70 is ideal bullish momentum, >80 is overbought, <30 is oversold.',
-    bullish_rule: '🟢 Bullish Zone: RSI crosses above 50/60 with expanding price candles. Bullish Divergence (Price Lower Low + RSI Higher Low).',
-    bearish_rule: '🔴 Bearish Zone: RSI drops below 45/40. Bearish Divergence (Price Higher High + RSI Lower High) warning of sharp trend reversal.',
-    ideal_parameters: 'Length = 14 periods, Overbought = 70 (or 80 in bull markets), Oversold = 30 (or 40 in bull markets)',
+    single_line: 'Measures velocity and magnitude of directional price momentum; 55–70 is ideal bullish momentum, >80 is overbought, <30 is oversold.',
+    bullish_math: '🟢 Bullish Formula: RSI > 50 AND rising towards 65-70. Regular Bullish Divergence = Price(t) < Price(t-n) while RSI(t) > RSI(t-n) at S1 Support.',
+    bearish_math: '🔴 Bearish Formula: RSI < 45 AND falling below 40. Regular Bearish Divergence = Price(t) > Price(t-n) while RSI(t) < RSI(t-n) at R1 Resistance.',
+    ideal_parameters: 'Length = 14 periods, Bullish Zone = 55–70, Overbought = 70/80, Oversold = 30/40',
     interpretation: 'RSI in a strong bull market rarely falls below 40; treating 40-50 as the new support zone offers high-probability pullback entries.',
     pro_tip: 'Combine RSI Divergence with support/resistance price action rather than buying purely on oversold readings.',
     scanner_path: '/indicators',
   },
   {
     name: 'Moving Average Convergence Divergence',
+    symbol_icon: '🔀',
     acronym: 'MACD (12, 26, 9)',
     category: 'Momentum',
     math_formula: 'MACD Line = EMA(12) - EMA(26) | Signal Line = EMA(9, MACD Line) | Histogram = MACD Line - Signal Line',
     calculation_steps: [
-      '1. Fast EMA = 12-period exponential moving average of closing price.',
-      '2. Slow EMA = 26-period exponential moving average of closing price.',
-      '3. MACD Line = Fast EMA (12) - Slow EMA (26).',
-      '4. Signal Line = 9-period EMA applied directly onto the MACD Line.',
+      '1. Fast EMA = 12-period exponential moving average of closing prices.',
+      '2. Slow EMA = 26-period exponential moving average of closing prices.',
+      '3. MACD Line = Fast EMA(12) - Slow EMA(26).',
+      '4. Signal Line = 9-period EMA applied directly on MACD Line.',
       '5. MACD Histogram = MACD Line - Signal Line (visualizes momentum acceleration).',
     ],
     single_line: 'Tracks trend momentum and moving average separation; bullish crossover above zero line confirms institutional trend continuation.',
-    bullish_rule: '🟢 Bullish Signal: MACD Line crosses ABOVE Signal Line while above zero line + Histogram turns expanding green.',
-    bearish_rule: '🔴 Bearish Signal: MACD Line crosses BELOW Signal Line from high overbought peak + Histogram turns red.',
+    bullish_math: '🟢 Bullish Formula: MACD Line crosses ABOVE Signal Line AND Histogram turns positive (Hist > 0) above Zero Benchmark.',
+    bearish_math: '🔴 Bearish Formula: MACD Line crosses BELOW Signal Line AND Histogram turns negative (Hist < 0) from high peak.',
     ideal_parameters: 'Fast Period = 12, Slow Period = 26, Signal Smoothing = 9 (Exponential)',
     interpretation: 'A crossover occurring below the zero line signifies an early reversal; a crossover occurring above zero signifies trend acceleration.',
     pro_tip: 'Watch the MACD Histogram: when red bars start shrinking towards zero, momentum is decelerating and buyers are preparing to take over.',
     scanner_path: '/indicators',
   },
   {
-    name: 'Put-Call Ratio & Option Chain Sentiment',
+    name: 'Put-Call Ratio & Option Chain Greek Sentiment',
+    symbol_icon: '⚖️',
     acronym: 'PCR (Options)',
     category: 'Derivatives & OI',
-    math_formula: 'PCR = Total Open Interest of Put Options (Σ Put OI) ÷ Total Open Interest of Call Options (Σ Call OI)',
+    math_formula: 'PCR = Total Put Open Interest (Σ Put OI) ÷ Total Call Open Interest (Σ Call OI)',
     calculation_steps: [
-      '1. Sum all outstanding open interest contracts for Puts across all strikes for active expiry.',
-      '2. Sum all outstanding open interest contracts for Calls across all strikes for active expiry.',
+      '1. Sum all outstanding open interest contracts for Puts across all active strikes: Σ Put OI.',
+      '2. Sum all outstanding open interest contracts for Calls across all active strikes: Σ Call OI.',
       '3. Divide Total Put OI by Total Call OI.',
-      '4. Optional: Volume PCR = Total Put Volume / Total Call Volume.',
+      '4. Volume PCR = Total Put Traded Volume / Total Call Traded Volume.',
     ],
     single_line: 'Contrarian sentiment barometer; PCR < 0.60 indicates extreme retail panic & oversold bottom, PCR > 1.40 indicates extreme greed & top.',
-    bullish_rule: '🟢 Bullish Reversal: PCR drops to 0.55–0.70 at major technical support + Put writers aggressively write Puts at ATM/ITM strikes.',
-    bearish_rule: '🔴 Bearish Reversal: PCR exceeds 1.50–1.75 at major technical resistance + Call writers aggressively write OTM Calls.',
+    bullish_math: '🟢 Bullish Formula: PCR <= 0.65 at major technical support + ATM/ITM Put OI writing increases significantly (Smart Money writing puts).',
+    bearish_math: '🔴 Bearish Formula: PCR >= 1.50 at major technical resistance + ATM/OTM Call OI writing increases (Smart Money writing calls).',
     ideal_parameters: 'Index PCR Range: 0.60 (Oversold) to 1.40 (Overbought) | Equilibrium = 1.0',
     interpretation: 'Option writers (smart money) dominate option buyers; high Put OI acts as an unbreakable price cushion.',
     pro_tip: 'Identify the strike with highest Put OI — that strike represents the highest-probability institutional floor for the weekly expiry.',
@@ -867,126 +899,156 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
   },
   {
     name: 'Average Directional Index',
+    symbol_icon: '🧭',
     acronym: 'ADX (14)',
     category: 'Trend',
     math_formula: 'ADX = 14-Period EMA of DX   where DX = [|+DI - -DI| / (+DI + -DI)] × 100',
     calculation_steps: [
-      '1. Calculate Directional Movement: +DM = Today High - Prev High (if > 0), -DM = Prev Low - Today Low (if > 0).',
-      '2. Calculate True Range (TR) = max(H-L, |H-PrevC|, |L-PrevC|).',
-      '3. Smooth +DM, -DM, and TR over 14 periods to get +DI and -DI.',
-      '4. Directional Index DX = [|+DI - -DI| / (+DI + -DI)] * 100.',
-      '5. ADX = 14-period Wilder smoothed average of DX.',
+      '1. Directional Movement: +DM = Today High - Prev High, -DM = Prev Low - Today Low.',
+      '2. True Range: TR = max[(H-L), |H-PrevC|, |L-PrevC|].',
+      '3. Smooth +DM, -DM, and TR over 14 periods using Wilder smoothing to obtain +DI and -DI.',
+      '4. Directional Index: DX = [|+DI - -DI| / (+DI + -DI)] * 100.',
+      '5. ADX = 14-period exponential moving average of DX.',
     ],
     single_line: 'Quantifies trend strength regardless of direction; ADX > 25 confirms powerful trend, ADX > 40 is explosive trend, ADX < 20 is choppy range.',
-    bullish_rule: '🟢 Bullish Trend: ADX > 25 AND rising while +DI is strictly greater than -DI.',
-    bearish_rule: '🔴 Bearish Trend: ADX > 25 AND rising while -DI is strictly greater than +DI (indicates aggressive downtrend).',
-    ideal_parameters: 'Period = 14, Strong Trend Threshold = 25, Extreme Trend = 40, Chop Threshold = 20',
+    bullish_math: '🟢 Bullish Formula: ADX > 25 AND rising (dADX/dt > 0) while +DI > -DI (Strong Bullish Trend Momentum).',
+    bearish_math: '🔴 Bearish Formula: ADX > 25 AND rising while -DI > +DI (Strong Bearish Trend Momentum) OR ADX < 20 (Choppy range).',
+    ideal_parameters: 'Period = 14, Trend Threshold = 25, Extreme Momentum = 40, Range Chop = 20',
     interpretation: 'ADX does NOT show direction; it measures the sheer momentum force of the market. High ADX +DI = buy breakouts; Low ADX = sell options/mean-revert.',
     pro_tip: 'Never trade breakout systems when ADX is below 20; false breakouts and whipsaws occur frequently in low-ADX regimes.',
     scanner_path: '/momentum',
   },
   {
     name: 'Volume Weighted Average Price',
+    symbol_icon: '🌊',
     acronym: 'VWAP',
     category: 'Volume / Flow',
     math_formula: 'VWAP = Σ(Typical Price × Volume) ÷ Σ(Volume)   where Typical Price = (High + Low + Close) / 3',
     calculation_steps: [
-      '1. Typical Price (TP) = (High + Low + Close) / 3 for each intraday candle.',
-      '2. Multiply TP by candle volume: Cumulative TP_Vol = Σ(TP × Volume).',
-      '3. Sum total volume from market open: Cumulative_Vol = Σ(Volume).',
-      '4. VWAP = Cumulative TP_Vol / Cumulative_Vol.',
-      '5. Bands = VWAP ± (1.0 / 2.0 / 3.0 × Standard Deviation).',
+      '1. Typical Price: TP(t) = [High(t) + Low(t) + Close(t)] / 3.',
+      '2. Cumulative TP Volume: Σ[TP(t) * Volume(t)] from 09:15 IST opening candle.',
+      '3. Cumulative Volume: Σ[Volume(t)] from 09:15 IST opening candle.',
+      '4. VWAP = Cumulative TP Volume / Cumulative Volume.',
+      '5. Standard Deviation Bands = VWAP ± [Multiplier × σ].',
     ],
     single_line: 'Institutional fair value benchmark reset daily at 09:15 IST; trading above VWAP confirms institutional buyer control.',
-    bullish_rule: '🟢 Bullish Intraday: Price holds above rising VWAP line. Pullbacks to VWAP hold as dynamic support.',
-    bearish_rule: '🔴 Bearish Intraday: Price trades below falling VWAP line. Rallies to VWAP are sold into by institutional algorithms.',
-    ideal_parameters: 'Session reset daily at 09:15 IST. Bands at +1.0σ, +2.0σ, -1.0σ, -2.0σ',
+    bullish_math: '🟢 Bullish Formula: Price > VWAP AND VWAP slope > 0. Pullback to VWAP touches line and prints green confirmation candle.',
+    bearish_math: '🔴 Bearish Formula: Price < VWAP AND VWAP slope < 0. Rallies to VWAP are rejected with heavy selling volume.',
+    ideal_parameters: 'Session reset daily at 09:15 IST. Standard Deviation Bands at ±1.0σ, ±2.0σ',
     interpretation: 'Institutional execution algorithms (VWAP orders) buy when price is at or below VWAP and hold off when extended > +2σ above VWAP.',
     pro_tip: 'The highest win-rate intraday trade in Nifty & F&O stocks is the "VWAP Pullback" after the initial 09:15-09:30 range establishment.',
     scanner_path: '/volume-best',
   },
   {
-    name: 'Supertrend',
+    name: 'Supertrend Dynamic Volatility Bands',
+    symbol_icon: '🛡️',
     acronym: 'Supertrend (10, 3)',
     category: 'Trend',
-    math_formula: 'Upper Band = (High + Low)/2 + (Multiplier × ATR) | Lower Band = (High + Low)/2 - (Multiplier × ATR)',
+    math_formula: 'Upper Band = (H+L)/2 + (3 × ATR) | Lower Band = (H+L)/2 - (3 × ATR) | Dynamic Flip Rule',
     calculation_steps: [
       '1. Calculate 10-period Average True Range (ATR).',
       '2. Basic Upper Band = (High + Low) / 2 + 3 * ATR.',
       '3. Basic Lower Band = (High + Low) / 2 - 3 * ATR.',
-      '4. If Close > Prev Final Upper Band → Trend = Bullish (Supertrend line = Lower Band).',
-      '5. If Close < Prev Final Lower Band → Trend = Bearish (Supertrend line = Upper Band).',
+      '4. If Close > Prev Final Upper Band → State = BULLISH (Supertrend Line = Lower Band).',
+      '5. If Close < Prev Final Lower Band → State = BEARISH (Supertrend Line = Upper Band).',
     ],
     single_line: 'Dynamic volatility-based trailing stop line; Green line below price indicates active buy mode, Red line above price indicates active sell mode.',
-    bullish_rule: '🟢 Bullish Trend: Supertrend turns GREEN below price with candle closing above previous upper band.',
-    bearish_rule: '🔴 Bearish Trend: Supertrend turns RED above price with candle closing below previous lower band.',
-    ideal_parameters: 'ATR Period = 10, Multiplier = 3.0 (or ATR 7, Multiplier 2.0 for faster scalping)',
+    bullish_math: '🟢 Bullish Formula: Price > Supertrend Line (Green) AND Price > 200 EMA (Long-term Bullish Confluence).',
+    bearish_math: '🔴 Bearish Formula: Price < Supertrend Line (Red) AND Price < 200 EMA (Long-term Bearish Confluence).',
+    ideal_parameters: 'ATR Period = 10, Multiplier = 3.0 (or ATR 7, Multiplier 2.0 for fast scalping)',
     interpretation: 'Provides unambiguous trailing stop loss levels that adjust dynamically with market volatility.',
     pro_tip: 'Filter Supertrend buy signals by requiring Price to be above 200 EMA to avoid false flips during major secular downtrends.',
     scanner_path: '/momentum',
   },
   {
-    name: 'Bollinger Bands',
+    name: 'Bollinger Bands & Volatility Squeeze',
+    symbol_icon: '🎯',
     acronym: 'BB (20, 2)',
     category: 'Volatility',
-    math_formula: 'Middle = SMA(20) | Upper = SMA(20) + (2 × σ) | Lower = SMA(20) - (2 × σ)  where σ = 20-Day Std Deviation',
+    math_formula: 'Middle = SMA(20) | Upper = SMA(20) + (2 × σ) | Lower = SMA(20) - (2 × σ)  where σ = 20-Day Std Dev',
     calculation_steps: [
-      '1. Middle Band = 20-period simple moving average of closing price.',
-      '2. Calculate Standard Deviation (σ) of the last 20 closing prices.',
-      '3. Upper Band = 20 SMA + 2 * σ.',
-      '4. Lower Band = 20 SMA - 2 * σ.',
-      '5. Bandwidth % = [(Upper - Lower) / Middle] * 100 (measures volatility squeeze).',
+      '1. Middle Band = 20-period simple moving average of closing prices: SMA(20).',
+      '2. Standard Deviation: σ = sqrt[ (1/20) * Σ(Price - SMA20)^2 ].',
+      '3. Upper Band = SMA(20) + 2 * σ.',
+      '4. Lower Band = SMA(20) - 2 * σ.',
+      '5. Bandwidth % = [(Upper - Lower) / Middle] * 100 (quantifies volatility squeeze).',
     ],
     single_line: 'Envelopes ~95% of all price action; tight contraction (squeeze) precedes massive explosive directional breakouts.',
-    bullish_rule: '🟢 Bullish Breakout: Bollinger Squeeze (narrow bandwidth) followed by candle closing above Upper Band with volume spike.',
-    bearish_rule: '🔴 Bearish Breakdown: Bollinger Squeeze followed by candle closing below Lower Band with heavy selling.',
-    ideal_parameters: 'Period = 20, Standard Deviations = 2.0',
+    bullish_math: '🟢 Bullish Formula: Bandwidth drops to multi-week low (Squeeze) → Candle closes ABOVE Upper Band on 2x+ Volume.',
+    bearish_math: '🔴 Bearish Formula: Bandwidth Squeeze followed by Candle closing BELOW Lower Band with expanding red volume.',
+    ideal_parameters: 'Period = 20, Standard Deviations = 2.0, Squeeze Threshold = Bandwidth < 4%',
     interpretation: 'Volatility is cyclical: periods of extreme compression (squeeze) lead to violent volatility expansion.',
     pro_tip: 'When bands squeeze to multi-month lows, do not predict direction — wait for the first candle to close outside the band with 2x volume.',
     scanner_path: '/breakout',
   },
   {
-    name: 'Average True Range',
+    name: 'Average True Range & Position Sizing',
+    symbol_icon: '📐',
     acronym: 'ATR (14)',
     category: 'Volatility',
-    math_formula: 'ATR = 14-Period Smoothed Average of True Range   where TR = max[(High - Low), |High - PrevClose|, |Low - PrevClose|]',
+    math_formula: 'ATR = (1/14) Σ max[(H-L), |H-PrevC|, |L-PrevC|] | Position Size = (Capital × 1%) ÷ (1.5 × ATR)',
     calculation_steps: [
-      '1. True Range = max of: (High - Low), (High - Prev Close), (Prev Close - Low).',
-      '2. First ATR = 14-day simple average of TR.',
-      '3. Subsequent ATR = [Prior ATR × 13 + Current TR] ÷ 14.',
+      '1. True Range = max of: (High - Low), |High - Prev Close|, |Low - Prev Close|.',
+      '2. Initial ATR = 14-period simple average of True Range.',
+      '3. Subsequent ATR = [Prior ATR * 13 + Current TR] / 14.',
+      '4. Dynamic Stop Loss = Entry Price - (1.5 * ATR in ₹).',
+      '5. Target 1 = Entry Price + (3.0 * ATR in ₹) [Guaranteed 1:2 Risk-to-Reward].',
     ],
     single_line: 'Pure measure of price volatility in points/rupees; used to set scientifically calibrated stop losses and dynamic position sizes.',
-    bullish_rule: '🟢 Risk Optimization: Stop Loss = Entry Price - (1.5 × ATR). Target = Entry Price + (3.0 × ATR) for guaranteed 1:2 Risk-to-Reward.',
-    bearish_rule: '🔴 Volatility Warning: ATR > 4% of stock price indicates dangerous whipsaw conditions requiring reduced position sizing.',
+    bullish_math: '🟢 Bullish Rule: Stop Loss = Entry - (1.5 × ATR). Target = Entry + (3.0 × ATR). Position Size = (1% Capital) ÷ (1.5 × ATR).',
+    bearish_math: '🔴 Volatility Warning: ATR > 4% of stock price indicates dangerous whipsaw risk requiring reduced lot sizing.',
     ideal_parameters: 'Period = 14 (Daily or 15-minute chart)',
     interpretation: 'High ATR = large daily swings (wider stops needed); Low ATR = tight consolidation (favorable risk-to-reward).',
     pro_tip: 'Position Size Formula = (Total Account Risk in ₹) ÷ (1.5 × ATR in ₹). This ensures you never lose more than 1% on any single trade.',
     scanner_path: '/today-result',
   },
   {
+    name: 'Stochastic Oscillator Momentum',
+    symbol_icon: '⚡',
+    acronym: 'Stochastic (14, 3, 3)',
+    category: 'Momentum',
+    math_formula: '%K = [(Close - Lowest Low 14) / (Highest High 14 - Lowest Low 14)] × 100 | %D = SMA(3, %K)',
+    calculation_steps: [
+      '1. Find Lowest Low (L14) and Highest High (H14) over the past 14 periods.',
+      '2. Fast Stochastic %K = [(Close - L14) / (H14 - L14)] * 100.',
+      '3. Slow %K = 3-period SMA of Fast %K.',
+      '4. %D Line = 3-period SMA of Slow %K.',
+    ],
+    single_line: 'Compares closing price to price range over a given period; %K crossing above %D below 20 triggers sharp oversold reversal buy.',
+    bullish_math: '🟢 Bullish Formula: %K crosses ABOVE %D while both are below 20 (Oversold Bullish Crossover) + green candle confirmation.',
+    bearish_math: '🔴 Bearish Formula: %K crosses BELOW %D while both are above 80 (Overbought Bearish Crossover) + red candle breakdown.',
+    ideal_parameters: '%K Period = 14, %K Smoothing = 3, %D Period = 3',
+    interpretation: 'Identifies exact turning points when momentum shifts inside a trading range.',
+    pro_tip: 'In strong trending markets, only take Stochastic oversold crossovers in the direction of the 50 EMA trend.',
+    scanner_path: '/indicators',
+  },
+  {
     name: 'Exponential Moving Average Alignment Stack',
+    symbol_icon: '🥞',
     acronym: 'EMA Stack (9, 20, 50, 200)',
     category: 'Trend',
     math_formula: 'EMA(t) = [Price(t) × k] + [EMA(t-1) × (1 - k)]   where k = 2 / (Period + 1)',
     calculation_steps: [
-      '1. Calculate weighting multiplier: k = 2 / (Period + 1).',
-      '2. Initial EMA = Simple Moving Average of first N periods.',
-      '3. Today EMA = (Close - Prior EMA) * k + Prior EMA.',
-      '4. EMA 9 (k=0.20), EMA 20 (k=0.0952), EMA 50 (k=0.0392), EMA 200 (k=0.00995).',
+      '1. Weighting multiplier: k = 2 / (Period + 1).',
+      '2. Short-term momentum: 9 EMA (k = 0.20), 20 EMA (k = 0.0952).',
+      '3. Medium-term trend: 50 EMA (k = 0.0392).',
+      '4. Long-term trend: 200 EMA (k = 0.00995).',
+      '5. Alignment Check: Price > 9 EMA > 20 EMA > 50 EMA > 200 EMA.',
     ],
     single_line: 'Hierarchical moving average stack; Price > 9 > 20 > 50 > 200 EMA indicates the strongest possible institutional uptrend.',
-    bullish_rule: '🟢 Perfect Bullish Stack: Price > 9 EMA > 20 EMA > 50 EMA > 200 EMA with all averages fanning out and sloping upwards.',
-    bearish_rule: '🔴 Perfect Bearish Stack: Price < 9 EMA < 20 EMA < 50 EMA < 200 EMA (Death Stack) indicating severe downtrend.',
+    bullish_math: '🟢 Perfect Bullish Stack: Price > 9 EMA > 20 EMA > 50 EMA > 200 EMA with all averages fanning out and sloping upwards.',
+    bearish_math: '🔴 Perfect Bearish Stack: Price < 9 EMA < 20 EMA < 50 EMA < 200 EMA (Death Stack) indicating severe downtrend.',
     ideal_parameters: 'Short-term = 9 & 20 EMA | Medium-term = 50 EMA | Long-term Trend = 200 EMA',
     interpretation: 'Faster EMAs give higher weight to recent price action; when all four align in order, retail traders cannot stop the momentum.',
     pro_tip: 'Only buy pullbacks at the 20 EMA when the 50 EMA and 200 EMA are sloping in the same direction.',
     scanner_path: '/ema-screener',
   },
   {
-    name: 'Smart Money Order Block & Imbalance',
+    name: 'Smart Money Concepts (SMC) & Fair Value Gap',
+    symbol_icon: '🏦',
     acronym: 'SMC (OB & FVG)',
     category: 'Derivatives & OI',
-    math_formula: 'FVG = Low(Candle 1) - High(Candle 3) [Bullish] | OB = Last Down Candle before BOS Impulse',
+    math_formula: 'FVG = Low(Candle 1) - High(Candle 3) [Bullish Imbalance] | OB = Last Down Candle before BOS',
     calculation_steps: [
       '1. Detect explosive 3-candle displacement wave.',
       '2. Measure gap between Candle 1 low and Candle 3 high (Fair Value Gap).',
@@ -995,8 +1057,8 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
       '5. Place limit order at OB entry with invalidation below OB low.',
     ],
     single_line: 'Smart money footprints: institutions create market imbalances (FVG) and leave unfilled buy orders inside Order Blocks (OB).',
-    bullish_rule: '🟢 Bullish OB Entry: Price pulls back to discount zone (0.618-0.786 Fibonacci) to mitigate Bullish Order Block + fill FVG.',
-    bearish_rule: '🔴 Bearish OB Entry: Price rallies into premium zone (0.618-0.786 Fibonacci) to mitigate Bearish Order Block + fill Bearish FVG.',
+    bullish_math: '🟢 Bullish OB Entry: Price pulls back to discount zone (0.618-0.786 Fibonacci) to mitigate Bullish Order Block + fill FVG.',
+    bearish_math: '🔴 Bearish OB Entry: Price rallies into premium zone (0.618-0.786 Fibonacci) to mitigate Bearish Order Block + fill Bearish FVG.',
     ideal_parameters: 'Displacement Volume > 2.5x, Mitigation Timeframe = 15m / 1H',
     interpretation: 'Market makers must return to unmitigated order blocks to balance their books before launching the next leg of the trend.',
     pro_tip: 'An Order Block that does NOT break market structure (BOS) is weak; only trade Order Blocks that caused a clear Break of Structure.',
@@ -1013,11 +1075,11 @@ export default function FormulaPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [viewMode, setViewMode] = useState<'cards' | 'accordion' | 'table'>('cards');
-  const [expandedDay, setExpandedDay] = useState<string | false>('19');
+  const [expandedDay, setExpandedDay] = useState<string | false>('1');
 
   // Filter 30-Day Masterclass strategies
   const filteredMasterclass = useMemo(() => {
-    return SEQUENTIAL_CHETAN_VERMA_SERIES.filter(s => {
+    return SEQUENTIAL_STRATEGY_SERIES.filter(s => {
       if (selectedCategory === 'Bullish' && !s.is_bullish) return false;
       if (selectedCategory === 'Bearish' && !s.is_bearish) return false;
       if (
@@ -1053,7 +1115,9 @@ export default function FormulaPage() {
         ind.acronym.toLowerCase().includes(q) ||
         ind.category.toLowerCase().includes(q) ||
         ind.single_line.toLowerCase().includes(q) ||
-        ind.math_formula.toLowerCase().includes(q)
+        ind.math_formula.toLowerCase().includes(q) ||
+        ind.bullish_math.toLowerCase().includes(q) ||
+        ind.bearish_math.toLowerCase().includes(q)
     );
   }, [searchQuery]);
 
@@ -1061,10 +1125,10 @@ export default function FormulaPage() {
     { label: 'All (30)', value: 'All' },
     { label: '🟢 Bullish Setups', value: 'Bullish' },
     { label: '🔴 Bearish Setups', value: 'Bearish' },
-    { label: '🎓 Chetan Verma Series', value: 'Chetan Verma Series' },
-    { label: '🕯️ Candlesticks & Price Action', value: 'Candlesticks & Price Action' },
+    { label: '🕯️ Candlestick Patterns', value: 'Candlestick Patterns' },
+    { label: '📐 Chart Formations', value: 'Chart Formations' },
     { label: '📈 EMA & Indicators', value: 'EMA & Indicators' },
-    { label: '🏦 Smart Money & Order Flow', value: 'Smart Money & Order Flow' },
+    { label: '🏦 Smart Money & Flow', value: 'Smart Money (SMC) & Flow' },
   ];
 
   const handleAccordionChange = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
@@ -1093,31 +1157,31 @@ export default function FormulaPage() {
             <Stack direction="row" alignItems="center" spacing={1} mb={1} flexWrap="wrap">
               <Chip
                 icon={<School sx={{ fontSize: 16 }} />}
-                label="Chetan Verma 100-Day Strategy Series"
+                label="Strategy Masterclass (Day 1 to Day 30)"
                 color="success"
                 size="small"
                 sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
               />
               <Chip
                 icon={<Verified sx={{ fontSize: 14 }} />}
-                label="Personal Study &amp; Learning Reference"
+                label="Technical Indicator Mathematical Library"
                 size="small"
                 variant="outlined"
                 sx={{ fontWeight: 800, fontSize: '0.68rem', height: 22 }}
               />
               <Chip
-                label="Day 19 Featured"
+                label="Sequential 1–30"
                 size="small"
-                sx={{ fontWeight: 900, bgcolor: 'rgba(255,23,68,0.12)', color: '#ff1744', height: 22 }}
+                sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.12)', color: '#00e676', height: 22 }}
               />
             </Stack>
 
             <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -0.5, mb: 0.8 }}>
-              🎓 Formula Understanding &amp; Strategy Masterclass
+              🎓 Strategy Masterclass &amp; Mathematical Formula Library
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 850, lineHeight: 1.5, mb: 1.5 }}>
-              Comprehensive personal study notebook containing full mathematical formulas, single-line rules, exact Stop Loss / Target levels, and indicator derivations from Day 1 to Day 30 in sequential order.
+              Comprehensive educational study notebook containing full mathematical formulas, single-line rules, exact Stop Loss / Target levels, and indicator derivations from Day 1 to Day 30 in sequential order.
             </Typography>
           </Box>
         </Stack>
@@ -1125,10 +1189,10 @@ export default function FormulaPage() {
         {/* Top Summary Metrics */}
         <Grid container spacing={1.5} mt={0.5}>
           {[
-            { label: 'Masterclass Days', value: 'Day 1 → Day 30', color: '#00e5ff', icon: <School /> },
+            { label: 'Sequential Days', value: 'Day 1 → Day 30', color: '#00e5ff', icon: <School /> },
             { label: 'Bullish Buy Rules', value: '22 Strategies', color: '#00e676', icon: <TrendingUp /> },
             { label: 'Bearish Exit Rules', value: '18 Strategies', color: '#ff1744', icon: <TrendingDown /> },
-            { label: 'Technical Indicators', value: 'RSI, MACD, PCR, ADX', color: '#ffd600', icon: <Calculate /> },
+            { label: 'Mathematical Library', value: 'RSI, MACD, PCR, ADX', color: '#ffd600', icon: <Calculate /> },
             { label: 'Smart Money SMC', value: 'OB, FVG, BOS, CHoCH', color: '#d500f9', icon: <AutoAwesome /> },
           ].map(m => (
             <Grid item xs={6} sm={4} md={2.4} key={m.label}>
@@ -1154,7 +1218,7 @@ export default function FormulaPage() {
         </Grid>
       </Paper>
 
-      {/* ── Main Section Tabs: 1. 30-Day Masterclass | 2. Indicator Formulas (RSI, MACD, PCR, ADX) ── */}
+      {/* ── Main Section Tabs: 1. 30-Day Masterclass | 2. Indicator Mathematical Formulas (RSI, MACD, PCR, ADX) ── */}
       <Paper
         elevation={0}
         sx={{
@@ -1176,8 +1240,8 @@ export default function FormulaPage() {
             '& .MuiTab-root': { fontWeight: 800, fontSize: '0.85rem', py: 1.8 },
           }}
         >
-          <Tab icon={<School sx={{ fontSize: 18 }} />} iconPosition="start" label="🎓 Chetan Verma Masterclass (Day 1 to 30)" />
-          <Tab icon={<Calculate sx={{ fontSize: 18 }} />} iconPosition="start" label="📐 Indicator Formulas (RSI, MACD, PCR, ADX, VWAP)" />
+          <Tab icon={<School sx={{ fontSize: 18 }} />} iconPosition="start" label="🎓 Strategy Masterclass (Day 1 to 30)" />
+          <Tab icon={<Calculate sx={{ fontSize: 18 }} />} iconPosition="start" label="📐 Technical Indicator Formulas (RSI, MACD, PCR, ADX, VWAP)" />
         </Tabs>
 
         {/* Search & View Controls */}
@@ -1185,7 +1249,7 @@ export default function FormulaPage() {
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ xs: 'stretch', md: 'center' }} justifyContent="space-between">
             <TextField
               size="small"
-              placeholder={mainTab === 0 ? 'Search Day (e.g. Day 1, Day 19), Candlestick, Indicator, Formula...' : 'Search RSI, MACD, PCR, ADX, VWAP, Supertrend, Formulas...'}
+              placeholder={mainTab === 0 ? 'Search Day (e.g. Day 1, Day 2, Day 19), Hammer, Pattern, Indicator...' : 'Search RSI, MACD, PCR, ADX, VWAP, Supertrend, Formulas...'}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               sx={{ flex: 1, minWidth: { xs: '100%', md: 340 } }}
@@ -1245,7 +1309,7 @@ export default function FormulaPage() {
       </Paper>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          TAB 0: CHETAN VERMA 100-DAY TRADING MASTERCLASS (DAY 1 TO 30)
+          TAB 0: SEQUENTIAL TRADING STRATEGY MASTERCLASS (DAY 1 TO 30)
          ══════════════════════════════════════════════════════════════════════ */}
       {mainTab === 0 && (
         <>
@@ -1290,12 +1354,13 @@ export default function FormulaPage() {
                       {/* Header Row */}
                       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1} gap={1}>
                         <Chip
+                          icon={<span style={{ fontSize: 13, marginRight: 2 }}>{item.symbol_icon}</span>}
                           label={item.day_tag}
                           size="small"
                           sx={{
                             fontWeight: 900,
-                            fontSize: '0.65rem',
-                            height: 20,
+                            fontSize: '0.68rem',
+                            height: 22,
                             bgcolor: item.day === 19 ? 'rgba(16,185,129,0.2)' : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
                             color: item.day === 19 ? '#10b981' : 'text.primary',
                             border: '1px solid',
@@ -1318,7 +1383,7 @@ export default function FormulaPage() {
 
                       {/* Title */}
                       <Typography variant="subtitle1" fontWeight={900} sx={{ lineHeight: 1.3, mb: 1 }}>
-                        {item.title}
+                        {item.symbol_icon} {item.title}
                       </Typography>
 
                       {/* Single Line Understanding Box */}
@@ -1427,13 +1492,14 @@ export default function FormulaPage() {
                   <AccordionSummary expandIcon={<ExpandMore />}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1.5} width="100%" pr={1}>
                       <Chip
+                        icon={<span style={{ fontSize: 13, marginRight: 2 }}>{item.symbol_icon}</span>}
                         label={item.day_tag}
                         size="small"
                         color={item.day === 19 ? 'success' : 'primary'}
-                        sx={{ fontWeight: 900, fontSize: '0.7rem', height: 22 }}
+                        sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
                       />
                       <Typography variant="subtitle1" fontWeight={800} sx={{ flex: 1 }}>
-                        {item.title}
+                        {item.symbol_icon} {item.title}
                       </Typography>
                       <Stack direction="row" spacing={1}>
                         <Chip
@@ -1614,10 +1680,16 @@ export default function FormulaPage() {
                   {filteredMasterclass.map(item => (
                     <TableRow key={item.day_tag} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
                       <TableCell>
-                        <Chip label={`Day ${item.day}`} size="small" color={item.day === 19 ? 'success' : 'default'} sx={{ fontWeight: 900, height: 20 }} />
+                        <Chip
+                          icon={<span style={{ fontSize: 12 }}>{item.symbol_icon}</span>}
+                          label={item.day_tag}
+                          size="small"
+                          color={item.day === 19 ? 'success' : 'default'}
+                          sx={{ fontWeight: 900, height: 22 }}
+                        />
                       </TableCell>
                       <TableCell sx={{ maxWidth: 340 }}>
-                        <Typography variant="body2" fontWeight={800}>{item.title}</Typography>
+                        <Typography variant="body2" fontWeight={800}>{item.symbol_icon} {item.title}</Typography>
                         <Typography variant="caption" color="text.secondary" fontStyle="italic" display="block">{item.single_line}</Typography>
                       </TableCell>
                       <TableCell sx={{ maxWidth: 280 }}>
@@ -1644,7 +1716,7 @@ export default function FormulaPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════
-          TAB 1: TECHNICAL INDICATORS & FORMULAS (RSI, MACD, PCR, ADX, VWAP, BB, ATR)
+          TAB 1: TECHNICAL INDICATOR MATHEMATICAL FORMULAS (RSI, MACD, PCR, ADX, VWAP, BB, ATR)
          ══════════════════════════════════════════════════════════════════════ */}
       {mainTab === 1 && (
         <Grid container spacing={2}>
@@ -1673,7 +1745,7 @@ export default function FormulaPage() {
                   {/* Header */}
                   <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <Calculate color="primary" sx={{ fontSize: 20 }} />
+                      <span style={{ fontSize: 20 }}>{ind.symbol_icon}</span>
                       <Typography variant="h6" fontWeight={900} sx={{ fontSize: '1.05rem' }}>
                         {ind.name}
                       </Typography>
@@ -1739,14 +1811,14 @@ export default function FormulaPage() {
                     <Grid item xs={12} sm={6}>
                       <Paper sx={{ p: 1.25, borderRadius: 2, bgcolor: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.25)' }}>
                         <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#00e676', lineHeight: 1.4 }}>
-                          {ind.bullish_rule}
+                          {ind.bullish_math}
                         </Typography>
                       </Paper>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <Paper sx={{ p: 1.25, borderRadius: 2, bgcolor: 'rgba(255,23,68,0.08)', border: '1px solid rgba(255,23,68,0.25)' }}>
                         <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#ff1744', lineHeight: 1.4 }}>
-                          {ind.bearish_rule}
+                          {ind.bearish_math}
                         </Typography>
                       </Paper>
                     </Grid>
