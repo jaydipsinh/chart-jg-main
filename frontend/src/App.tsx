@@ -51,6 +51,7 @@ const IPODashboardPage    = lazy(() => import('./pages/IPODashboard'));
 const IPODetailPage        = lazy(() => import('./pages/IPODetail'));
 const IPOHistoryPage       = lazy(() => import('./pages/IPOHistory'));
 const TodayResultPage      = lazy(() => import('./pages/TodayResult'));
+const LatestEventsPage     = lazy(() => import('./pages/LatestEvents'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -123,8 +124,10 @@ const AppInner: React.FC = () => {
               <Route path="/ipo"                element={<IPODashboardPage />} />
               <Route path="/ipo/history"        element={<IPOHistoryPage />} />
               <Route path="/ipo/:ipo_id"        element={<IPODetailPage />} />
-              {/* Today's Result */}
+              {/* Today's Result & Latest Events */}
               <Route path="/today-result"      element={<TodayResultPage />} />
+              <Route path="/latest-events"     element={<LatestEventsPage />} />
+              <Route path="/events"            element={<LatestEventsPage />} />
             </Routes>
           </Suspense>
         </Layout>

@@ -14,6 +14,7 @@ import {
   Assessment, History as HistoryIcon, Biotech, Science, Public,
   AccountTree, RocketLaunch, ExpandLess, ExpandMore,
   Home, BarChart, Search, Bolt, EmojiEvents, TableChart, School,
+  EventAvailable,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMarketOverview, fetchFutureStocks } from '../services/api';
@@ -185,6 +186,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, themeMode, onToggleThe
   const menuSections = {
     overview: [
       { label: 'Dashboard',     path: '/',             icon: <DashboardIcon /> },
+      { label: 'Latest Events', path: '/latest-events',icon: <EventAvailable />,  badge: 'NEW' },
       { label: 'Quant Screener',path: '/quant-screener',icon: <Bolt />,         badge: '100-PT' },
       { label: 'Price Shockers',path: '/price-shockers',icon: <Whatshot />,     badge: 'HOT' },
       { label: "Today's Result", path: '/today-result', icon: <EmojiEvents />, badge: 'LIVE' },

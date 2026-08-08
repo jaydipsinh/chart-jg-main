@@ -434,4 +434,40 @@ export const fetchTargetMatrix = async (params?: { search?: string; action?: str
   return (await apiSlow.get(`/target-matrix${qs ? `?${qs}` : ''}`)).data;
 };
 
+export interface StockEventItem {
+  id: string;
+  symbol: string;
+  company_name: string;
+  sector: string;
+  category: string;
+  badge_icon: string;
+  impact_score: number;
+  headline: string;
+  event_details: string;
+  contract_value?: string;
+  time_period: string;
+  fii_dii_change?: string;
+  cmp: number;
+  target_price: number;
+  potential_upside: string;
+  market_cap_tier: string;
+  tags: string[];
+  catalyst_summary: string;
+}
+
+export interface LatestEventsResponse {
+  events: StockEventItem[];
+  total: number;
+  all_categories: string[];
+  timestamp: string;
+}
+
+export const fetchLatestEvents = async (params?: { category?: string }): Promise<LatestEventsResponse> => {
+  const q = new URLSearchParams();
+  if (params?.category && params.category !== 'All') q.set('category', params.category);
+  const qs = q.toString();
+  return (await api.get(`/latest-events${qs ? `?${qs}` : ''}`)).data;
+};
+
+
 

@@ -11,6 +11,7 @@ import {
   TrendingUp, TrendingDown, ShowChart, ArrowForward,
   Equalizer, Search, Download, Refresh, Bolt,
   BarChart, Star, CalendarToday, DateRange, School,
+  EventAvailable, BusinessCenter, AccountBalance, Whatshot,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -207,6 +208,7 @@ export default function DashboardPage() {
   });
 
   const screeners = [
+    { title: '🎯 Latest Events', desc: 'Work orders, +ve results, FII & seasons', path: '/latest-events', color: '#38bdf8', icon: <EventAvailable /> },
     { title: '⚡ Intraday',   desc: 'Best intraday buy/sell picks',     path: '/top-buy',     color: '#00e676', icon: <Bolt /> },
     { title: '📈 Swing',      desc: '2–5 day swing opportunities',       path: '/swing-buy',   color: '#00b0ff', icon: <TrendingUp /> },
     { title: '📅 Weekly',     desc: '1–2 week hold signals',             path: '/weekly-buy',  color: '#d500f9', icon: <DateRange /> },
@@ -276,70 +278,134 @@ export default function DashboardPage() {
         </Grid>
       </Grid>
 
-      {/* ── Study Notebook Banner (For Study Purpose Only) ── */}
-      <Paper
-        elevation={0}
-        onClick={() => navigate('/formula-understanding')}
-        sx={{
-          p: 1.5,
-          mb: 2.5,
-          borderRadius: 2.5,
-          cursor: 'pointer',
-          border: '1px solid',
-          borderColor: isDark ? 'rgba(0,230,118,0.3)' : 'rgba(0,230,118,0.4)',
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(0,230,118,0.08) 0%, rgba(0,176,255,0.06) 100%)'
-            : 'linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 1.5,
-          transition: 'all 0.2s',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            borderColor: '#00e676',
-            boxShadow: '0 8px 24px rgba(0,230,118,0.12)',
-          },
-        }}
-      >
-        <Stack direction="row" alignItems="center" spacing={1.5}>
-          <Chip
-            icon={<School sx={{ fontSize: 16 }} />}
-            label="STUDY NOTEBOOK"
-            color="success"
-            size="small"
-            sx={{ fontWeight: 900, fontSize: '0.68rem', height: 24 }}
-          />
-          <Box>
-            <Typography variant="subtitle2" fontWeight={800} sx={{ lineHeight: 1.2 }}>
-              🎓 Trading Strategy Masterclass &amp; Indicator Mathematical Formula Library (Day 1 – Day 30)
-            </Typography>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>
-              Single-line rules, Bullish/Bearish mathematical formulas, Stop Loss &amp; 1:3+ Targets — Purely for personal study.
-            </Typography>
-          </Box>
-        </Stack>
-
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Chip label="Sequential 1–30" size="small" sx={{ fontWeight: 800, fontSize: '0.65rem', bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676' }} />
-          <Button
-            size="small"
-            variant="contained"
-            color="success"
-            endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
-            sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', borderRadius: 2, px: 1.5 }}
+      {/* ── Dual Banners: 1. Latest Events & Catalysts | 2. Study Notebook (Day 1-30) ── */}
+      <Grid container spacing={1.5} mb={2.5}>
+        <Grid item xs={12} md={6}>
+          <Paper
+            elevation={0}
+            onClick={() => navigate('/latest-events')}
+            sx={{
+              p: 1.5,
+              height: '100%',
+              borderRadius: 2.5,
+              cursor: 'pointer',
+              border: '1.5px solid',
+              borderColor: isDark ? 'rgba(56,189,248,0.35)' : 'rgba(56,189,248,0.4)',
+              background: isDark
+                ? 'linear-gradient(135deg, rgba(56,189,248,0.1) 0%, rgba(16,185,129,0.06) 100%)'
+                : 'linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1.5,
+              transition: 'all 0.2s',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                borderColor: '#38bdf8',
+                boxShadow: '0 8px 24px rgba(56,189,248,0.15)',
+              },
+            }}
           >
-            Open Study Guide
-          </Button>
-        </Stack>
-      </Paper>
+            <Stack direction="row" alignItems="center" spacing={1.5}>
+              <Chip
+                icon={<EventAvailable sx={{ fontSize: 16 }} />}
+                label="LATEST EVENTS"
+                color="primary"
+                size="small"
+                sx={{ fontWeight: 900, fontSize: '0.68rem', height: 24 }}
+              />
+              <Box>
+                <Typography variant="subtitle2" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+                  🎯 Mega Work Orders, +ve Results, FII/DII &amp; Seasons
+                </Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  Latest 1–3 month catalysts: L&T, Trent (+130% PAT), Zomato, HDFC Bank, Titan wedding demand.
+                </Typography>
+              </Box>
+            </Stack>
+
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Chip label="20 Catalysts" size="small" sx={{ fontWeight: 800, fontSize: '0.65rem', bgcolor: 'rgba(56,189,248,0.15)', color: '#38bdf8' }} />
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
+                sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', borderRadius: 2, px: 1.5 }}
+              >
+                View Events
+              </Button>
+            </Stack>
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Paper
+            elevation={0}
+            onClick={() => navigate('/formula-understanding')}
+            sx={{
+              p: 1.5,
+              height: '100%',
+              borderRadius: 2.5,
+              cursor: 'pointer',
+              border: '1.5px solid',
+              borderColor: isDark ? 'rgba(0,230,118,0.3)' : 'rgba(0,230,118,0.4)',
+              background: isDark
+                ? 'linear-gradient(135deg, rgba(0,230,118,0.08) 0%, rgba(0,176,255,0.06) 100%)'
+                : 'linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1.5,
+              transition: 'all 0.2s',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                borderColor: '#00e676',
+                boxShadow: '0 8px 24px rgba(0,230,118,0.12)',
+              },
+            }}
+          >
+            <Stack direction="row" alignItems="center" spacing={1.5}>
+              <Chip
+                icon={<School sx={{ fontSize: 16 }} />}
+                label="STUDY NOTEBOOK"
+                color="success"
+                size="small"
+                sx={{ fontWeight: 900, fontSize: '0.68rem', height: 24 }}
+              />
+              <Box>
+                <Typography variant="subtitle2" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+                  🎓 Strategy Handbook &amp; Indicator Math Library (1–30)
+                </Typography>
+                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  Single-line rules, mini SVG charts, Bullish/Bearish math, RSI, MACD, PCR, ADX formulas.
+                </Typography>
+              </Box>
+            </Stack>
+
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Chip label="1–30 Rules" size="small" sx={{ fontWeight: 800, fontSize: '0.65rem', bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676' }} />
+              <Button
+                size="small"
+                variant="contained"
+                color="success"
+                endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
+                sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', borderRadius: 2, px: 1.5 }}
+              >
+                Open Guide
+              </Button>
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
 
       {/* ── Screener Shortcuts ── */}
       <SectionHeader title="📊 Screener Horizons" />
       <Grid container spacing={{ xs: 1, sm: 1.5 }} mb={3}>
         {screeners.map(s => (
-          <Grid item xs={12} sm={6} md={2.4} key={s.path}>
+          <Grid item xs={12} sm={6} md={2} key={s.path}>
             <ScreenerCard {...s} />
           </Grid>
         ))}

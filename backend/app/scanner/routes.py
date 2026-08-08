@@ -1506,3 +1506,31 @@ async def get_target_matrix(
     }
 
 
+# ── GET /latest-events ───────────────────────────────────────────────────────
+@router.get("/latest-events")
+@router.get("/events")
+def get_events_feed(category: Optional[str] = None):
+    """
+    Returns high-impact stock events and macro catalysts from the latest 1 to 3 months:
+    Mega work orders, positive earnings, FII/DII accumulation, promoter buying, and seasonal catalysts.
+    """
+    from app.scanner.events_data import get_latest_events, LATEST_EVENTS_DATABASE
+    events = get_latest_events(category)
+    return {
+        "events": events,
+        "total": len(events),
+        "all_categories": [
+            "All",
+            "Work Orders & Contracts",
+            "Positive Earnings / +ve Results",
+            "FII / DII Accumulation",
+            "Promoter Buying & Pledge",
+            "Monsoon & Agro Season",
+            "Winter & Wedding Boom",
+            "Summer & Power Capex",
+        ],
+        "timestamp": _now(),
+    }
+
+
+
