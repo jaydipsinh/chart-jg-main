@@ -2,7 +2,7 @@
 nixPkgs = ["python311", "gcc"]
 
 [phases.install]
-cmds = ["cd backend && pip install --no-cache-dir -r requirements.txt"]
+cmds = ["pip install --no-cache-dir -r backend/requirements.txt"]
 
 [start]
-cmd = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
+cmd = "python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"
