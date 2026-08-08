@@ -8,11 +8,21 @@ import type {
   NotificationResponse, MarketOverview,
 } from '../utils/types';
 
-const BASE_URL = import.meta.env.VITE_API_URL ||
-  (import.meta.env.MODE === 'development' ? '/api' : 'https://brave-success-production-6aea.up.railway.app/api');
+export const getApiBaseUrl = (): string => {
+  if (typeof window !== 'undefined') {
+    const custom = localStorage.getItem('CUSTOM_API_URL');
+    if (custom && custom.trim()) {
+      let trimmed = custom.trim().replace(/\/+$/, '');
+      if (!trimmed.endsWith('/api')) trimmed += '/api';
+      return trimmed;
+    }
+  }
+  return import.meta.env.VITE_API_URL ||
+    (import.meta.env.MODE === 'development' ? '/api' : 'https://brave-success-production-6aea.up.railway.app/api');
+};
 
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getApiBaseUrl(),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -22,9 +32,15 @@ export const api = axios.create({
   },
 });
 
+// Update baseURL dynamically per request if changed in Settings
+api.interceptors.request.use((config) => {
+  config.baseURL = getApiBaseUrl();
+  return config;
+});
+
 // Separate instance for slow scanner endpoints (full scan can take 30–60s first time)
 export const apiSlow = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getApiBaseUrl(),
   timeout: 90000,
   headers: {
     'Content-Type': 'application/json',
@@ -32,6 +48,11 @@ export const apiSlow = axios.create({
     'Pragma': 'no-cache',
     'Expires': '0',
   },
+});
+
+apiSlow.interceptors.request.use((config) => {
+  config.baseURL = getApiBaseUrl();
+  return config;
 });
 
 api.interceptors.response.use(
