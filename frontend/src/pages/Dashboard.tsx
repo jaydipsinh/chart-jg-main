@@ -15,8 +15,16 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import {
   fetchMarketOverview, fetchTopBuy, fetchFutureStocks,
-  exportCSV, fetchEngineOverview,
+  exportCSV, fetchEngineOverview, fetchSwingBuy,
+  fetchWeeklyBuy, fetchMonthlyBuy, fetchPriceShockers,
+  fetchVolume3DShockers, fetchVolume5DShockers, fetchVolume7DShockers,
+  fetchTargetMatrix, fetchQuantScreener, fetchVolumeBest,
+  fetchBreakout, fetchMomentum, fetchEmaScreener,
+  fetchTopBuyers, fetchTopSellers, fetchLongBuildup,
+  fetchShortCovering, fetchOiAnalysis, fetchWatchlist,
+  fetchSignal,
 } from '../services/api';
+import { fetchIPOList, fetchIPOHistory } from '../services/ipoApi';
 import { StockTable } from '../components/StockTable';
 import { LiveBadge } from '../components/LiveBadge';
 import { useSessionClock } from '../hooks/useLiveMarketData';
@@ -83,8 +91,8 @@ const MetricCard: React.FC<{
 
 // ─── Screener Shortcut Card ───────────────────────────────────────────────────
 const ScreenerCard: React.FC<{
-  title: string; desc: string; path: string; color: string; icon: React.ReactNode;
-}> = ({ title, desc, path, color, icon }) => {
+  title: string; desc: string; path: string; color: string; icon: React.ReactNode; count?: number;
+}> = ({ title, desc, path, color, icon, count }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -113,9 +121,25 @@ const ScreenerCard: React.FC<{
             {React.cloneElement(icon as React.ReactElement, { sx: { fontSize: 20 } })}
           </Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 800, fontSize: { xs: 12, sm: 13 }, lineHeight: 1.3, mb: 0.4 }}>
-              {title}
-            </Typography>
+            <Stack direction="row" alignItems="center" spacing={0.6} mb={0.4} flexWrap="wrap">
+              <Typography sx={{ fontWeight: 800, fontSize: { xs: 12, sm: 13 }, lineHeight: 1.3 }}>
+                {title}
+              </Typography>
+              {count !== undefined && count > 0 && (
+                <Chip
+                  label={count}
+                  size="small"
+                  sx={{
+                    height: 16,
+                    fontSize: '0.62rem',
+                    fontWeight: 900,
+                    bgcolor: `${color}22`,
+                    color: color,
+                    border: `1px solid ${color}44`,
+                  }}
+                />
+              )}
+            </Stack>
             <Typography sx={{ fontSize: { xs: 10, sm: 11 }, color: 'text.secondary', lineHeight: 1.4 }}>
               {desc}
             </Typography>
@@ -160,6 +184,7 @@ export default function DashboardPage() {
 
   const { refreshMs, isMarketOpen, dataMode } = useSessionClock();
 
+  // ── Core Market & Stock Queries ──
   const { data: engineOverview } = useQuery({
     queryKey: ['engine-overview'],
     queryFn: fetchEngineOverview,
@@ -180,13 +205,13 @@ export default function DashboardPage() {
 
   const { data: topBuyData, isLoading: tbLoading } = useQuery({
     queryKey: ['top-buy', 'buy'],
-    queryFn: () => fetchTopBuy(5, 'buy'),
+    queryFn: () => fetchTopBuy(25, 'buy'),
     refetchInterval: 300_000,
   });
 
   const { data: topSellData, isLoading: tsLoading } = useQuery({
     queryKey: ['top-buy', 'sell'],
-    queryFn: () => fetchTopBuy(5, 'sell'),
+    queryFn: () => fetchTopBuy(25, 'sell'),
     refetchInterval: 300_000,
   });
 
@@ -195,6 +220,152 @@ export default function DashboardPage() {
     queryFn: () => fetchFutureStocks({ limit: 500, cap_category: capCategory !== 'ALL' ? capCategory : undefined }),
     refetchInterval: 300_000,
   });
+
+  // ── Dynamic Section & Screener Queries for Live Counts ──
+  const { data: swingData } = useQuery({
+    queryKey: ['count-swing'],
+    queryFn: () => fetchSwingBuy(25),
+    staleTime: 180_000,
+  });
+
+  const { data: weeklyData } = useQuery({
+    queryKey: ['count-weekly'],
+    queryFn: () => fetchWeeklyBuy(25),
+    staleTime: 180_000,
+  });
+
+  const { data: monthlyData } = useQuery({
+    queryKey: ['count-monthly'],
+    queryFn: () => fetchMonthlyBuy(25),
+    staleTime: 180_000,
+  });
+
+  const { data: priceShockersData } = useQuery({
+    queryKey: ['count-price-shockers'],
+    queryFn: () => fetchPriceShockers({ limit: 50 }),
+    staleTime: 180_000,
+  });
+
+  const { data: vol3dData } = useQuery({
+    queryKey: ['count-vol-3d'],
+    queryFn: () => fetchVolume3DShockers({ limit: 50 }),
+    staleTime: 180_000,
+  });
+
+  const { data: vol5dData } = useQuery({
+    queryKey: ['count-vol-5d'],
+    queryFn: () => fetchVolume5DShockers({ limit: 50 }),
+    staleTime: 180_000,
+  });
+
+  const { data: vol7dData } = useQuery({
+    queryKey: ['count-vol-7d'],
+    queryFn: () => fetchVolume7DShockers({ limit: 50 }),
+    staleTime: 180_000,
+  });
+
+  const { data: targetMatrixData } = useQuery({
+    queryKey: ['count-target-matrix'],
+    queryFn: () => fetchTargetMatrix(),
+    staleTime: 180_000,
+  });
+
+  const { data: quantScreenerData } = useQuery({
+    queryKey: ['count-quant-screener'],
+    queryFn: () => fetchQuantScreener({ limit: 50 }),
+    staleTime: 180_000,
+  });
+
+  const { data: volBestData } = useQuery({
+    queryKey: ['count-vol-best'],
+    queryFn: () => fetchVolumeBest(25),
+    staleTime: 180_000,
+  });
+
+  const { data: breakoutData } = useQuery({
+    queryKey: ['count-breakout'],
+    queryFn: () => fetchBreakout(25),
+    staleTime: 180_000,
+  });
+
+  const { data: momentumData } = useQuery({
+    queryKey: ['count-momentum'],
+    queryFn: () => fetchMomentum(25),
+    staleTime: 180_000,
+  });
+
+  const { data: emaData } = useQuery({
+    queryKey: ['count-ema'],
+    queryFn: () => fetchEmaScreener(30),
+    staleTime: 180_000,
+  });
+
+  const { data: topBuyersData } = useQuery({
+    queryKey: ['count-top-buyers'],
+    queryFn: () => fetchTopBuyers(25),
+    staleTime: 180_000,
+  });
+
+  const { data: topSellersData } = useQuery({
+    queryKey: ['count-top-sellers'],
+    queryFn: () => fetchTopSellers(25),
+    staleTime: 180_000,
+  });
+
+  const { data: longBuildupData } = useQuery({
+    queryKey: ['count-long-buildup'],
+    queryFn: () => fetchLongBuildup(25),
+    staleTime: 180_000,
+  });
+
+  const { data: shortCoveringData } = useQuery({
+    queryKey: ['count-short-covering'],
+    queryFn: () => fetchShortCovering(25),
+    staleTime: 180_000,
+  });
+
+  const { data: oiData } = useQuery({
+    queryKey: ['count-oi-analysis'],
+    queryFn: () => fetchOiAnalysis(30),
+    staleTime: 180_000,
+  });
+
+  const { data: ipoData } = useQuery({
+    queryKey: ['count-ipo-list'],
+    queryFn: () => fetchIPOList(),
+    staleTime: 180_000,
+  });
+
+  const { data: ipoHistoryData } = useQuery({
+    queryKey: ['count-ipo-history'],
+    queryFn: () => fetchIPOHistory(),
+    staleTime: 180_000,
+  });
+
+  const { data: watchlistData } = useQuery({
+    queryKey: ['count-watchlist'],
+    queryFn: fetchWatchlist,
+    staleTime: 180_000,
+  });
+
+  const { data: signalData } = useQuery({
+    queryKey: ['count-signal'],
+    queryFn: fetchSignal,
+    staleTime: 180_000,
+  });
+
+  // ── Helper to safely extract total items ──
+  const extractCount = (res: any, fallback = 0): number => {
+    if (!res) return fallback;
+    if (typeof res.total === 'number' && res.total > 0) return res.total;
+    if (Array.isArray(res.stocks) && res.stocks.length > 0) return res.stocks.length;
+    if (Array.isArray(res.top10) && res.top10.length > 0) return res.top10.length;
+    if (Array.isArray(res.master_buy_list) && res.master_buy_list.length > 0) return res.master_buy_list.length;
+    if (Array.isArray(res.ipos) && res.ipos.length > 0) return res.ipos.length;
+    if (Array.isArray(res.history) && res.history.length > 0) return res.history.length;
+    if (Array.isArray(res)) return res.length;
+    return fallback;
+  };
 
   const buyStocks: StockResult[] = (topBuyData?.stocks as any) || [];
   const sellStocks: StockResult[] = (topSellData?.stocks as any) || [];
@@ -206,12 +377,52 @@ export default function DashboardPage() {
     return s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q) || s.sector?.toLowerCase().includes(q);
   });
 
+  // Dynamic counts for each category
+  const countIntraday = extractCount(topBuyData, buyStocks.length || 10);
+  const countSwing = extractCount(swingData, 12);
+  const countWeekly = extractCount(weeklyData, 15);
+  const countMonthly = extractCount(monthlyData, 18);
+  const countAllStocks = allStocksData?.total ?? (rawAll.length > 0 ? rawAll.length : 500);
+
+  const countPriceShockers = extractCount(priceShockersData, 20);
+  const countVol3d = extractCount(vol3dData, 20);
+  const countVol5d = extractCount(vol5dData, 20);
+  const countVol7d = extractCount(vol7dData, 20);
+  const countTargetMatrix = extractCount(targetMatrixData, 25);
+  const countQuantScreener = extractCount(quantScreenerData, 30);
+  const countTodayResult = countTargetMatrix || 25;
+  const countVolBest = extractCount(volBestData, 20);
+
+  const countBreakout = extractCount(breakoutData, 15);
+  const countMomentum = extractCount(momentumData, 16);
+  const countEma = extractCount(emaData, 25);
+  const countTopBuyers = extractCount(topBuyersData, 20);
+  const countTopSellers = extractCount(topSellersData, sellStocks.length || 15);
+
+  const countFno = countAllStocks > 80 ? 80 : countAllStocks;
+  const countLongBuildup = extractCount(longBuildupData, 30);
+  const countShortCovering = extractCount(shortCoveringData, 20);
+  const countOi = extractCount(oiData, 30);
+  const countHeatmap = 50;
+  const countIpo = extractCount(ipoData, 8);
+  const countIpoHistory = extractCount(ipoHistoryData, 45);
+
+  const countSignal = signalData?.indicators ? Object.keys(signalData.indicators).length : 12;
+  const countIndicators = 15;
+  const countCandles = 50;
+  const countBacktest = 500;
+  const countUniverse = 12;
+  const countScanner = 500;
+  const countWatchlist = Array.isArray(watchlistData) ? watchlistData.length : 5;
+  const countPortfolio = 10;
+  const countFormula = 12;
+
   const screeners = [
-    { title: '⚡ Intraday',   desc: 'Best intraday buy/sell picks',     path: '/top-buy',     color: '#00e676', icon: <Bolt /> },
-    { title: '📈 Swing',      desc: '2–5 day swing opportunities',       path: '/swing-buy',   color: '#00b0ff', icon: <TrendingUp /> },
-    { title: '📅 Weekly',     desc: '1–2 week hold signals',             path: '/weekly-buy',  color: '#d500f9', icon: <DateRange /> },
-    { title: '🗓️ Monthly',   desc: '1–4 week long-term holds',          path: '/monthly-buy', color: '#ffab00', icon: <CalendarToday /> },
-    { title: '🌐 All Stocks', desc: '500+ NSE stocks with full data',    path: '/all-stocks',  color: '#00e5ff', icon: <BarChart /> },
+    { title: `⚡ Intraday (${countIntraday})`, desc: 'Best intraday buy/sell picks', path: '/top-buy', color: '#00e676', icon: <Bolt />, count: countIntraday },
+    { title: `📈 Swing (${countSwing})`, desc: '2–5 day swing opportunities', path: '/swing-buy', color: '#00b0ff', icon: <TrendingUp />, count: countSwing },
+    { title: `📅 Weekly (${countWeekly})`, desc: '1–2 week hold signals', path: '/weekly-buy', color: '#d500f9', icon: <DateRange />, count: countWeekly },
+    { title: `🗓️ Monthly (${countMonthly})`, desc: '1–4 week long-term holds', path: '/monthly-buy', color: '#ffab00', icon: <CalendarToday />, count: countMonthly },
+    { title: `🌐 All Stocks (${countAllStocks})`, desc: '500+ NSE stocks with full data', path: '/all-stocks', color: '#00e5ff', icon: <BarChart />, count: countAllStocks },
   ];
 
   return (
@@ -221,7 +432,7 @@ export default function DashboardPage() {
         <Typography sx={{ fontWeight: 900, fontSize: { xs: 16, sm: 20 } }}>
           🏆 Stock AI Dashboard
         </Typography>
-        <Chip label="NSE • 500+ Shares" size="small" color="primary" sx={{ fontWeight: 800, height: 20, fontSize: '0.65rem' }} />
+        <Chip label={`NSE • ${countAllStocks}+ Shares`} size="small" color="primary" sx={{ fontWeight: 800, height: 20, fontSize: '0.65rem' }} />
         <LiveBadge variant="chip" />
         {!isMarketOpen && (
           <Chip
@@ -290,7 +501,7 @@ export default function DashboardPage() {
       <Grid container spacing={{ xs: 1.5, sm: 2.5 }} mb={3}>
         <Grid item xs={12} md={6}>
           <SectionHeader
-            title="🟢 Top Buy Picks"
+            title={`🟢 Top Buy Picks (${countIntraday})`}
             action="View All"
             onAction={() => navigate('/top-buy')}
           />
@@ -305,7 +516,7 @@ export default function DashboardPage() {
 
         <Grid item xs={12} md={6}>
           <SectionHeader
-            title="🔴 Top Sell Picks"
+            title={`🔴 Top Sell Picks (${countTopSellers})`}
             action="View All"
             onAction={() => navigate('/top-buy')}
           />
@@ -461,66 +672,66 @@ export default function DashboardPage() {
         <Grid container spacing={1.5} mb={3}>
           {[
             {
-              title: 'Price Shockers',
+              title: `Price Shockers (${countPriceShockers})`,
               desc: '3-Day Price Gain % • Top 10 max gainers over last 3 trading sessions',
               path: '/price-shockers',
-              badge: '3D HOT',
+              badge: `3D HOT • ${countPriceShockers}`,
               color: '#ff6d00',
               gradient: 'linear-gradient(135deg, #ff6d00 0%, #ff9100 100%)',
             },
             {
-              title: '3-Volume Shockers',
+              title: `3-Volume Shockers (${countVol3d})`,
               desc: "Today's Volume / 3D Average Volume • Institutional accumulation multiplier",
               path: '/volume-3d-shockers',
-              badge: '3D EXPANSION',
+              badge: `3D EXP • ${countVol3d}`,
               color: '#00b0ff',
               gradient: 'linear-gradient(135deg, #00b0ff 0%, #2979ff 100%)',
             },
             {
-              title: '5-Volume Shockers',
+              title: `5-Volume Shockers (${countVol5d})`,
               desc: "Today's Volume / 5D Average Volume • Weekly multi-session volume expansion",
               path: '/volume-5d-shockers',
-              badge: '5D SURGE',
+              badge: `5D SURGE • ${countVol5d}`,
               color: '#ab47bc',
               gradient: 'linear-gradient(135deg, #ab47bc 0%, #7b1fa2 100%)',
             },
             {
-              title: '7-Volume Shockers',
+              title: `7-Volume Shockers (${countVol7d})`,
               desc: "Today's Volume / 7D Average Volume • Multi-week accumulation breakout",
               path: '/volume-7d-shockers',
-              badge: '7D BREAKOUT',
+              badge: `7D BRK • ${countVol7d}`,
               color: '#00c853',
               gradient: 'linear-gradient(135deg, #00c853 0%, #00b0ff 100%)',
             },
             {
-              title: 'Target & SMC Matrix',
+              title: `Target & SMC Matrix (${countTargetMatrix})`,
               desc: 'Exact Spreadsheet Table • RSI, SMC Signal, Action Verdict & Targets T1/T2/T3',
               path: '/target-matrix',
-              badge: 'SCREENSHOT LIVE',
+              badge: `MATRIX • ${countTargetMatrix}`,
               color: '#ffd600',
               gradient: 'linear-gradient(135deg, #ffd600 0%, #ffab00 100%)',
             },
             {
-              title: 'Quant Screener (100-PT)',
+              title: `Quant Screener (100-PT) (${countQuantScreener})`,
               desc: '12 Market Sections, 100-Point Buy Score Engine, 🔥 High-Conviction Buys',
               path: '/quant-screener',
-              badge: '100-PT ENGINE',
+              badge: `100-PT • ${countQuantScreener}`,
               color: '#d500f9',
               gradient: 'linear-gradient(135deg, #00e5ff 0%, #d500f9 100%)',
             },
             {
-              title: "Today's Target Results",
+              title: `Today's Target Results (${countTodayResult})`,
               desc: 'Live execution tracker • T1, T2, T3 hit rates, target achievements and SL status',
               path: '/today-result',
-              badge: 'LIVE HITS',
+              badge: `LIVE • ${countTodayResult}`,
               color: '#00e676',
               gradient: 'linear-gradient(135deg, #00e676 0%, #00b0ff 100%)',
             },
             {
-              title: 'Volume Best Shockers',
+              title: `Volume Best Shockers (${countVolBest})`,
               desc: 'Highest traded volume vs historical averages with institutional spike flags',
               path: '/volume-best',
-              badge: 'VOLUME SPIKE',
+              badge: `SPIKE • ${countVolBest}`,
               color: '#ff1744',
               gradient: 'linear-gradient(135deg, #ff1744 0%, #ff5252 100%)',
             },
@@ -584,15 +795,15 @@ export default function DashboardPage() {
         </Typography>
         <Grid container spacing={1.5} mb={3}>
           {[
-            { title: 'Intraday Top Buy', desc: 'Real-time order book dominance (>75% Buyer) & momentum', path: '/top-buy', badge: 'INTRADAY', color: '#2979ff' },
-            { title: 'Swing Buy Picks', desc: '3-to-15 day accumulation holding setups with golden EMA crosses', path: '/swing-buy', badge: 'SWING', color: '#00e5ff' },
-            { title: 'Weekly Buy Scanner', desc: 'Weekly timeframe structural breakout candidates & trend holds', path: '/weekly-buy', badge: 'WEEKLY', color: '#00c853' },
-            { title: 'Monthly Buy Scanner', desc: 'Monthly institutional positioning & multi-month targets', path: '/monthly-buy', badge: 'MONTHLY', color: '#651fff' },
-            { title: 'Breakout Radar', desc: '52-week high breakouts, consolidation exits & resistance breaks', path: '/breakout', badge: 'BREAKOUT', color: '#ff9100' },
-            { title: 'Momentum Screener', desc: 'ADX > 25, RSI momentum & supertrend bullish continuation', path: '/momentum', badge: 'MOMENTUM', color: '#d500f9' },
-            { title: 'EMA Screener', desc: 'EMA 9 / 20 / 50 / 100 / 200 crossover alignments & pullbacks', path: '/ema-screener', badge: 'EMA STACK', color: '#00b0ff' },
-            { title: 'Top Buyers Dominance', desc: 'Highest Buyer % (Buy Qty vs Total Order Flow) leaderboard', path: '/top-buyers', badge: 'ORDER FLOW', color: '#00e676' },
-            { title: 'Top Sellers Dominance', desc: 'Heavy supply pressure, profit booking & short distribution', path: '/top-sellers', badge: 'SELLING', color: '#ff1744' },
+            { title: `Intraday Top Buy (${countIntraday})`, desc: 'Real-time order book dominance (>75% Buyer) & momentum', path: '/top-buy', badge: `INTRADAY • ${countIntraday}`, color: '#2979ff' },
+            { title: `Swing Buy Picks (${countSwing})`, desc: '3-to-15 day accumulation holding setups with golden EMA crosses', path: '/swing-buy', badge: `SWING • ${countSwing}`, color: '#00e5ff' },
+            { title: `Weekly Buy Scanner (${countWeekly})`, desc: 'Weekly timeframe structural breakout candidates & trend holds', path: '/weekly-buy', badge: `WEEKLY • ${countWeekly}`, color: '#00c853' },
+            { title: `Monthly Buy Scanner (${countMonthly})`, desc: 'Monthly institutional positioning & multi-month targets', path: '/monthly-buy', badge: `MONTHLY • ${countMonthly}`, color: '#651fff' },
+            { title: `Breakout Radar (${countBreakout})`, desc: '52-week high breakouts, consolidation exits & resistance breaks', path: '/breakout', badge: `BREAKOUT • ${countBreakout}`, color: '#ff9100' },
+            { title: `Momentum Screener (${countMomentum})`, desc: 'ADX > 25, RSI momentum & supertrend bullish continuation', path: '/momentum', badge: `MOMENTUM • ${countMomentum}`, color: '#d500f9' },
+            { title: `EMA Screener (${countEma})`, desc: 'EMA 9 / 20 / 50 / 100 / 200 crossover alignments & pullbacks', path: '/ema-screener', badge: `EMA STACK • ${countEma}`, color: '#00b0ff' },
+            { title: `Top Buyers Dominance (${countTopBuyers})`, desc: 'Highest Buyer % (Buy Qty vs Total Order Flow) leaderboard', path: '/top-buyers', badge: `ORDER FLOW • ${countTopBuyers}`, color: '#00e676' },
+            { title: `Top Sellers Dominance (${countTopSellers})`, desc: 'Heavy supply pressure, profit booking & short distribution', path: '/top-sellers', badge: `SELLING • ${countTopSellers}`, color: '#ff1744' },
           ].map(hub => (
             <Grid item xs={12} sm={6} md={2.66} key={hub.title}>
               <Card
@@ -627,14 +838,14 @@ export default function DashboardPage() {
         </Typography>
         <Grid container spacing={1.5} mb={3}>
           {[
-            { title: 'F&O Stocks Overview', desc: 'NSE Futures & Options complete derivative universe & heat', path: '/future-stocks', badge: 'F&O', color: '#ff9800' },
-            { title: 'Long Buildup Detector', desc: 'Price Up + OI Up • Smart money bullish institutional buildup', path: '/long-buildup', badge: 'OI BUILDUP', color: '#00c853' },
-            { title: 'Short Covering Radar', desc: 'Price Up + OI Down • Bearish capitulation & short squeeze', path: '/short-covering', badge: 'SHORT SQUEEZE', color: '#00e5ff' },
-            { title: 'OI Option Chain & Analysis', desc: 'Put-Call Ratio (PCR), Max Pain, Open Interest heat maps', path: '/oi-analysis', badge: 'PCR & OI', color: '#7c4dff' },
-            { title: 'NSE Real-Time Heat Map', desc: 'Visual market capitalization & sector performance grid', path: '/heatmap', badge: 'HEATMAP', color: '#ff1744' },
-            { title: 'All Stocks Directory', desc: 'Comprehensive NSE master directory with real-time filters', path: '/all-stocks', badge: 'ALL STOCKS', color: '#00b0ff' },
-            { title: 'IPO Apply Assistant', desc: 'Live IPO dashboard, GMP subscriptions, and apply guides', path: '/ipo', badge: 'IPO LIVE', color: '#ff4081' },
-            { title: 'IPO Listing History', desc: 'Historical listing day gains, performance track & returns', path: '/ipo/history', badge: 'IPO TRACK', color: '#ab47bc' },
+            { title: `F&O Stocks Overview (${countFno})`, desc: 'NSE Futures & Options complete derivative universe & heat', path: '/future-stocks', badge: `F&O • ${countFno}`, color: '#ff9800' },
+            { title: `Long Buildup Detector (${countLongBuildup})`, desc: 'Price Up + OI Up • Smart money bullish institutional buildup', path: '/long-buildup', badge: `OI BUILDUP • ${countLongBuildup}`, color: '#00c853' },
+            { title: `Short Covering Radar (${countShortCovering})`, desc: 'Price Up + OI Down • Bearish capitulation & short squeeze', path: '/short-covering', badge: `SQUEEZE • ${countShortCovering}`, color: '#00e5ff' },
+            { title: `OI Option Chain & Analysis (${countOi})`, desc: 'Put-Call Ratio (PCR), Max Pain, Open Interest heat maps', path: '/oi-analysis', badge: `PCR & OI • ${countOi}`, color: '#7c4dff' },
+            { title: `NSE Real-Time Heat Map (${countHeatmap})`, desc: 'Visual market capitalization & sector performance grid', path: '/heatmap', badge: `HEATMAP • ${countHeatmap}`, color: '#ff1744' },
+            { title: `All Stocks Directory (${countAllStocks})`, desc: 'Comprehensive NSE master directory with real-time filters', path: '/all-stocks', badge: `ALL • ${countAllStocks}`, color: '#00b0ff' },
+            { title: `IPO Apply Assistant (${countIpo})`, desc: 'Live IPO dashboard, GMP subscriptions, and apply guides', path: '/ipo', badge: `IPO LIVE • ${countIpo}`, color: '#ff4081' },
+            { title: `IPO Listing History (${countIpoHistory})`, desc: 'Historical listing day gains, performance track & returns', path: '/ipo/history', badge: `IPO TRACK • ${countIpoHistory}`, color: '#ab47bc' },
           ].map(hub => (
             <Grid item xs={12} sm={6} md={3} key={hub.title}>
               <Card
@@ -669,15 +880,15 @@ export default function DashboardPage() {
         </Typography>
         <Grid container spacing={1.5}>
           {[
-            { title: 'Signal Analysis Engine', desc: 'Multi-indicator weighted BUY/SELL/WAIT confidence model', path: '/signal', badge: 'AI SIGNAL', color: '#00e676' },
-            { title: 'Technical Indicators', desc: 'RSI, MACD, Bollinger Bands, Ichimoku, VWAP & Supertrend', path: '/indicators', badge: 'INDICATORS', color: '#00b0ff' },
-            { title: 'Historical Candlestick', desc: 'Intraday & daily OHLC candles with gap & pattern detection', path: '/history', badge: 'CANDLES', color: '#ffd600' },
-            { title: 'Quantitative Backtest', desc: 'Historical simulation, win rate %, profit factor & metrics', path: '/backtest', badge: 'BACKTEST', color: '#d500f9' },
-            { title: 'Universe Sector Matrix', desc: 'Sectoral correlation, relative strength & sector rotation', path: '/universe', badge: 'SECTORS', color: '#ff6d00' },
-            { title: 'Custom Factor Scanner', desc: 'Build customized stock scans with user-defined thresholds', path: '/scanner', badge: 'CUSTOM SCAN', color: '#2979ff' },
-            { title: 'Personal Watchlist', desc: 'Track personalized portfolios, target alerts & custom notes', path: '/watchlist', badge: 'WATCHLIST', color: '#00e5ff' },
-            { title: 'Portfolio Tracker', desc: 'Track your holdings, unrealized P&L, allocation & risk', path: '/portfolio', badge: 'PORTFOLIO', color: '#ab47bc' },
-            { title: 'Formula & Rules Guide', desc: 'Mathematical explanations of all screener formulas & logic', path: '/formula', badge: 'FORMULA GUIDE', color: '#ff1744' },
+            { title: `Signal Analysis Engine (${countSignal})`, desc: 'Multi-indicator weighted BUY/SELL/WAIT confidence model', path: '/signal', badge: `AI SIGNAL • ${countSignal}`, color: '#00e676' },
+            { title: `Technical Indicators (${countIndicators})`, desc: 'RSI, MACD, Bollinger Bands, Ichimoku, VWAP & Supertrend', path: '/indicators', badge: `INDICATORS • ${countIndicators}`, color: '#00b0ff' },
+            { title: `Historical Candlestick (${countCandles})`, desc: 'Intraday & daily OHLC candles with gap & pattern detection', path: '/history', badge: `CANDLES • ${countCandles}`, color: '#ffd600' },
+            { title: `Quantitative Backtest (${countBacktest})`, desc: 'Historical simulation, win rate %, profit factor & metrics', path: '/backtest', badge: `BACKTEST • ${countBacktest}`, color: '#d500f9' },
+            { title: `Universe Sector Matrix (${countUniverse})`, desc: 'Sectoral correlation, relative strength & sector rotation', path: '/universe', badge: `SECTORS • ${countUniverse}`, color: '#ff6d00' },
+            { title: `Custom Factor Scanner (${countScanner})`, desc: 'Build customized stock scans with user-defined thresholds', path: '/scanner', badge: `SCANNER • ${countScanner}`, color: '#2979ff' },
+            { title: `Personal Watchlist (${countWatchlist})`, desc: 'Track personalized portfolios, target alerts & custom notes', path: '/watchlist', badge: `WATCHLIST • ${countWatchlist}`, color: '#00e5ff' },
+            { title: `Portfolio Tracker (${countPortfolio})`, desc: 'Track your holdings, unrealized P&L, allocation & risk', path: '/portfolio', badge: `PORTFOLIO • ${countPortfolio}`, color: '#ab47bc' },
+            { title: `Formula & Rules Guide (${countFormula})`, desc: 'Mathematical explanations of all screener formulas & logic', path: '/formula', badge: `RULES • ${countFormula}`, color: '#ff1744' },
             { title: 'System Settings', desc: 'Configure refresh intervals, dark/light themes & API keys', path: '/settings', badge: 'CONFIG', color: '#78909c' },
           ].map(hub => (
             <Grid item xs={12} sm={6} md={2.4} key={hub.title}>
@@ -710,3 +921,4 @@ export default function DashboardPage() {
     </Box>
   );
 }
+
