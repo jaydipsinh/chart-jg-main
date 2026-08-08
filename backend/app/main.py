@@ -127,8 +127,18 @@ async def global_exception_handler(request, exc):
 
 
 # ---------------------------------------------------------------------------
-# Root
+# Root & Documentation Redirects
 # ---------------------------------------------------------------------------
+from fastapi.responses import RedirectResponse
+
+
+@app.get("/doc", include_in_schema=False)
+@app.get("/api/docs", include_in_schema=False)
+@app.get("/api/doc", include_in_schema=False)
+async def doc_redirect():
+    return RedirectResponse(url="/docs")
+
+
 @app.get("/", tags=["root"])
 async def root():
     return {
@@ -166,3 +176,4 @@ async def root():
             "/api/ipo/notifications/all",
         ],
     }
+
