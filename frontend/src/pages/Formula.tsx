@@ -2,25 +2,21 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Paper, Grid, Accordion, AccordionSummary,
-  AccordionDetails, Chip, Stack, TextField, MenuItem, Button,
-  Card, CardContent, InputAdornment, IconButton, Tooltip,
-  Divider, ToggleButtonGroup, ToggleButton, useTheme,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  AccordionDetails, Chip, Stack, TextField, Button,
+  Card, CardContent, InputAdornment, Divider, ToggleButtonGroup,
+  ToggleButton, useTheme, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Tabs, Tab,
 } from '@mui/material';
 import {
   ExpandMore, School, Search, TrendingUp, TrendingDown,
-  Bolt, CheckCircle, Warning, AutoAwesome,
-  FilterList, ViewModule, ViewList, TableRows,
-  Bookmark, ArrowForward, Verified, Whatshot, Security,
-  Timeline, Speed, MonetizationOn, BarChart,
+  Bolt, CheckCircle, Warning, AutoAwesome, ViewModule,
+  ViewList, TableRows, ArrowForward, Verified, Whatshot,
+  Speed, Calculate, Functions, Psychology, Insights,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import { fetchFormulas } from '../services/api';
-import type { FormulaEntry } from '../utils/types';
 
-// ── Complete Chetan Verma 100-Day Trading Masterclass & Institutional Formula Data ──
+// ── Types for Pure Study Reference Notebook ──
 export interface MasterclassStrategy {
-  day: number | string;
+  day: number;
   day_tag: string;
   title: string;
   category: 'Chetan Verma Series' | 'Candlesticks & Price Action' | 'EMA & Indicators' | 'Smart Money & Order Flow';
@@ -44,40 +40,23 @@ export interface MasterclassStrategy {
   scanner_path: string;
 }
 
-export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
-  {
-    day: 19,
-    day_tag: 'Day 19: Chetan Verma Featured Masterclass',
-    title: '9 EMA + 15-Min Breakout & Retest with Order Flow Confirmation',
-    category: 'Chetan Verma Series',
-    single_line: 'When a strong 15-minute candle breaks key resistance and retests the rising 9 EMA with a green confirmation candle + volume > 1.5x, enter for high-probability momentum.',
-    is_bullish: true,
-    is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: 15-min candle closes above Resistance/EMA 9. Wait for retest pullback touching 9 EMA. Enter on next green candle with Volume > 1.5x.',
-    bearish_display: '🔴 BEARISH SHORT: 15-min candle closes below Support/EMA 9. Wait for upward retest rejection at 9 EMA. Enter on next red candle breakdown.',
-    entry_trigger: 'Buy immediately on close of first green confirmation candle after retesting 9 EMA on 15m chart.',
-    stop_loss: 'Strict SL below the retest candle low (or 9 EMA − 0.25%).',
-    target_1: 'Target 1: 1:1.5 Risk-to-Reward (Day High / Next Resistance)',
-    target_2: 'Target 2: 1:2.5 Risk-to-Reward (R2 Pivot / Fibonacci 1.618)',
-    target_3: 'Target 3: 1:4.0 Risk-to-Reward (Trail with 9 EMA till close below)',
-    timeframe: 'Intraday: 5-min & 15-min | Swing: Daily Chart',
-    win_rate: '88% Win Rate',
-    risk_reward: '1:2.5 to 1:4.0 R:R',
-    indicators: ['9 EMA', '15-min Price Action', 'Volume Surge > 1.5x', 'VWAP Support', 'RSI 55–65'],
-    rules: [
-      'Never enter directly on initial breakout candle; ALWAYS wait for 9 EMA retest to avoid retail bull traps.',
-      'Retest candle must show lower wick rejection (buying absorption at 9 EMA).',
-      'Volume on the breakout and retest confirmation candle must be higher than 20-period average volume.',
-      'Check that Price is trading above intraday VWAP for institutional bias alignment.',
-    ],
-    mistakes_to_avoid: [
-      'Entering when price is already 2% extended above 9 EMA (wait for mean reversion).',
-      'Trading against the broader Nifty 50 market trend.',
-      'Moving Stop Loss during an active trade.',
-    ],
-    example: 'NIFTY 15m breaks 24,500 resistance, pulls back to test 9 EMA at 24,485, prints strong green hammer with 1.8x volume → rallies to 24,620.',
-    scanner_path: '/quant-screener',
-  },
+export interface IndicatorFormula {
+  name: string;
+  acronym: string;
+  category: 'Momentum' | 'Trend' | 'Volatility' | 'Volume / Flow' | 'Derivatives & OI';
+  math_formula: string;
+  calculation_steps: string[];
+  single_line: string;
+  bullish_rule: string;
+  bearish_rule: string;
+  ideal_parameters: string;
+  interpretation: string;
+  pro_tip: string;
+  scanner_path: string;
+}
+
+// ── 1. Chetan Verma 100-Day Series (Days 1 to 30 in Strict Ascending Sequence) ──
+export const SEQUENTIAL_CHETAN_VERMA_SERIES: MasterclassStrategy[] = [
   {
     day: 1,
     day_tag: 'Day 1: Candlestick Foundation',
@@ -520,6 +499,39 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
     scanner_path: '/volume-best',
   },
   {
+    day: 19,
+    day_tag: 'Day 19: Chetan Verma Featured Masterclass',
+    title: '9 EMA + 15-Min Breakout & Retest with Order Flow Confirmation',
+    category: 'Chetan Verma Series',
+    single_line: 'When a strong 15-minute candle breaks key resistance and retests the rising 9 EMA with a green confirmation candle + volume > 1.5x, enter for high-probability momentum.',
+    is_bullish: true,
+    is_bearish: true,
+    bullish_display: '🟢 BULLISH BUY: 15-min candle closes above Resistance/EMA 9. Wait for retest pullback touching 9 EMA. Enter on next green candle with Volume > 1.5x.',
+    bearish_display: '🔴 BEARISH SHORT: 15-min candle closes below Support/EMA 9. Wait for upward retest rejection at 9 EMA. Enter on next red candle breakdown.',
+    entry_trigger: 'Buy immediately on close of first green confirmation candle after retesting 9 EMA on 15m chart.',
+    stop_loss: 'Strict SL below the retest candle low (or 9 EMA − 0.25%).',
+    target_1: 'Target 1: 1:1.5 Risk-to-Reward (Day High / Next Resistance)',
+    target_2: 'Target 2: 1:2.5 Risk-to-Reward (R2 Pivot / Fibonacci 1.618)',
+    target_3: 'Target 3: 1:4.0 Risk-to-Reward (Trail with 9 EMA till close below)',
+    timeframe: 'Intraday: 5-min & 15-min | Swing: Daily Chart',
+    win_rate: '88% Win Rate',
+    risk_reward: '1:2.5 to 1:4.0 R:R',
+    indicators: ['9 EMA', '15-min Price Action', 'Volume Surge > 1.5x', 'VWAP Support', 'RSI 55–65'],
+    rules: [
+      'Never enter directly on initial breakout candle; ALWAYS wait for 9 EMA retest to avoid retail bull traps.',
+      'Retest candle must show lower wick rejection (buying absorption at 9 EMA).',
+      'Volume on the breakout and retest confirmation candle must be higher than 20-period average volume.',
+      'Check that Price is trading above intraday VWAP for institutional bias alignment.',
+    ],
+    mistakes_to_avoid: [
+      'Entering when price is already 2% extended above 9 EMA (wait for mean reversion).',
+      'Trading against the broader Nifty 50 market trend.',
+      'Moving Stop Loss during an active trade.',
+    ],
+    example: 'NIFTY 15m breaks 24,500 resistance, pulls back to test 9 EMA at 24,485, prints strong green hammer with 1.8x volume → rallies to 24,620.',
+    scanner_path: '/quant-screener',
+  },
+  {
     day: 20,
     day_tag: 'Day 20: Smart Money Concept (SMC)',
     title: 'Order Block (OB) & Fair Value Gap (FVG) Retest Strategy',
@@ -792,27 +804,220 @@ export const CHETAN_VERMA_STRATEGIES: MasterclassStrategy[] = [
   },
 ];
 
+// ── 2. Technical Indicator Mathematical Formulas & Library (RSI, MACD, PCR, ADX, VWAP, Supertrend, etc.) ──
+export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
+  {
+    name: 'Relative Strength Index',
+    acronym: 'RSI (14)',
+    category: 'Momentum',
+    math_formula: 'RSI = 100 - [100 / (1 + RS)]  where RS = (Smoothed Avg 14-Day Gain) / (Smoothed Avg 14-Day Loss)',
+    calculation_steps: [
+      '1. Calculate price changes: ΔP = Close(t) - Close(t-1)',
+      '2. Gain = max(ΔP, 0), Loss = max(-ΔP, 0)',
+      '3. Average Gain = [Prior Avg Gain * 13 + Current Gain] / 14',
+      '4. Average Loss = [Prior Avg Loss * 13 + Current Loss] / 14',
+      '5. RS = Avg Gain / Avg Loss → RSI oscillates between 0 and 100.',
+    ],
+    single_line: 'Measures the velocity and magnitude of directional price movements; 55–70 is ideal bullish momentum, >80 is overbought, <30 is oversold.',
+    bullish_rule: '🟢 Bullish Zone: RSI crosses above 50/60 with expanding price candles. Bullish Divergence (Price Lower Low + RSI Higher Low).',
+    bearish_rule: '🔴 Bearish Zone: RSI drops below 45/40. Bearish Divergence (Price Higher High + RSI Lower High) warning of sharp trend reversal.',
+    ideal_parameters: 'Length = 14 periods, Overbought = 70 (or 80 in bull markets), Oversold = 30 (or 40 in bull markets)',
+    interpretation: 'RSI in a strong bull market rarely falls below 40; treating 40-50 as the new support zone offers high-probability pullback entries.',
+    pro_tip: 'Combine RSI Divergence with support/resistance price action rather than buying purely on oversold readings.',
+    scanner_path: '/indicators',
+  },
+  {
+    name: 'Moving Average Convergence Divergence',
+    acronym: 'MACD (12, 26, 9)',
+    category: 'Momentum',
+    math_formula: 'MACD Line = EMA(12) - EMA(26) | Signal Line = EMA(9, MACD Line) | Histogram = MACD Line - Signal Line',
+    calculation_steps: [
+      '1. Fast EMA = 12-period exponential moving average of closing price.',
+      '2. Slow EMA = 26-period exponential moving average of closing price.',
+      '3. MACD Line = Fast EMA (12) - Slow EMA (26).',
+      '4. Signal Line = 9-period EMA applied directly onto the MACD Line.',
+      '5. MACD Histogram = MACD Line - Signal Line (visualizes momentum acceleration).',
+    ],
+    single_line: 'Tracks trend momentum and moving average separation; bullish crossover above zero line confirms institutional trend continuation.',
+    bullish_rule: '🟢 Bullish Signal: MACD Line crosses ABOVE Signal Line while above zero line + Histogram turns expanding green.',
+    bearish_rule: '🔴 Bearish Signal: MACD Line crosses BELOW Signal Line from high overbought peak + Histogram turns red.',
+    ideal_parameters: 'Fast Period = 12, Slow Period = 26, Signal Smoothing = 9 (Exponential)',
+    interpretation: 'A crossover occurring below the zero line signifies an early reversal; a crossover occurring above zero signifies trend acceleration.',
+    pro_tip: 'Watch the MACD Histogram: when red bars start shrinking towards zero, momentum is decelerating and buyers are preparing to take over.',
+    scanner_path: '/indicators',
+  },
+  {
+    name: 'Put-Call Ratio & Option Chain Sentiment',
+    acronym: 'PCR (Options)',
+    category: 'Derivatives & OI',
+    math_formula: 'PCR = Total Open Interest of Put Options (Σ Put OI) ÷ Total Open Interest of Call Options (Σ Call OI)',
+    calculation_steps: [
+      '1. Sum all outstanding open interest contracts for Puts across all strikes for active expiry.',
+      '2. Sum all outstanding open interest contracts for Calls across all strikes for active expiry.',
+      '3. Divide Total Put OI by Total Call OI.',
+      '4. Optional: Volume PCR = Total Put Volume / Total Call Volume.',
+    ],
+    single_line: 'Contrarian sentiment barometer; PCR < 0.60 indicates extreme retail panic & oversold bottom, PCR > 1.40 indicates extreme greed & top.',
+    bullish_rule: '🟢 Bullish Reversal: PCR drops to 0.55–0.70 at major technical support + Put writers aggressively write Puts at ATM/ITM strikes.',
+    bearish_rule: '🔴 Bearish Reversal: PCR exceeds 1.50–1.75 at major technical resistance + Call writers aggressively write OTM Calls.',
+    ideal_parameters: 'Index PCR Range: 0.60 (Oversold) to 1.40 (Overbought) | Equilibrium = 1.0',
+    interpretation: 'Option writers (smart money) dominate option buyers; high Put OI acts as an unbreakable price cushion.',
+    pro_tip: 'Identify the strike with highest Put OI — that strike represents the highest-probability institutional floor for the weekly expiry.',
+    scanner_path: '/oi-analysis',
+  },
+  {
+    name: 'Average Directional Index',
+    acronym: 'ADX (14)',
+    category: 'Trend',
+    math_formula: 'ADX = 14-Period EMA of DX   where DX = [|+DI - -DI| / (+DI + -DI)] × 100',
+    calculation_steps: [
+      '1. Calculate Directional Movement: +DM = Today High - Prev High (if > 0), -DM = Prev Low - Today Low (if > 0).',
+      '2. Calculate True Range (TR) = max(H-L, |H-PrevC|, |L-PrevC|).',
+      '3. Smooth +DM, -DM, and TR over 14 periods to get +DI and -DI.',
+      '4. Directional Index DX = [|+DI - -DI| / (+DI + -DI)] * 100.',
+      '5. ADX = 14-period Wilder smoothed average of DX.',
+    ],
+    single_line: 'Quantifies trend strength regardless of direction; ADX > 25 confirms powerful trend, ADX > 40 is explosive trend, ADX < 20 is choppy range.',
+    bullish_rule: '🟢 Bullish Trend: ADX > 25 AND rising while +DI is strictly greater than -DI.',
+    bearish_rule: '🔴 Bearish Trend: ADX > 25 AND rising while -DI is strictly greater than +DI (indicates aggressive downtrend).',
+    ideal_parameters: 'Period = 14, Strong Trend Threshold = 25, Extreme Trend = 40, Chop Threshold = 20',
+    interpretation: 'ADX does NOT show direction; it measures the sheer momentum force of the market. High ADX +DI = buy breakouts; Low ADX = sell options/mean-revert.',
+    pro_tip: 'Never trade breakout systems when ADX is below 20; false breakouts and whipsaws occur frequently in low-ADX regimes.',
+    scanner_path: '/momentum',
+  },
+  {
+    name: 'Volume Weighted Average Price',
+    acronym: 'VWAP',
+    category: 'Volume / Flow',
+    math_formula: 'VWAP = Σ(Typical Price × Volume) ÷ Σ(Volume)   where Typical Price = (High + Low + Close) / 3',
+    calculation_steps: [
+      '1. Typical Price (TP) = (High + Low + Close) / 3 for each intraday candle.',
+      '2. Multiply TP by candle volume: Cumulative TP_Vol = Σ(TP × Volume).',
+      '3. Sum total volume from market open: Cumulative_Vol = Σ(Volume).',
+      '4. VWAP = Cumulative TP_Vol / Cumulative_Vol.',
+      '5. Bands = VWAP ± (1.0 / 2.0 / 3.0 × Standard Deviation).',
+    ],
+    single_line: 'Institutional fair value benchmark reset daily at 09:15 IST; trading above VWAP confirms institutional buyer control.',
+    bullish_rule: '🟢 Bullish Intraday: Price holds above rising VWAP line. Pullbacks to VWAP hold as dynamic support.',
+    bearish_rule: '🔴 Bearish Intraday: Price trades below falling VWAP line. Rallies to VWAP are sold into by institutional algorithms.',
+    ideal_parameters: 'Session reset daily at 09:15 IST. Bands at +1.0σ, +2.0σ, -1.0σ, -2.0σ',
+    interpretation: 'Institutional execution algorithms (VWAP orders) buy when price is at or below VWAP and hold off when extended > +2σ above VWAP.',
+    pro_tip: 'The highest win-rate intraday trade in Nifty & F&O stocks is the "VWAP Pullback" after the initial 09:15-09:30 range establishment.',
+    scanner_path: '/volume-best',
+  },
+  {
+    name: 'Supertrend',
+    acronym: 'Supertrend (10, 3)',
+    category: 'Trend',
+    math_formula: 'Upper Band = (High + Low)/2 + (Multiplier × ATR) | Lower Band = (High + Low)/2 - (Multiplier × ATR)',
+    calculation_steps: [
+      '1. Calculate 10-period Average True Range (ATR).',
+      '2. Basic Upper Band = (High + Low) / 2 + 3 * ATR.',
+      '3. Basic Lower Band = (High + Low) / 2 - 3 * ATR.',
+      '4. If Close > Prev Final Upper Band → Trend = Bullish (Supertrend line = Lower Band).',
+      '5. If Close < Prev Final Lower Band → Trend = Bearish (Supertrend line = Upper Band).',
+    ],
+    single_line: 'Dynamic volatility-based trailing stop line; Green line below price indicates active buy mode, Red line above price indicates active sell mode.',
+    bullish_rule: '🟢 Bullish Trend: Supertrend turns GREEN below price with candle closing above previous upper band.',
+    bearish_rule: '🔴 Bearish Trend: Supertrend turns RED above price with candle closing below previous lower band.',
+    ideal_parameters: 'ATR Period = 10, Multiplier = 3.0 (or ATR 7, Multiplier 2.0 for faster scalping)',
+    interpretation: 'Provides unambiguous trailing stop loss levels that adjust dynamically with market volatility.',
+    pro_tip: 'Filter Supertrend buy signals by requiring Price to be above 200 EMA to avoid false flips during major secular downtrends.',
+    scanner_path: '/momentum',
+  },
+  {
+    name: 'Bollinger Bands',
+    acronym: 'BB (20, 2)',
+    category: 'Volatility',
+    math_formula: 'Middle = SMA(20) | Upper = SMA(20) + (2 × σ) | Lower = SMA(20) - (2 × σ)  where σ = 20-Day Std Deviation',
+    calculation_steps: [
+      '1. Middle Band = 20-period simple moving average of closing price.',
+      '2. Calculate Standard Deviation (σ) of the last 20 closing prices.',
+      '3. Upper Band = 20 SMA + 2 * σ.',
+      '4. Lower Band = 20 SMA - 2 * σ.',
+      '5. Bandwidth % = [(Upper - Lower) / Middle] * 100 (measures volatility squeeze).',
+    ],
+    single_line: 'Envelopes ~95% of all price action; tight contraction (squeeze) precedes massive explosive directional breakouts.',
+    bullish_rule: '🟢 Bullish Breakout: Bollinger Squeeze (narrow bandwidth) followed by candle closing above Upper Band with volume spike.',
+    bearish_rule: '🔴 Bearish Breakdown: Bollinger Squeeze followed by candle closing below Lower Band with heavy selling.',
+    ideal_parameters: 'Period = 20, Standard Deviations = 2.0',
+    interpretation: 'Volatility is cyclical: periods of extreme compression (squeeze) lead to violent volatility expansion.',
+    pro_tip: 'When bands squeeze to multi-month lows, do not predict direction — wait for the first candle to close outside the band with 2x volume.',
+    scanner_path: '/breakout',
+  },
+  {
+    name: 'Average True Range',
+    acronym: 'ATR (14)',
+    category: 'Volatility',
+    math_formula: 'ATR = 14-Period Smoothed Average of True Range   where TR = max[(High - Low), |High - PrevClose|, |Low - PrevClose|]',
+    calculation_steps: [
+      '1. True Range = max of: (High - Low), (High - Prev Close), (Prev Close - Low).',
+      '2. First ATR = 14-day simple average of TR.',
+      '3. Subsequent ATR = [Prior ATR × 13 + Current TR] ÷ 14.',
+    ],
+    single_line: 'Pure measure of price volatility in points/rupees; used to set scientifically calibrated stop losses and dynamic position sizes.',
+    bullish_rule: '🟢 Risk Optimization: Stop Loss = Entry Price - (1.5 × ATR). Target = Entry Price + (3.0 × ATR) for guaranteed 1:2 Risk-to-Reward.',
+    bearish_rule: '🔴 Volatility Warning: ATR > 4% of stock price indicates dangerous whipsaw conditions requiring reduced position sizing.',
+    ideal_parameters: 'Period = 14 (Daily or 15-minute chart)',
+    interpretation: 'High ATR = large daily swings (wider stops needed); Low ATR = tight consolidation (favorable risk-to-reward).',
+    pro_tip: 'Position Size Formula = (Total Account Risk in ₹) ÷ (1.5 × ATR in ₹). This ensures you never lose more than 1% on any single trade.',
+    scanner_path: '/today-result',
+  },
+  {
+    name: 'Exponential Moving Average Alignment Stack',
+    acronym: 'EMA Stack (9, 20, 50, 200)',
+    category: 'Trend',
+    math_formula: 'EMA(t) = [Price(t) × k] + [EMA(t-1) × (1 - k)]   where k = 2 / (Period + 1)',
+    calculation_steps: [
+      '1. Calculate weighting multiplier: k = 2 / (Period + 1).',
+      '2. Initial EMA = Simple Moving Average of first N periods.',
+      '3. Today EMA = (Close - Prior EMA) * k + Prior EMA.',
+      '4. EMA 9 (k=0.20), EMA 20 (k=0.0952), EMA 50 (k=0.0392), EMA 200 (k=0.00995).',
+    ],
+    single_line: 'Hierarchical moving average stack; Price > 9 > 20 > 50 > 200 EMA indicates the strongest possible institutional uptrend.',
+    bullish_rule: '🟢 Perfect Bullish Stack: Price > 9 EMA > 20 EMA > 50 EMA > 200 EMA with all averages fanning out and sloping upwards.',
+    bearish_rule: '🔴 Perfect Bearish Stack: Price < 9 EMA < 20 EMA < 50 EMA < 200 EMA (Death Stack) indicating severe downtrend.',
+    ideal_parameters: 'Short-term = 9 & 20 EMA | Medium-term = 50 EMA | Long-term Trend = 200 EMA',
+    interpretation: 'Faster EMAs give higher weight to recent price action; when all four align in order, retail traders cannot stop the momentum.',
+    pro_tip: 'Only buy pullbacks at the 20 EMA when the 50 EMA and 200 EMA are sloping in the same direction.',
+    scanner_path: '/ema-screener',
+  },
+  {
+    name: 'Smart Money Order Block & Imbalance',
+    acronym: 'SMC (OB & FVG)',
+    category: 'Derivatives & OI',
+    math_formula: 'FVG = Low(Candle 1) - High(Candle 3) [Bullish] | OB = Last Down Candle before BOS Impulse',
+    calculation_steps: [
+      '1. Detect explosive 3-candle displacement wave.',
+      '2. Measure gap between Candle 1 low and Candle 3 high (Fair Value Gap).',
+      '3. Identify the last opposite candle body preceding the impulse (Order Block).',
+      '4. Mark 50% Equilibrium level (Mean Threshold) of the Order Block.',
+      '5. Place limit order at OB entry with invalidation below OB low.',
+    ],
+    single_line: 'Smart money footprints: institutions create market imbalances (FVG) and leave unfilled buy orders inside Order Blocks (OB).',
+    bullish_rule: '🟢 Bullish OB Entry: Price pulls back to discount zone (0.618-0.786 Fibonacci) to mitigate Bullish Order Block + fill FVG.',
+    bearish_rule: '🔴 Bearish OB Entry: Price rallies into premium zone (0.618-0.786 Fibonacci) to mitigate Bearish Order Block + fill Bearish FVG.',
+    ideal_parameters: 'Displacement Volume > 2.5x, Mitigation Timeframe = 15m / 1H',
+    interpretation: 'Market makers must return to unmitigated order blocks to balance their books before launching the next leg of the trend.',
+    pro_tip: 'An Order Block that does NOT break market structure (BOS) is weak; only trade Order Blocks that caused a clear Break of Structure.',
+    scanner_path: '/target-matrix',
+  },
+];
+
 export default function FormulaPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
+  const [mainTab, setMainTab] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [viewMode, setViewMode] = useState<'cards' | 'accordion' | 'table'>('cards');
   const [expandedDay, setExpandedDay] = useState<string | false>('19');
 
-  // Backend API query
-  const { data: backendData } = useQuery({
-    queryKey: ['formulas'],
-    queryFn: fetchFormulas,
-    staleTime: 300_000,
-  });
-
-  // Filter strategies based on search and category
-  const filteredStrategies = useMemo(() => {
-    return CHETAN_VERMA_STRATEGIES.filter(s => {
-      // Category filter
+  // Filter 30-Day Masterclass strategies
+  const filteredMasterclass = useMemo(() => {
+    return SEQUENTIAL_CHETAN_VERMA_SERIES.filter(s => {
       if (selectedCategory === 'Bullish' && !s.is_bullish) return false;
       if (selectedCategory === 'Bearish' && !s.is_bearish) return false;
       if (
@@ -824,7 +1029,6 @@ export default function FormulaPage() {
         return false;
       }
 
-      // Search filter
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
       return (
@@ -838,6 +1042,20 @@ export default function FormulaPage() {
       );
     });
   }, [searchQuery, selectedCategory]);
+
+  // Filter Technical Indicator Library
+  const filteredIndicators = useMemo(() => {
+    if (!searchQuery.trim()) return TECHNICAL_INDICATOR_LIBRARY;
+    const q = searchQuery.toLowerCase().trim();
+    return TECHNICAL_INDICATOR_LIBRARY.filter(
+      ind =>
+        ind.name.toLowerCase().includes(q) ||
+        ind.acronym.toLowerCase().includes(q) ||
+        ind.category.toLowerCase().includes(q) ||
+        ind.single_line.toLowerCase().includes(q) ||
+        ind.math_formula.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
 
   const categories = [
     { label: 'All (30)', value: 'All' },
@@ -855,7 +1073,7 @@ export default function FormulaPage() {
 
   return (
     <Box sx={{ pb: 6 }}>
-      {/* ── Top Hero Banner (Study Purpose Only) ── */}
+      {/* ── Top Hero Header (Pure Study & Educational Notebook) ── */}
       <Paper
         elevation={0}
         sx={{
@@ -899,61 +1117,19 @@ export default function FormulaPage() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 850, lineHeight: 1.5, mb: 1.5 }}>
-              Comprehensive master library of high-probability Indian market trading formulas, candlestick patterns, Smart Money Concepts (SMC), and exact entry/exit/stop-loss mechanics from Chetan Verma's 100-day series — organized for personal study and analysis.
+              Comprehensive personal study notebook containing full mathematical formulas, single-line rules, exact Stop Loss / Target levels, and indicator derivations from Day 1 to Day 30 in sequential order.
             </Typography>
-
-            {/* Featured Day 19 Callout Card */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 1.5,
-                borderRadius: 2.5,
-                bgcolor: isDark ? 'rgba(0,0,0,0.4)' : '#ffffff',
-                border: '1px solid',
-                borderColor: '#10b981',
-                display: 'flex',
-                alignItems: { xs: 'flex-start', sm: 'center' },
-                justifyContent: 'space-between',
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: 1.5,
-              }}
-            >
-              <Box>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Whatshot sx={{ color: '#ff9800', fontSize: 18 }} />
-                  <Typography variant="subtitle2" fontWeight={900} color="success.main">
-                    Featured Day 19 Strategy: 9 EMA + 15-Min Breakout Retest
-                  </Typography>
-                </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.3, fontWeight: 600 }}>
-                  High-win-rate intraday/swing trigger with tight SL and 1:3+ Risk-Reward ratio.
-                </Typography>
-              </Box>
-
-              <Stack direction="row" spacing={1}>
-                <Button
-                  variant="contained"
-                  color="success"
-                  size="small"
-                  endIcon={<ArrowForward />}
-                  onClick={() => navigate('/quant-screener')}
-                  sx={{ fontWeight: 800, fontSize: '0.75rem', textTransform: 'none', borderRadius: 2 }}
-                >
-                  Scan Live Stocks
-                </Button>
-              </Stack>
-            </Paper>
           </Box>
         </Stack>
 
         {/* Top Summary Metrics */}
-        <Grid container spacing={1.5} mt={1}>
+        <Grid container spacing={1.5} mt={0.5}>
           {[
-            { label: 'Masterclass Formulas', value: '30 Days', color: '#00e5ff', icon: <School /> },
-            { label: 'Bullish Buy Setups', value: '22 Strategies', color: '#00e676', icon: <TrendingUp /> },
-            { label: 'Bearish Short Setups', value: '18 Strategies', color: '#ff1744', icon: <TrendingDown /> },
-            { label: 'Max Win Rate', value: '88% – 91%', color: '#ffd600', icon: <Speed /> },
-            { label: 'Smart Money SMC Setups', value: '10 Formulas', color: '#d500f9', icon: <AutoAwesome /> },
+            { label: 'Masterclass Days', value: 'Day 1 → Day 30', color: '#00e5ff', icon: <School /> },
+            { label: 'Bullish Buy Rules', value: '22 Strategies', color: '#00e676', icon: <TrendingUp /> },
+            { label: 'Bearish Exit Rules', value: '18 Strategies', color: '#ff1744', icon: <TrendingDown /> },
+            { label: 'Technical Indicators', value: 'RSI, MACD, PCR, ADX', color: '#ffd600', icon: <Calculate /> },
+            { label: 'Smart Money SMC', value: 'OB, FVG, BOS, CHoCH', color: '#d500f9', icon: <AutoAwesome /> },
           ].map(m => (
             <Grid item xs={6} sm={4} md={2.4} key={m.label}>
               <Box
@@ -969,7 +1145,7 @@ export default function FormulaPage() {
                 <Typography sx={{ fontSize: '0.68rem', fontWeight: 800, color: 'text.secondary', textTransform: 'uppercase' }}>
                   {m.label}
                 </Typography>
-                <Typography sx={{ fontSize: '1rem', fontWeight: 900, color: m.color, mt: 0.3 }}>
+                <Typography sx={{ fontSize: '0.95rem', fontWeight: 900, color: m.color, mt: 0.3 }}>
                   {m.value}
                 </Typography>
               </Box>
@@ -978,82 +1154,502 @@ export default function FormulaPage() {
         </Grid>
       </Paper>
 
-      {/* ── Search, Category Tabs, & View Switcher ── */}
+      {/* ── Main Section Tabs: 1. 30-Day Masterclass | 2. Indicator Formulas (RSI, MACD, PCR, ADX) ── */}
       <Paper
         elevation={0}
         sx={{
-          p: 2,
           mb: 3,
           borderRadius: 3,
           border: '1px solid',
           borderColor: 'divider',
           background: isDark ? 'rgba(255,255,255,0.02)' : '#ffffff',
+          overflow: 'hidden',
         }}
       >
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ xs: 'stretch', md: 'center' }} justifyContent="space-between">
-          {/* Search Input */}
-          <TextField
-            size="small"
-            placeholder="Search by Day (e.g. Day 19, Day 1), Pattern, Indicator, Formula..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            sx={{ flex: 1, minWidth: { xs: '100%', md: 320 } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-              sx: { borderRadius: 2, fontSize: '0.85rem' },
-            }}
-          />
+        <Tabs
+          value={mainTab}
+          onChange={(_, v) => setMainTab(v)}
+          variant="fullWidth"
+          sx={{
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            '& .MuiTab-root': { fontWeight: 800, fontSize: '0.85rem', py: 1.8 },
+          }}
+        >
+          <Tab icon={<School sx={{ fontSize: 18 }} />} iconPosition="start" label="🎓 Chetan Verma Masterclass (Day 1 to 30)" />
+          <Tab icon={<Calculate sx={{ fontSize: 18 }} />} iconPosition="start" label="📐 Indicator Formulas (RSI, MACD, PCR, ADX, VWAP)" />
+        </Tabs>
 
-          {/* View Mode Toggle */}
-          <ToggleButtonGroup
-            size="small"
-            value={viewMode}
-            exclusive
-            onChange={(_, v) => v && setViewMode(v)}
-            sx={{ alignSelf: { xs: 'flex-start', md: 'center' } }}
-          >
-            <ToggleButton value="cards" title="Grid Cards View">
-              <ViewModule sx={{ fontSize: 18, mr: 0.5 }} /> Cards
-            </ToggleButton>
-            <ToggleButton value="accordion" title="Accordion Deep Dive View">
-              <ViewList sx={{ fontSize: 18, mr: 0.5 }} /> Deep Dive
-            </ToggleButton>
-            <ToggleButton value="table" title="Quick Table View">
-              <TableRows sx={{ fontSize: 18, mr: 0.5 }} /> Table
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Stack>
-
-        {/* Category Pills */}
-        <Stack direction="row" spacing={1} mt={1.5} flexWrap="wrap" gap={0.75}>
-          {categories.map(c => (
-            <Chip
-              key={c.value}
-              label={c.label}
-              onClick={() => setSelectedCategory(c.value)}
-              color={selectedCategory === c.value ? 'primary' : 'default'}
-              variant={selectedCategory === c.value ? 'filled' : 'outlined'}
-              sx={{
-                fontWeight: 800,
-                fontSize: '0.72rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                '&:hover': { transform: 'translateY(-1px)' },
+        {/* Search & View Controls */}
+        <Box sx={{ p: 2 }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ xs: 'stretch', md: 'center' }} justifyContent="space-between">
+            <TextField
+              size="small"
+              placeholder={mainTab === 0 ? 'Search Day (e.g. Day 1, Day 19), Candlestick, Indicator, Formula...' : 'Search RSI, MACD, PCR, ADX, VWAP, Supertrend, Formulas...'}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              sx={{ flex: 1, minWidth: { xs: '100%', md: 340 } }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: 2, fontSize: '0.85rem' },
               }}
             />
-          ))}
-        </Stack>
+
+            {mainTab === 0 && (
+              <ToggleButtonGroup
+                size="small"
+                value={viewMode}
+                exclusive
+                onChange={(_, v) => v && setViewMode(v)}
+                sx={{ alignSelf: { xs: 'flex-start', md: 'center' } }}
+              >
+                <ToggleButton value="cards" title="Grid Cards View">
+                  <ViewModule sx={{ fontSize: 18, mr: 0.5 }} /> Cards
+                </ToggleButton>
+                <ToggleButton value="accordion" title="Accordion Deep Dive View">
+                  <ViewList sx={{ fontSize: 18, mr: 0.5 }} /> Deep Dive
+                </ToggleButton>
+                <ToggleButton value="table" title="Quick Table View">
+                  <TableRows sx={{ fontSize: 18, mr: 0.5 }} /> Table
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )}
+          </Stack>
+
+          {/* Category Filters for 30-Day Series */}
+          {mainTab === 0 && (
+            <Stack direction="row" spacing={1} mt={1.5} flexWrap="wrap" gap={0.75}>
+              {categories.map(c => (
+                <Chip
+                  key={c.value}
+                  label={c.label}
+                  onClick={() => setSelectedCategory(c.value)}
+                  color={selectedCategory === c.value ? 'primary' : 'default'}
+                  variant={selectedCategory === c.value ? 'filled' : 'outlined'}
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': { transform: 'translateY(-1px)' },
+                  }}
+                />
+              ))}
+            </Stack>
+          )}
+        </Box>
       </Paper>
 
-      {/* ── View 1: Card Grid View (Interactive Cards with 1-Click Drilldown) ── */}
-      {viewMode === 'cards' && (
+      {/* ══════════════════════════════════════════════════════════════════════
+          TAB 0: CHETAN VERMA 100-DAY TRADING MASTERCLASS (DAY 1 TO 30)
+         ══════════════════════════════════════════════════════════════════════ */}
+      {mainTab === 0 && (
+        <>
+          {/* ── View 1: Card Grid View ── */}
+          {viewMode === 'cards' && (
+            <Grid container spacing={2}>
+              {filteredMasterclass.map(item => (
+                <Grid item xs={12} md={6} lg={4} key={item.day_tag}>
+                  <Card
+                    elevation={0}
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      borderRadius: 3,
+                      border: '1.5px solid',
+                      borderColor: item.day === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+                      bgcolor: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
+                      transition: 'all 0.22s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        borderColor: item.day === 19 ? '#059669' : 'primary.main',
+                        boxShadow: isDark ? '0 12px 30px rgba(0,0,0,0.5)' : '0 12px 30px rgba(0,0,0,0.08)',
+                      },
+                    }}
+                  >
+                    {/* Top Accent Line */}
+                    <Box
+                      sx={{
+                        height: 4,
+                        background: item.day === 19
+                          ? 'linear-gradient(90deg, #10b981 0%, #06b6d4 100%)'
+                          : item.is_bullish && item.is_bearish
+                          ? 'linear-gradient(90deg, #00e676 0%, #ff1744 100%)'
+                          : item.is_bullish
+                          ? 'linear-gradient(90deg, #00e676 0%, #00b0ff 100%)'
+                          : 'linear-gradient(90deg, #ff1744 0%, #ff9100 100%)',
+                      }}
+                    />
+
+                    <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      {/* Header Row */}
+                      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1} gap={1}>
+                        <Chip
+                          label={item.day_tag}
+                          size="small"
+                          sx={{
+                            fontWeight: 900,
+                            fontSize: '0.65rem',
+                            height: 20,
+                            bgcolor: item.day === 19 ? 'rgba(16,185,129,0.2)' : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                            color: item.day === 19 ? '#10b981' : 'text.primary',
+                            border: '1px solid',
+                            borderColor: item.day === 19 ? 'rgba(16,185,129,0.4)' : 'divider',
+                          }}
+                        />
+                        <Chip
+                          label={item.win_rate}
+                          size="small"
+                          sx={{
+                            fontWeight: 900,
+                            fontSize: '0.65rem',
+                            height: 20,
+                            bgcolor: 'rgba(0,230,118,0.15)',
+                            color: '#00e676',
+                            border: '1px solid rgba(0,230,118,0.3)',
+                          }}
+                        />
+                      </Stack>
+
+                      {/* Title */}
+                      <Typography variant="subtitle1" fontWeight={900} sx={{ lineHeight: 1.3, mb: 1 }}>
+                        {item.title}
+                      </Typography>
+
+                      {/* Single Line Understanding Box */}
+                      <Box
+                        sx={{
+                          p: 1.25,
+                          mb: 1.5,
+                          borderRadius: 2,
+                          bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          borderLeft: '3px solid',
+                          borderColor: item.day === 19 ? '#10b981' : 'primary.main',
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: 'text.secondary', fontStyle: 'italic', lineHeight: 1.45 }}>
+                          "{item.single_line}"
+                        </Typography>
+                      </Box>
+
+                      {/* Bullish Condition (Green Font) */}
+                      {item.is_bullish && (
+                        <Box
+                          sx={{
+                            p: 1,
+                            mb: 1,
+                            borderRadius: 1.5,
+                            bgcolor: 'rgba(0,230,118,0.08)',
+                            border: '1px solid rgba(0,230,118,0.25)',
+                          }}
+                        >
+                          <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#00e676', lineHeight: 1.4 }}>
+                            {item.bullish_display}
+                          </Typography>
+                        </Box>
+                      )}
+
+                      {/* Bearish Condition (Red Font) */}
+                      {item.is_bearish && (
+                        <Box
+                          sx={{
+                            p: 1,
+                            mb: 1.5,
+                            borderRadius: 1.5,
+                            bgcolor: 'rgba(255,23,68,0.08)',
+                            border: '1px solid rgba(255,23,68,0.25)',
+                          }}
+                        >
+                          <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#ff1744', lineHeight: 1.4 }}>
+                            {item.bearish_display}
+                          </Typography>
+                        </Box>
+                      )}
+
+                      {/* Quick Mechanics Grid */}
+                      <Box sx={{ mt: 'auto', pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                        <Stack spacing={0.5} mb={1.5}>
+                          <Stack direction="row" justifyContent="space-between">
+                            <Typography variant="caption" color="text.secondary" fontWeight={700}>Stop Loss:</Typography>
+                            <Typography variant="caption" fontWeight={800} color="error.main">{item.stop_loss}</Typography>
+                          </Stack>
+                          <Stack direction="row" justifyContent="space-between">
+                            <Typography variant="caption" color="text.secondary" fontWeight={700}>Risk/Reward:</Typography>
+                            <Typography variant="caption" fontWeight={800} color="success.main">{item.risk_reward}</Typography>
+                          </Stack>
+                          <Stack direction="row" justifyContent="space-between">
+                            <Typography variant="caption" color="text.secondary" fontWeight={700}>Timeframe:</Typography>
+                            <Typography variant="caption" fontWeight={800}>{item.timeframe}</Typography>
+                          </Stack>
+                        </Stack>
+
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
+                          onClick={() => navigate(item.scanner_path)}
+                          sx={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'none', py: 0.5 }}
+                        >
+                          Scan Stocks with this Formula
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+
+          {/* ── View 2: Detailed Accordion Deep-Dive View ── */}
+          {viewMode === 'accordion' && (
+            <Stack spacing={1.5}>
+              {filteredMasterclass.map(item => (
+                <Accordion
+                  key={item.day_tag}
+                  expanded={expandedDay === String(item.day)}
+                  onChange={handleAccordionChange(String(item.day))}
+                  sx={{
+                    borderRadius: 2.5,
+                    border: '1px solid',
+                    borderColor: item.day === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+                    bgcolor: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
+                    overflow: 'hidden',
+                    '&:before': { display: 'none' },
+                  }}
+                >
+                  <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1.5} width="100%" pr={1}>
+                      <Chip
+                        label={item.day_tag}
+                        size="small"
+                        color={item.day === 19 ? 'success' : 'primary'}
+                        sx={{ fontWeight: 900, fontSize: '0.7rem', height: 22 }}
+                      />
+                      <Typography variant="subtitle1" fontWeight={800} sx={{ flex: 1 }}>
+                        {item.title}
+                      </Typography>
+                      <Stack direction="row" spacing={1}>
+                        <Chip
+                          label={item.win_rate}
+                          size="small"
+                          sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676', fontSize: '0.65rem' }}
+                        />
+                        <Chip
+                          label={item.risk_reward}
+                          size="small"
+                          variant="outlined"
+                          sx={{ fontWeight: 800, fontSize: '0.65rem' }}
+                        />
+                      </Stack>
+                    </Stack>
+                  </AccordionSummary>
+
+                  <AccordionDetails sx={{ pt: 0, pb: 2.5, px: 2.5 }}>
+                    <Divider sx={{ mb: 2 }} />
+
+                    {/* Single Line Understanding */}
+                    <Paper
+                      sx={{
+                        p: 1.5,
+                        mb: 2,
+                        borderRadius: 2,
+                        bgcolor: isDark ? 'rgba(0,176,255,0.06)' : '#e0f7fa',
+                        borderLeft: '4px solid #00b0ff',
+                      }}
+                    >
+                      <Typography variant="caption" fontWeight={900} color="primary.main" textTransform="uppercase">
+                        📌 Single-Line Formula Understanding:
+                      </Typography>
+                      <Typography variant="body2" fontWeight={700} mt={0.5}>
+                        {item.single_line}
+                      </Typography>
+                    </Paper>
+
+                    <Grid container spacing={2}>
+                      {/* Bullish Conditions (Green Font) */}
+                      <Grid item xs={12} md={6}>
+                        <Paper
+                          sx={{
+                            p: 1.75,
+                            borderRadius: 2,
+                            bgcolor: isDark ? 'rgba(0,230,118,0.05)' : '#f0fdf4',
+                            border: '1.5px solid #00e676',
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={0.8} mb={0.75}>
+                            <CheckCircle sx={{ color: '#00e676', fontSize: 18 }} />
+                            <Typography variant="subtitle2" fontWeight={900} color="#00e676">
+                              BULLISH BUY ENTRY MECHANICS
+                            </Typography>
+                          </Stack>
+                          <Typography variant="body2" fontWeight={800} color="#00e676" mb={1} sx={{ lineHeight: 1.5 }}>
+                            {item.bullish_display}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" fontWeight={700} display="block">
+                            • Trigger: {item.entry_trigger}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+
+                      {/* Bearish Conditions (Red Font) */}
+                      <Grid item xs={12} md={6}>
+                        <Paper
+                          sx={{
+                            p: 1.75,
+                            borderRadius: 2,
+                            bgcolor: isDark ? 'rgba(255,23,68,0.05)' : '#fff1f2',
+                            border: '1.5px solid #ff1744',
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={0.8} mb={0.75}>
+                            <Warning sx={{ color: '#ff1744', fontSize: 18 }} />
+                            <Typography variant="subtitle2" fontWeight={900} color="#ff1744">
+                              BEARISH SHORT / EXIT MECHANICS
+                            </Typography>
+                          </Stack>
+                          <Typography variant="body2" fontWeight={800} color="#ff1744" mb={1} sx={{ lineHeight: 1.5 }}>
+                            {item.bearish_display}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" fontWeight={700} display="block">
+                            • Stop Loss: {item.stop_loss}
+                          </Typography>
+                        </Paper>
+                      </Grid>
+
+                      {/* Profit Targets & Stop Loss */}
+                      <Grid item xs={12} md={6}>
+                        <Paper sx={{ p: 1.75, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                          <Typography variant="subtitle2" fontWeight={800} mb={1}>
+                            🎯 Target Calculations &amp; Risk/Reward
+                          </Typography>
+                          <Stack spacing={0.6}>
+                            <Typography variant="caption" fontWeight={700} color="success.main">• {item.target_1}</Typography>
+                            <Typography variant="caption" fontWeight={700} color="success.main">• {item.target_2}</Typography>
+                            <Typography variant="caption" fontWeight={700} color="success.main">• {item.target_3}</Typography>
+                            <Typography variant="caption" fontWeight={700} color="error.main">• Stop Loss Formula: {item.stop_loss}</Typography>
+                          </Stack>
+                        </Paper>
+                      </Grid>
+
+                      {/* Rules & Mistakes to Avoid */}
+                      <Grid item xs={12} md={6}>
+                        <Paper sx={{ p: 1.75, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                          <Typography variant="subtitle2" fontWeight={800} mb={1}>
+                            ⚠️ Strategy Rules &amp; Retail Traps to Avoid
+                          </Typography>
+                          <Stack spacing={0.6}>
+                            {item.rules.map((r, i) => (
+                              <Typography key={i} variant="caption" color="text.secondary" fontWeight={600}>
+                                ✓ {r}
+                              </Typography>
+                            ))}
+                            {item.mistakes_to_avoid.map((m, i) => (
+                              <Typography key={i} variant="caption" color="error.main" fontWeight={700}>
+                                ❌ Avoid: {m}
+                              </Typography>
+                            ))}
+                          </Stack>
+                        </Paper>
+                      </Grid>
+
+                      {/* Indicators Used & Real Market Example */}
+                      <Grid item xs={12}>
+                        <Paper sx={{ p: 1.5, borderRadius: 2, bgcolor: isDark ? 'rgba(255,255,255,0.02)' : '#fafafa', border: '1px solid', borderColor: 'divider' }}>
+                          <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1}>
+                            <Box>
+                              <Typography variant="caption" fontWeight={800} color="text.secondary" textTransform="uppercase">
+                                Technical Checklist:
+                              </Typography>
+                              <Stack direction="row" spacing={0.6} mt={0.4} flexWrap="wrap" gap={0.5}>
+                                {item.indicators.map(ind => (
+                                  <Chip key={ind} label={ind} size="small" sx={{ fontSize: '0.65rem', fontWeight: 800, height: 20 }} />
+                                ))}
+                              </Stack>
+                              <Typography variant="caption" color="primary.main" fontWeight={700} display="block" mt={1}>
+                                💡 Real Market Example: {item.example}
+                              </Typography>
+                            </Box>
+
+                            <Button
+                              size="small"
+                              variant="contained"
+                              endIcon={<ArrowForward />}
+                              onClick={() => navigate(item.scanner_path)}
+                              sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', alignSelf: { xs: 'flex-start', sm: 'center' } }}
+                            >
+                              Launch Screener
+                            </Button>
+                          </Stack>
+                        </Paper>
+                      </Grid>
+                    </Grid>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+            </Stack>
+          )}
+
+          {/* ── View 3: Quick Scan Table View ── */}
+          {viewMode === 'table' && (
+            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <Table size="small">
+                <TableHead sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8faff' }}>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 900 }}>Day #</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Strategy &amp; Single-Line Understanding</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Bullish Trigger (Green)</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Bearish Warning (Red)</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Win Rate</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredMasterclass.map(item => (
+                    <TableRow key={item.day_tag} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
+                      <TableCell>
+                        <Chip label={`Day ${item.day}`} size="small" color={item.day === 19 ? 'success' : 'default'} sx={{ fontWeight: 900, height: 20 }} />
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 340 }}>
+                        <Typography variant="body2" fontWeight={800}>{item.title}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontStyle="italic" display="block">{item.single_line}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 280 }}>
+                        <Typography variant="caption" fontWeight={800} color="#00e676">{item.bullish_display}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 280 }}>
+                        <Typography variant="caption" fontWeight={800} color="#ff1744">{item.bearish_display}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={item.win_rate} size="small" sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676' }} />
+                      </TableCell>
+                      <TableCell>
+                        <Button size="small" variant="outlined" endIcon={<ArrowForward sx={{ fontSize: 13 }} />} sx={{ fontWeight: 800, fontSize: '0.68rem', py: 0.3 }}>
+                          Scan
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          TAB 1: TECHNICAL INDICATORS & FORMULAS (RSI, MACD, PCR, ADX, VWAP, BB, ATR)
+         ══════════════════════════════════════════════════════════════════════ */}
+      {mainTab === 1 && (
         <Grid container spacing={2}>
-          {filteredStrategies.map(item => (
-            <Grid item xs={12} md={6} lg={4} key={item.day_tag}>
+          {filteredIndicators.map(ind => (
+            <Grid item xs={12} md={6} key={ind.acronym}>
               <Card
                 elevation={0}
                 sx={{
@@ -1062,143 +1658,123 @@ export default function FormulaPage() {
                   flexDirection: 'column',
                   borderRadius: 3,
                   border: '1.5px solid',
-                  borderColor: item.day === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+                  borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'divider',
                   bgcolor: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
-                  transition: 'all 0.22s ease-in-out',
+                  transition: 'all 0.2s',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    borderColor: item.day === 19 ? '#059669' : 'primary.main',
+                    borderColor: 'primary.main',
                     boxShadow: isDark ? '0 12px 30px rgba(0,0,0,0.5)' : '0 12px 30px rgba(0,0,0,0.08)',
                   },
                 }}
               >
-                {/* Top Accent Line */}
-                <Box
-                  sx={{
-                    height: 4,
-                    background: item.day === 19
-                      ? 'linear-gradient(90deg, #10b981 0%, #06b6d4 100%)'
-                      : item.is_bullish && item.is_bearish
-                      ? 'linear-gradient(90deg, #00e676 0%, #ff1744 100%)'
-                      : item.is_bullish
-                      ? 'linear-gradient(90deg, #00e676 0%, #00b0ff 100%)'
-                      : 'linear-gradient(90deg, #ff1744 0%, #ff9100 100%)',
-                  }}
-                />
+                <Box sx={{ height: 4, background: 'linear-gradient(90deg, #00e5ff 0%, #00e676 100%)' }} />
 
-                <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  {/* Header Row */}
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1} gap={1}>
+                <CardContent sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Header */}
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Calculate color="primary" sx={{ fontSize: 20 }} />
+                      <Typography variant="h6" fontWeight={900} sx={{ fontSize: '1.05rem' }}>
+                        {ind.name}
+                      </Typography>
+                    </Stack>
                     <Chip
-                      label={item.day_tag}
+                      label={ind.acronym}
                       size="small"
-                      sx={{
-                        fontWeight: 900,
-                        fontSize: '0.65rem',
-                        height: 20,
-                        bgcolor: item.day === 19 ? 'rgba(16,185,129,0.2)' : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                        color: item.day === 19 ? '#10b981' : 'text.primary',
-                        border: '1px solid',
-                        borderColor: item.day === 19 ? 'rgba(16,185,129,0.4)' : 'divider',
-                      }}
-                    />
-                    <Chip
-                      label={item.win_rate}
-                      size="small"
-                      sx={{
-                        fontWeight: 900,
-                        fontSize: '0.65rem',
-                        height: 20,
-                        bgcolor: 'rgba(0,230,118,0.15)',
-                        color: '#00e676',
-                        border: '1px solid rgba(0,230,118,0.3)',
-                      }}
+                      color="primary"
+                      sx={{ fontWeight: 900, fontSize: '0.72rem', height: 22 }}
                     />
                   </Stack>
 
-                  {/* Title */}
-                  <Typography variant="subtitle1" fontWeight={900} sx={{ lineHeight: 1.3, mb: 1 }}>
-                    {item.title}
-                  </Typography>
-
-                  {/* Single Line Understanding Box */}
+                  {/* Single Line Understanding */}
                   <Box
                     sx={{
                       p: 1.25,
-                      mb: 1.5,
+                      mb: 2,
                       borderRadius: 2,
-                      bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                      borderLeft: '3px solid',
-                      borderColor: item.day === 19 ? '#10b981' : 'primary.main',
+                      bgcolor: isDark ? 'rgba(0,229,255,0.05)' : '#e0f7fa',
+                      borderLeft: '3px solid #00e5ff',
                     }}
                   >
                     <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: 'text.secondary', fontStyle: 'italic', lineHeight: 1.45 }}>
-                      "{item.single_line}"
+                      "{ind.single_line}"
                     </Typography>
                   </Box>
 
-                  {/* Bullish Condition (Green Font) */}
-                  {item.is_bullish && (
-                    <Box
-                      sx={{
-                        p: 1,
-                        mb: 1,
-                        borderRadius: 1.5,
-                        bgcolor: 'rgba(0,230,118,0.08)',
-                        border: '1px solid rgba(0,230,118,0.25)',
-                      }}
-                    >
-                      <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#00e676', lineHeight: 1.4 }}>
-                        {item.bullish_display}
-                      </Typography>
-                    </Box>
-                  )}
+                  {/* Mathematical Formula Box */}
+                  <Typography variant="caption" fontWeight={900} color="text.secondary" textTransform="uppercase" mb={0.5} display="block">
+                    📐 Mathematical Formula:
+                  </Typography>
+                  <Paper
+                    sx={{
+                      p: 1.5,
+                      mb: 2,
+                      borderRadius: 2,
+                      bgcolor: isDark ? 'rgba(0,0,0,0.4)' : '#f8faff',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      fontFamily: 'monospace',
+                      fontSize: '0.82rem',
+                      fontWeight: 800,
+                      color: isDark ? '#38bdf8' : '#0284c7',
+                    }}
+                  >
+                    {ind.math_formula}
+                  </Paper>
 
-                  {/* Bearish Condition (Red Font) */}
-                  {item.is_bearish && (
-                    <Box
-                      sx={{
-                        p: 1,
-                        mb: 1.5,
-                        borderRadius: 1.5,
-                        bgcolor: 'rgba(255,23,68,0.08)',
-                        border: '1px solid rgba(255,23,68,0.25)',
-                      }}
-                    >
-                      <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#ff1744', lineHeight: 1.4 }}>
-                        {item.bearish_display}
+                  {/* Step-by-Step Calculation */}
+                  <Typography variant="caption" fontWeight={900} color="text.secondary" textTransform="uppercase" mb={0.5} display="block">
+                    🔢 Derivation Steps:
+                  </Typography>
+                  <Stack spacing={0.4} mb={2}>
+                    {ind.calculation_steps.map((step, i) => (
+                      <Typography key={i} variant="caption" sx={{ fontSize: '0.72rem', color: 'text.secondary', fontWeight: 600 }}>
+                        {step}
                       </Typography>
-                    </Box>
-                  )}
+                    ))}
+                  </Stack>
 
-                  {/* Quick Mechanics Grid */}
+                  {/* Bullish & Bearish Conditions */}
+                  <Grid container spacing={1.5} mb={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Paper sx={{ p: 1.25, borderRadius: 2, bgcolor: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.25)' }}>
+                        <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#00e676', lineHeight: 1.4 }}>
+                          {ind.bullish_rule}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Paper sx={{ p: 1.25, borderRadius: 2, bgcolor: 'rgba(255,23,68,0.08)', border: '1px solid rgba(255,23,68,0.25)' }}>
+                        <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#ff1744', lineHeight: 1.4 }}>
+                          {ind.bearish_rule}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+
+                  {/* Interpretation & Parameters */}
                   <Box sx={{ mt: 'auto', pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
                     <Stack spacing={0.5} mb={1.5}>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="caption" color="text.secondary" fontWeight={700}>Stop Loss:</Typography>
-                        <Typography variant="caption" fontWeight={800} color="error.main">{item.stop_loss}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight={700}>Parameters:</Typography>
+                        <Typography variant="caption" fontWeight={800}>{ind.ideal_parameters}</Typography>
                       </Stack>
                       <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="caption" color="text.secondary" fontWeight={700}>Risk/Reward:</Typography>
-                        <Typography variant="caption" fontWeight={800} color="success.main">{item.risk_reward}</Typography>
-                      </Stack>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="caption" color="text.secondary" fontWeight={700}>Timeframe:</Typography>
-                        <Typography variant="caption" fontWeight={800}>{item.timeframe}</Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight={700}>Pro Tip:</Typography>
+                        <Typography variant="caption" fontWeight={700} color="primary.main">{ind.pro_tip}</Typography>
                       </Stack>
                     </Stack>
 
-                    {/* Action Button */}
                     <Button
                       size="small"
                       variant="contained"
                       color="primary"
                       fullWidth
                       endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
-                      onClick={() => navigate(item.scanner_path)}
+                      onClick={() => navigate(ind.scanner_path)}
                       sx={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'none', py: 0.5 }}
                     >
-                      Scan Stocks with this Formula
+                      Open Indicator Screener
                     </Button>
                   </Box>
                 </CardContent>
@@ -1206,240 +1782,6 @@ export default function FormulaPage() {
             </Grid>
           ))}
         </Grid>
-      )}
-
-      {/* ── View 2: Detailed Accordion Deep-Dive View ── */}
-      {viewMode === 'accordion' && (
-        <Stack spacing={1.5}>
-          {filteredStrategies.map(item => (
-            <Accordion
-              key={item.day_tag}
-              expanded={expandedDay === String(item.day)}
-              onChange={handleAccordionChange(String(item.day))}
-              sx={{
-                borderRadius: 2.5,
-                border: '1px solid',
-                borderColor: item.day === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
-                bgcolor: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
-                overflow: 'hidden',
-                '&:before': { display: 'none' },
-              }}
-            >
-              <AccordionSummary expandIcon={<ExpandMore />}>
-                <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1.5} width="100%" pr={1}>
-                  <Chip
-                    label={item.day_tag}
-                    size="small"
-                    color={item.day === 19 ? 'success' : 'primary'}
-                    sx={{ fontWeight: 900, fontSize: '0.7rem', height: 22 }}
-                  />
-                  <Typography variant="subtitle1" fontWeight={800} sx={{ flex: 1 }}>
-                    {item.title}
-                  </Typography>
-                  <Stack direction="row" spacing={1}>
-                    <Chip
-                      label={item.win_rate}
-                      size="small"
-                      sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676', fontSize: '0.65rem' }}
-                    />
-                    <Chip
-                      label={item.risk_reward}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontWeight: 800, fontSize: '0.65rem' }}
-                    />
-                  </Stack>
-                </Stack>
-              </AccordionSummary>
-
-              <AccordionDetails sx={{ pt: 0, pb: 2.5, px: 2.5 }}>
-                <Divider sx={{ mb: 2 }} />
-
-                {/* Single Line Understanding */}
-                <Paper
-                  sx={{
-                    p: 1.5,
-                    mb: 2,
-                    borderRadius: 2,
-                    bgcolor: isDark ? 'rgba(0,176,255,0.06)' : '#e0f7fa',
-                    borderLeft: '4px solid #00b0ff',
-                  }}
-                >
-                  <Typography variant="caption" fontWeight={900} color="primary.main" textTransform="uppercase">
-                    📌 Single-Line Formula Understanding:
-                  </Typography>
-                  <Typography variant="body2" fontWeight={700} mt={0.5}>
-                    {item.single_line}
-                  </Typography>
-                </Paper>
-
-                <Grid container spacing={2}>
-                  {/* Bullish Conditions (Green Font) */}
-                  <Grid item xs={12} md={6}>
-                    <Paper
-                      sx={{
-                        p: 1.75,
-                        borderRadius: 2,
-                        bgcolor: isDark ? 'rgba(0,230,118,0.05)' : '#f0fdf4',
-                        border: '1.5px solid #00e676',
-                      }}
-                    >
-                      <Stack direction="row" alignItems="center" spacing={0.8} mb={0.75}>
-                        <CheckCircle sx={{ color: '#00e676', fontSize: 18 }} />
-                        <Typography variant="subtitle2" fontWeight={900} color="#00e676">
-                          BULLISH BUY ENTRY MECHANICS
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" fontWeight={800} color="#00e676" mb={1} sx={{ lineHeight: 1.5 }}>
-                        {item.bullish_display}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary" fontWeight={700} display="block">
-                        • Trigger: {item.entry_trigger}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-
-                  {/* Bearish Conditions (Red Font) */}
-                  <Grid item xs={12} md={6}>
-                    <Paper
-                      sx={{
-                        p: 1.75,
-                        borderRadius: 2,
-                        bgcolor: isDark ? 'rgba(255,23,68,0.05)' : '#fff1f2',
-                        border: '1.5px solid #ff1744',
-                      }}
-                    >
-                      <Stack direction="row" alignItems="center" spacing={0.8} mb={0.75}>
-                        <Warning sx={{ color: '#ff1744', fontSize: 18 }} />
-                        <Typography variant="subtitle2" fontWeight={900} color="#ff1744">
-                          BEARISH SHORT / EXIT MECHANICS
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" fontWeight={800} color="#ff1744" mb={1} sx={{ lineHeight: 1.5 }}>
-                        {item.bearish_display}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary" fontWeight={700} display="block">
-                        • Stop Loss: {item.stop_loss}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-
-                  {/* Profit Targets & Stop Loss */}
-                  <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 1.75, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-                      <Typography variant="subtitle2" fontWeight={800} mb={1}>
-                        🎯 Target Calculations &amp; Risk/Reward
-                      </Typography>
-                      <Stack spacing={0.6}>
-                        <Typography variant="caption" fontWeight={700} color="success.main">• {item.target_1}</Typography>
-                        <Typography variant="caption" fontWeight={700} color="success.main">• {item.target_2}</Typography>
-                        <Typography variant="caption" fontWeight={700} color="success.main">• {item.target_3}</Typography>
-                        <Typography variant="caption" fontWeight={700} color="error.main">• Stop Loss Formula: {item.stop_loss}</Typography>
-                      </Stack>
-                    </Paper>
-                  </Grid>
-
-                  {/* Rules & Mistakes to Avoid */}
-                  <Grid item xs={12} md={6}>
-                    <Paper sx={{ p: 1.75, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-                      <Typography variant="subtitle2" fontWeight={800} mb={1}>
-                        ⚠️ Strategy Rules &amp; Retail Traps to Avoid
-                      </Typography>
-                      <Stack spacing={0.6}>
-                        {item.rules.map((r, i) => (
-                          <Typography key={i} variant="caption" color="text.secondary" fontWeight={600}>
-                            ✓ {r}
-                          </Typography>
-                        ))}
-                        {item.mistakes_to_avoid.map((m, i) => (
-                          <Typography key={i} variant="caption" color="error.main" fontWeight={700}>
-                            ❌ Avoid: {m}
-                          </Typography>
-                        ))}
-                      </Stack>
-                    </Paper>
-                  </Grid>
-
-                  {/* Indicators Used & Real Market Example */}
-                  <Grid item xs={12}>
-                    <Paper sx={{ p: 1.5, borderRadius: 2, bgcolor: isDark ? 'rgba(255,255,255,0.02)' : '#fafafa', border: '1px solid', borderColor: 'divider' }}>
-                      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1}>
-                        <Box>
-                          <Typography variant="caption" fontWeight={800} color="text.secondary" textTransform="uppercase">
-                            Technical Checklist:
-                          </Typography>
-                          <Stack direction="row" spacing={0.6} mt={0.4} flexWrap="wrap" gap={0.5}>
-                            {item.indicators.map(ind => (
-                              <Chip key={ind} label={ind} size="small" sx={{ fontSize: '0.65rem', fontWeight: 800, height: 20 }} />
-                            ))}
-                          </Stack>
-                          <Typography variant="caption" color="primary.main" fontWeight={700} display="block" mt={1}>
-                            💡 Real Market Example: {item.example}
-                          </Typography>
-                        </Box>
-
-                        <Button
-                          size="small"
-                          variant="contained"
-                          endIcon={<ArrowForward />}
-                          onClick={() => navigate(item.scanner_path)}
-                          sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', alignSelf: { xs: 'flex-start', sm: 'center' } }}
-                        >
-                          Launch Screener
-                        </Button>
-                      </Stack>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </AccordionDetails>
-            </Accordion>
-          ))}
-        </Stack>
-      )}
-
-      {/* ── View 3: Quick Scan Table View ── */}
-      {viewMode === 'table' && (
-        <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-          <Table size="small">
-            <TableHead sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8faff' }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 900 }}>Day #</TableCell>
-                <TableCell sx={{ fontWeight: 900 }}>Strategy &amp; Single-Line Understanding</TableCell>
-                <TableCell sx={{ fontWeight: 900 }}>Bullish Trigger (Green)</TableCell>
-                <TableCell sx={{ fontWeight: 900 }}>Bearish Warning (Red)</TableCell>
-                <TableCell sx={{ fontWeight: 900 }}>Win Rate</TableCell>
-                <TableCell sx={{ fontWeight: 900 }}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredStrategies.map(item => (
-                <TableRow key={item.day_tag} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
-                  <TableCell>
-                    <Chip label={`Day ${item.day}`} size="small" color={item.day === 19 ? 'success' : 'default'} sx={{ fontWeight: 900, height: 20 }} />
-                  </TableCell>
-                  <TableCell sx={{ maxWidth: 340 }}>
-                    <Typography variant="body2" fontWeight={800}>{item.title}</Typography>
-                    <Typography variant="caption" color="text.secondary" fontStyle="italic" display="block">{item.single_line}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ maxWidth: 280 }}>
-                    <Typography variant="caption" fontWeight={800} color="#00e676">{item.bullish_display}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ maxWidth: 280 }}>
-                    <Typography variant="caption" fontWeight={800} color="#ff1744">{item.bearish_display}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={item.win_rate} size="small" sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676' }} />
-                  </TableCell>
-                  <TableCell>
-                    <Button size="small" variant="outlined" endIcon={<ArrowForward sx={{ fontSize: 13 }} />} sx={{ fontWeight: 800, fontSize: '0.68rem', py: 0.3 }}>
-                      Scan
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
       )}
     </Box>
   );
