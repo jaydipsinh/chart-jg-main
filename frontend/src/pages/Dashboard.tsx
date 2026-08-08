@@ -677,7 +677,7 @@ export default function DashboardPage() {
             { title: 'Custom Factor Scanner', desc: 'Build customized stock scans with user-defined thresholds', path: '/scanner', badge: 'CUSTOM SCAN', color: '#2979ff' },
             { title: 'Personal Watchlist', desc: 'Track personalized portfolios, target alerts & custom notes', path: '/watchlist', badge: 'WATCHLIST', color: '#00e5ff' },
             { title: 'Portfolio Tracker', desc: 'Track your holdings, unrealized P&L, allocation & risk', path: '/portfolio', badge: 'PORTFOLIO', color: '#ab47bc' },
-            { title: 'Formula & Rules Guide', desc: 'Mathematical explanations of all screener formulas & logic', path: '/formula', badge: 'FORMULA GUIDE', color: '#ff1744' },
+            { title: 'Formula & Strategy Masterclass', desc: 'Chetan Verma 100-Day Series, Day 19 9 EMA Retest, single-line rules & buy formulas', path: '/formula-understanding', badge: 'DAY 1-19+', color: '#00e676' },
             { title: 'System Settings', desc: 'Configure refresh intervals, dark/light themes & API keys', path: '/settings', badge: 'CONFIG', color: '#78909c' },
           ].map(hub => (
             <Grid item xs={12} sm={6} md={2.4} key={hub.title}>

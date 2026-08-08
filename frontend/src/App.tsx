@@ -106,6 +106,8 @@ const AppInner: React.FC = () => {
               <Route path="/short-covering"     element={<ShortCoveringPage />} />
               <Route path="/oi-analysis"        element={<OiAnalysisPage />} />
               <Route path="/formula"            element={<FormulaPage />} />
+              <Route path="/formula-understanding" element={<FormulaPage />} />
+              <Route path="/strategy-masterclass"  element={<FormulaPage />} />
               <Route path="/watchlist"          element={<WatchlistPage />} />
               <Route path="/portfolio"          element={<PortfolioPage />} />
               <Route path="/scanner"            element={<ScannerPage />} />
