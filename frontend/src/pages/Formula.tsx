@@ -57,11 +57,11 @@ export interface IndicatorFormula {
   scanner_path: string;
 }
 
-// ── 1. Complete Sequential Trading Strategy Masterclass (Day 1 to Day 30) ──
+// ── 1. Complete Sequential Trading Strategy Series (1 to 30) ──
 export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   {
     day: 1,
-    day_tag: 'Day 1',
+    day_tag: '1',
     symbol_icon: '🔨',
     title: 'Hammer & Inverted Hammer at Key Support Zone',
     category: 'Candlestick Patterns',
@@ -90,9 +90,9 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 2,
-    day_tag: 'Day 2',
+    day_tag: '2',
     symbol_icon: '🔄',
-    title: 'Bullish & Bearish Engulfing Master Setup',
+    title: 'Bullish & Bearish Engulfing Setup',
     category: 'Candlestick Patterns',
     single_line: 'A massive body candle completely engulfing the prior opposite candle demonstrates total institutional control over order flow.',
     is_bullish: true,
@@ -118,7 +118,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 3,
-    day_tag: 'Day 3',
+    day_tag: '3',
     symbol_icon: '☀️',
     title: 'Morning Star (Bullish) & Evening Star (Bearish)',
     category: 'Candlestick Patterns',
@@ -145,7 +145,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 4,
-    day_tag: 'Day 4',
+    day_tag: '4',
     symbol_icon: '🏹',
     title: 'Shooting Star & Hanging Man Reversal Formations',
     category: 'Candlestick Patterns',
@@ -170,7 +170,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 5,
-    day_tag: 'Day 5',
+    day_tag: '5',
     symbol_icon: '⚔️',
     title: 'Piercing Pattern & Dark Cloud Cover Formations',
     category: 'Candlestick Patterns',
@@ -195,7 +195,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 6,
-    day_tag: 'Day 6',
+    day_tag: '6',
     symbol_icon: '🎖️',
     title: 'Three White Soldiers & Three Black Crows',
     category: 'Candlestick Patterns',
@@ -220,7 +220,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 7,
-    day_tag: 'Day 7',
+    day_tag: '7',
     symbol_icon: '🤰',
     title: 'Bullish & Bearish Harami / Inside Bar Breakout',
     category: 'Candlestick Patterns',
@@ -245,7 +245,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 8,
-    day_tag: 'Day 8',
+    day_tag: '8',
     symbol_icon: '🪜',
     title: 'Tweezer Bottom & Tweezer Top Price Action',
     category: 'Candlestick Patterns',
@@ -270,7 +270,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 9,
-    day_tag: 'Day 9',
+    day_tag: '9',
     symbol_icon: '🌟',
     title: 'Marubozu Full-Body Momentum Candles',
     category: 'Candlestick Patterns',
@@ -295,7 +295,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 10,
-    day_tag: 'Day 10',
+    day_tag: '10',
     symbol_icon: '🪰',
     title: 'Dragonfly Doji & Gravestone Doji Reversals',
     category: 'Candlestick Patterns',
@@ -320,7 +320,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 11,
-    day_tag: 'Day 11',
+    day_tag: '11',
     symbol_icon: '💫',
     title: 'Spinning Top & High Wave Indecision Candles',
     category: 'Candlestick Patterns',
@@ -345,7 +345,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 12,
-    day_tag: 'Day 12',
+    day_tag: '12',
     symbol_icon: '🧱',
     title: 'Support & Resistance Breakout with Volume Expansion',
     category: 'Chart Formations',
@@ -370,7 +370,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 13,
-    day_tag: 'Day 13',
+    day_tag: '13',
     symbol_icon: '🪓',
     title: 'Double Bottom (W-Pattern) & Double Top (M-Pattern)',
     category: 'Chart Formations',
@@ -395,7 +395,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 14,
-    day_tag: 'Day 14',
+    day_tag: '14',
     symbol_icon: '👤',
     title: 'Inverse Head & Shoulders & Regular Head & Shoulders',
     category: 'Chart Formations',
@@ -420,9 +420,9 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 15,
-    day_tag: 'Day 15',
+    day_tag: '15',
     symbol_icon: '☕',
-    title: 'Cup & Handle Master Pattern (Institutional Shakeout)',
+    title: 'Cup & Handle Pattern (Institutional Shakeout)',
     category: 'Chart Formations',
     single_line: 'Rounded U-shaped accumulation base followed by a shallow downward handle shakeout; breakout above the rim signals massive multi-month rally.',
     is_bullish: true,
@@ -445,7 +445,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 16,
-    day_tag: 'Day 16',
+    day_tag: '16',
     symbol_icon: '📐',
     title: 'Ascending Triangle & Symmetrical Triangle Breakout',
     category: 'Chart Formations',
@@ -470,7 +470,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 17,
-    day_tag: 'Day 17',
+    day_tag: '17',
     symbol_icon: '🚩',
     title: 'Bull Flag & Bear Flag Fast-Trend Continuation',
     category: 'Chart Formations',
@@ -495,7 +495,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 18,
-    day_tag: 'Day 18',
+    day_tag: '18',
     symbol_icon: '📊',
     title: 'Falling Bullish Wedge & Rising Bearish Wedge',
     category: 'Chart Formations',
@@ -520,7 +520,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 19,
-    day_tag: 'Day 19',
+    day_tag: '19',
     symbol_icon: '⚡',
     title: '9 EMA + 15-Min Breakout & Retest with Order Flow Confirmation',
     category: 'EMA & Indicators',
@@ -554,7 +554,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 20,
-    day_tag: 'Day 20',
+    day_tag: '20',
     symbol_icon: '📈',
     title: '20 EMA + 50 EMA Golden Cross & Alignment System',
     category: 'EMA & Indicators',
@@ -579,9 +579,9 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 21,
-    day_tag: 'Day 21',
+    day_tag: '21',
     symbol_icon: '🧭',
-    title: 'Supertrend (10, 3) + 200 EMA Institutional Trend Engine',
+    title: 'Supertrend (10, 3) + 200 EMA Trend Engine',
     category: 'EMA & Indicators',
     single_line: 'Filter trades by 200 EMA (bias filter); only take Supertrend GREEN buy signals when Price > 200 EMA for effortless trend following.',
     is_bullish: true,
@@ -604,9 +604,9 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 22,
-    day_tag: 'Day 22',
+    day_tag: '22',
     symbol_icon: '🌊',
-    title: 'VWAP + Volume Spike Institutional Intraday Breakout',
+    title: 'VWAP + Volume Spike Intraday Breakout',
     category: 'EMA & Indicators',
     single_line: 'VWAP represents the institutional average execution price; price breaking above VWAP with a 2x volume spike confirms massive institutional buying.',
     is_bullish: true,
@@ -629,7 +629,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 23,
-    day_tag: 'Day 23',
+    day_tag: '23',
     symbol_icon: '🏦',
     title: 'Order Block (OB) & Fair Value Gap (FVG) Retest Strategy',
     category: 'Smart Money (SMC) & Flow',
@@ -654,7 +654,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 24,
-    day_tag: 'Day 24',
+    day_tag: '24',
     symbol_icon: '🔄',
     title: 'Break of Structure (BOS) & Change of Character (CHoCH)',
     category: 'Smart Money (SMC) & Flow',
@@ -679,7 +679,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 25,
-    day_tag: 'Day 25',
+    day_tag: '25',
     symbol_icon: '🪤',
     title: 'Liquidity Sweep & Stop Hunt False Breakdown Reversal',
     category: 'Smart Money (SMC) & Flow',
@@ -704,7 +704,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 26,
-    day_tag: 'Day 26',
+    day_tag: '26',
     symbol_icon: '💥',
     title: '3-Day / 5-Day / 7-Day Volume Shocker Breakout Rule',
     category: 'Smart Money (SMC) & Flow',
@@ -729,7 +729,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 27,
-    day_tag: 'Day 27',
+    day_tag: '27',
     symbol_icon: '📊',
     title: 'Open Interest (OI) Long Buildup & Short Covering Squeeze',
     category: 'Smart Money (SMC) & Flow',
@@ -754,7 +754,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 28,
-    day_tag: 'Day 28',
+    day_tag: '28',
     symbol_icon: '⚖️',
     title: 'Option Chain PCR (Put-Call Ratio) Contrarian Turnaround',
     category: 'Smart Money (SMC) & Flow',
@@ -779,7 +779,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 29,
-    day_tag: 'Day 29',
+    day_tag: '29',
     symbol_icon: '⏰',
     title: 'Opening Range Breakout (ORB 15-Minute Rule)',
     category: 'Candlestick Patterns',
@@ -804,7 +804,7 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
   {
     day: 30,
-    day_tag: 'Day 30',
+    day_tag: '30',
     symbol_icon: '🏆',
     title: '200-Point Institutional AI Master Buy Checklist (All-in-One Rule)',
     category: 'Smart Money (SMC) & Flow',
@@ -1077,7 +1077,7 @@ export default function FormulaPage() {
   const [viewMode, setViewMode] = useState<'cards' | 'accordion' | 'table'>('cards');
   const [expandedDay, setExpandedDay] = useState<string | false>('1');
 
-  // Filter 30-Day Masterclass strategies
+  // Filter 1-30 Strategy Series
   const filteredMasterclass = useMemo(() => {
     return SEQUENTIAL_STRATEGY_SERIES.filter(s => {
       if (selectedCategory === 'Bullish' && !s.is_bullish) return false;
@@ -1100,7 +1100,7 @@ export default function FormulaPage() {
         s.category.toLowerCase().includes(q) ||
         s.indicators.some(i => i.toLowerCase().includes(q)) ||
         s.example.toLowerCase().includes(q) ||
-        `day ${s.day}`.toLowerCase().includes(q)
+        String(s.day) === q
       );
     });
   }, [searchQuery, selectedCategory]);
@@ -1157,7 +1157,7 @@ export default function FormulaPage() {
             <Stack direction="row" alignItems="center" spacing={1} mb={1} flexWrap="wrap">
               <Chip
                 icon={<School sx={{ fontSize: 16 }} />}
-                label="Strategy Masterclass (Day 1 to Day 30)"
+                label="Strategy Guide (1 to 30)"
                 color="success"
                 size="small"
                 sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
@@ -1177,11 +1177,11 @@ export default function FormulaPage() {
             </Stack>
 
             <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -0.5, mb: 0.8 }}>
-              🎓 Strategy Masterclass &amp; Mathematical Formula Library
+              🎓 Strategy Guide &amp; Mathematical Formula Library
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 850, lineHeight: 1.5, mb: 1.5 }}>
-              Comprehensive educational study notebook containing full mathematical formulas, single-line rules, exact Stop Loss / Target levels, and indicator derivations from Day 1 to Day 30 in sequential order.
+              Comprehensive educational study notebook containing full mathematical formulas, single-line rules, exact Stop Loss / Target levels, and indicator derivations from 1 to 30 in sequential order.
             </Typography>
           </Box>
         </Stack>
@@ -1189,7 +1189,7 @@ export default function FormulaPage() {
         {/* Top Summary Metrics */}
         <Grid container spacing={1.5} mt={0.5}>
           {[
-            { label: 'Sequential Days', value: 'Day 1 → Day 30', color: '#00e5ff', icon: <School /> },
+            { label: 'Strategy Series', value: '1 → 30', color: '#00e5ff', icon: <School /> },
             { label: 'Bullish Buy Rules', value: '22 Strategies', color: '#00e676', icon: <TrendingUp /> },
             { label: 'Bearish Exit Rules', value: '18 Strategies', color: '#ff1744', icon: <TrendingDown /> },
             { label: 'Mathematical Library', value: 'RSI, MACD, PCR, ADX', color: '#ffd600', icon: <Calculate /> },
@@ -1218,7 +1218,7 @@ export default function FormulaPage() {
         </Grid>
       </Paper>
 
-      {/* ── Main Section Tabs: 1. 30-Day Masterclass | 2. Indicator Mathematical Formulas (RSI, MACD, PCR, ADX) ── */}
+      {/* ── Main Section Tabs: 1. Strategy Series (1 to 30) | 2. Indicator Mathematical Formulas (RSI, MACD, PCR, ADX) ── */}
       <Paper
         elevation={0}
         sx={{
@@ -1240,7 +1240,7 @@ export default function FormulaPage() {
             '& .MuiTab-root': { fontWeight: 800, fontSize: '0.85rem', py: 1.8 },
           }}
         >
-          <Tab icon={<School sx={{ fontSize: 18 }} />} iconPosition="start" label="🎓 Strategy Masterclass (Day 1 to 30)" />
+          <Tab icon={<School sx={{ fontSize: 18 }} />} iconPosition="start" label="🎓 Strategy Guide (1 to 30)" />
           <Tab icon={<Calculate sx={{ fontSize: 18 }} />} iconPosition="start" label="📐 Technical Indicator Formulas (RSI, MACD, PCR, ADX, VWAP)" />
         </Tabs>
 
@@ -1249,7 +1249,7 @@ export default function FormulaPage() {
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ xs: 'stretch', md: 'center' }} justifyContent="space-between">
             <TextField
               size="small"
-              placeholder={mainTab === 0 ? 'Search Day (e.g. Day 1, Day 2, Day 19), Hammer, Pattern, Indicator...' : 'Search RSI, MACD, PCR, ADX, VWAP, Supertrend, Formulas...'}
+              placeholder={mainTab === 0 ? 'Search (e.g. 1, 2, 19), Hammer, Pattern, Indicator, Formula...' : 'Search RSI, MACD, PCR, ADX, VWAP, Supertrend, Formulas...'}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               sx={{ flex: 1, minWidth: { xs: '100%', md: 340 } }}
@@ -1284,7 +1284,7 @@ export default function FormulaPage() {
             )}
           </Stack>
 
-          {/* Category Filters for 30-Day Series */}
+          {/* Category Filters for 1-30 Series */}
           {mainTab === 0 && (
             <Stack direction="row" spacing={1} mt={1.5} flexWrap="wrap" gap={0.75}>
               {categories.map(c => (
@@ -1309,7 +1309,7 @@ export default function FormulaPage() {
       </Paper>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          TAB 0: SEQUENTIAL TRADING STRATEGY MASTERCLASS (DAY 1 TO 30)
+          TAB 0: SEQUENTIAL TRADING STRATEGY SERIES (1 TO 30)
          ══════════════════════════════════════════════════════════════════════ */}
       {mainTab === 0 && (
         <>
@@ -1317,7 +1317,7 @@ export default function FormulaPage() {
           {viewMode === 'cards' && (
             <Grid container spacing={2}>
               {filteredMasterclass.map(item => (
-                <Grid item xs={12} md={6} lg={4} key={item.day_tag}>
+                <Grid item xs={12} md={6} lg={4} key={item.day}>
                   <Card
                     elevation={0}
                     sx={{
@@ -1355,11 +1355,11 @@ export default function FormulaPage() {
                       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1} gap={1}>
                         <Chip
                           icon={<span style={{ fontSize: 13, marginRight: 2 }}>{item.symbol_icon}</span>}
-                          label={item.day_tag}
+                          label={`#${item.day}`}
                           size="small"
                           sx={{
                             fontWeight: 900,
-                            fontSize: '0.68rem',
+                            fontSize: '0.72rem',
                             height: 22,
                             bgcolor: item.day === 19 ? 'rgba(16,185,129,0.2)' : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
                             color: item.day === 19 ? '#10b981' : 'text.primary',
@@ -1477,7 +1477,7 @@ export default function FormulaPage() {
             <Stack spacing={1.5}>
               {filteredMasterclass.map(item => (
                 <Accordion
-                  key={item.day_tag}
+                  key={item.day}
                   expanded={expandedDay === String(item.day)}
                   onChange={handleAccordionChange(String(item.day))}
                   sx={{
@@ -1493,7 +1493,7 @@ export default function FormulaPage() {
                     <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1.5} width="100%" pr={1}>
                       <Chip
                         icon={<span style={{ fontSize: 13, marginRight: 2 }}>{item.symbol_icon}</span>}
-                        label={item.day_tag}
+                        label={`#${item.day}`}
                         size="small"
                         color={item.day === 19 ? 'success' : 'primary'}
                         sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
@@ -1668,7 +1668,7 @@ export default function FormulaPage() {
               <Table size="small">
                 <TableHead sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8faff' }}>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 900 }}>Day #</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>#</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Strategy &amp; Single-Line Understanding</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Bullish Trigger (Green)</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Bearish Warning (Red)</TableCell>
@@ -1678,11 +1678,11 @@ export default function FormulaPage() {
                 </TableHead>
                 <TableBody>
                   {filteredMasterclass.map(item => (
-                    <TableRow key={item.day_tag} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
+                    <TableRow key={item.day} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
                       <TableCell>
                         <Chip
                           icon={<span style={{ fontSize: 12 }}>{item.symbol_icon}</span>}
-                          label={item.day_tag}
+                          label={String(item.day)}
                           size="small"
                           color={item.day === 19 ? 'success' : 'default'}
                           sx={{ fontWeight: 900, height: 22 }}
