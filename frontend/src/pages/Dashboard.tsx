@@ -10,7 +10,7 @@ import {
 import {
   TrendingUp, TrendingDown, ShowChart, ArrowForward,
   Equalizer, Search, Download, Refresh, Bolt,
-  BarChart, Star, CalendarToday, DateRange,
+  BarChart, Star, CalendarToday, DateRange, School,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -275,6 +275,65 @@ export default function DashboardPage() {
           />
         </Grid>
       </Grid>
+
+      {/* ── Study Notebook Banner (For Study Purpose Only) ── */}
+      <Paper
+        elevation={0}
+        onClick={() => navigate('/formula-understanding')}
+        sx={{
+          p: 1.5,
+          mb: 2.5,
+          borderRadius: 2.5,
+          cursor: 'pointer',
+          border: '1px solid',
+          borderColor: isDark ? 'rgba(0,230,118,0.3)' : 'rgba(0,230,118,0.4)',
+          background: isDark
+            ? 'linear-gradient(135deg, rgba(0,230,118,0.08) 0%, rgba(0,176,255,0.06) 100%)'
+            : 'linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 1.5,
+          transition: 'all 0.2s',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            borderColor: '#00e676',
+            boxShadow: '0 8px 24px rgba(0,230,118,0.12)',
+          },
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Chip
+            icon={<School sx={{ fontSize: 16 }} />}
+            label="STUDY NOTEBOOK"
+            color="success"
+            size="small"
+            sx={{ fontWeight: 900, fontSize: '0.68rem', height: 24 }}
+          />
+          <Box>
+            <Typography variant="subtitle2" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+              🎓 Chetan Verma 100-Day Trading Series &amp; Formula Study Guide (Day 1 – Day 19+)
+            </Typography>
+            <Typography variant="caption" color="text.secondary" fontWeight={600}>
+              Single-line rules, Bullish/Bearish triggers, Stop Loss &amp; 1:3+ Targets — Purely for personal study &amp; analysis.
+            </Typography>
+          </Box>
+        </Stack>
+
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Chip label="Day 19 Featured" size="small" sx={{ fontWeight: 800, fontSize: '0.65rem', bgcolor: 'rgba(255,23,68,0.12)', color: '#ff1744' }} />
+          <Button
+            size="small"
+            variant="contained"
+            color="success"
+            endIcon={<ArrowForward sx={{ fontSize: 14 }} />}
+            sx={{ fontWeight: 800, fontSize: '0.72rem', textTransform: 'none', borderRadius: 2, px: 1.5 }}
+          >
+            Open Study Guide
+          </Button>
+        </Stack>
+      </Paper>
 
       {/* ── Screener Shortcuts ── */}
       <SectionHeader title="📊 Screener Horizons" />
