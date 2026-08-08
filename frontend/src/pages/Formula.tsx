@@ -11,21 +11,22 @@ import {
   ExpandMore, School, Search, TrendingUp, TrendingDown,
   CheckCircle, Warning, AutoAwesome, ViewModule,
   ViewList, TableRows, ArrowForward, Verified, Whatshot,
-  Speed, Calculate, Functions, Psychology, Insights,
+  Speed, Calculate, Functions, Psychology, Insights, MenuBook,
+  Biotech, Security, Timeline,
 } from '@mui/icons-material';
 
-// ── Types for Pure Study Reference Notebook ──
-export interface MasterclassStrategy {
-  day: number;
-  day_tag: string;
+// ── Types for Proprietary Study Notebook ──
+export interface StrategyPattern {
+  id: number;
   symbol_icon: string;
+  chart_type: string;
   title: string;
-  category: 'Candlestick Patterns' | 'Chart Formations' | 'EMA & Indicators' | 'Smart Money (SMC) & Flow';
+  category: 'Candlestick Mechanics' | 'Geometric Formations' | 'Dynamic Moving Averages' | 'Institutional Order Flow';
   single_line: string;
   is_bullish: boolean;
   is_bearish: boolean;
-  bullish_display: string;
-  bearish_display: string;
+  bullish_logic: string;
+  bearish_logic: string;
   entry_trigger: string;
   stop_loss: string;
   target_1: string;
@@ -41,11 +42,12 @@ export interface MasterclassStrategy {
   scanner_path: string;
 }
 
-export interface IndicatorFormula {
+export interface IndicatorMath {
   name: string;
   symbol_icon: string;
   acronym: string;
   category: 'Momentum' | 'Trend' | 'Volatility' | 'Volume / Flow' | 'Derivatives & OI';
+  chart_type: string;
   math_formula: string;
   calculation_steps: string[];
   single_line: string;
@@ -57,19 +59,291 @@ export interface IndicatorFormula {
   scanner_path: string;
 }
 
-// ── 1. Complete Sequential Trading Strategy Series (1 to 30) ──
-export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
+// ── Mini SVG Chart Renderer Component ──
+const MiniPatternChart: React.FC<{ type: string; isDark: boolean }> = ({ type, isDark }) => {
+  const strokeColor = isDark ? '#38bdf8' : '#0284c7';
+  const green = '#00e676';
+  const red = '#ff1744';
+  const gray = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)';
+
+  switch (type) {
+    case 'hammer':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="30" y1="6" x2="30" y2="38" stroke={green} strokeWidth="2" strokeLinecap="round" />
+          <rect x="23" y="6" width="14" height="9" rx="2" fill={green} />
+          <line x1="5" y1="36" x2="55" y2="36" stroke={gray} strokeWidth="1.5" strokeDasharray="2 2" />
+        </svg>
+      );
+    case 'engulfing':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="20" y1="14" x2="20" y2="32" stroke={red} strokeWidth="1.5" />
+          <rect x="15" y="18" width="10" height="10" rx="1.5" fill={red} />
+          <line x1="40" y1="6" x2="40" y2="38" stroke={green} strokeWidth="2" />
+          <rect x="33" y="10" width="14" height="24" rx="2" fill={green} />
+        </svg>
+      );
+    case 'morning_star':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="10" y="8" width="10" height="18" rx="1.5" fill={red} />
+          <line x1="15" y1="4" x2="15" y2="30" stroke={red} strokeWidth="1.5" />
+          <circle cx="30" cy="32" r="3" fill={strokeColor} />
+          <rect x="40" y="12" width="10" height="18" rx="1.5" fill={green} />
+          <line x1="45" y1="8" x2="45" y2="34" stroke={green} strokeWidth="1.5" />
+        </svg>
+      );
+    case 'shooting_star':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="30" y1="4" x2="30" y2="34" stroke={red} strokeWidth="2" strokeLinecap="round" />
+          <rect x="23" y="25" width="14" height="9" rx="2" fill={red} />
+          <line x1="5" y1="8" x2="55" y2="8" stroke={gray} strokeWidth="1.5" strokeDasharray="2 2" />
+        </svg>
+      );
+    case 'piercing':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="14" y="8" width="12" height="20" rx="1.5" fill={red} />
+          <rect x="34" y="16" width="12" height="20" rx="1.5" fill={green} />
+          <line x1="10" y1="18" x2="50" y2="18" stroke={gray} strokeWidth="1" strokeDasharray="2 2" />
+        </svg>
+      );
+    case 'soldiers':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="10" y="24" width="9" height="14" rx="1.5" fill={green} />
+          <rect x="25" y="16" width="9" height="16" rx="1.5" fill={green} />
+          <rect x="40" y="8" width="9" height="18" rx="1.5" fill={green} />
+        </svg>
+      );
+    case 'harami':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="12" y="6" width="14" height="28" rx="2" fill={red} />
+          <rect x="34" y="15" width="10" height="10" rx="1.5" fill={green} />
+        </svg>
+      );
+    case 'tweezers':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="20" y1="12" x2="20" y2="34" stroke={red} strokeWidth="1.5" />
+          <rect x="15" y="12" width="10" height="12" rx="1.5" fill={red} />
+          <line x1="40" y1="12" x2="40" y2="34" stroke={green} strokeWidth="1.5" />
+          <rect x="35" y="16" width="10" height="12" rx="1.5" fill={green} />
+          <line x1="10" y1="34" x2="50" y2="34" stroke={strokeColor} strokeWidth="1.5" strokeDasharray="2 2" />
+        </svg>
+      );
+    case 'marubozu':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="22" y="6" width="16" height="30" rx="2" fill={green} />
+        </svg>
+      );
+    case 'dragonfly':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="30" y1="8" x2="30" y2="36" stroke={green} strokeWidth="2" />
+          <line x1="18" y1="8" x2="42" y2="8" stroke={green} strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      );
+    case 'spinning_top':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="30" y1="4" x2="30" y2="38" stroke={strokeColor} strokeWidth="1.5" />
+          <rect x="23" y="17" width="14" height="8" rx="1.5" fill={strokeColor} />
+        </svg>
+      );
+    case 'breakout':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="20" x2="54" y2="20" stroke={gray} strokeWidth="1.5" strokeDasharray="2 2" />
+          <path d="M 10 32 L 22 22 L 32 26 L 46 8" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="46" cy="8" r="3" fill={green} />
+        </svg>
+      );
+    case 'double_bottom':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="12" x2="54" y2="12" stroke={gray} strokeWidth="1" strokeDasharray="2 2" />
+          <path d="M 8 14 L 18 34 L 30 18 L 42 34 L 52 10" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'head_shoulders':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="16" x2="54" y2="16" stroke={gray} strokeWidth="1" strokeDasharray="2 2" />
+          <path d="M 8 18 L 18 28 L 24 18 L 30 36 L 36 18 L 42 28 L 52 12" fill="none" stroke={green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'cup_handle':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <path d="M 8 12 Q 24 38 40 14 Q 45 22 49 14 L 54 8" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="6" y1="12" x2="50" y2="12" stroke={gray} strokeWidth="1" strokeDasharray="2 2" />
+        </svg>
+      );
+    case 'triangle':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="8" y1="10" x2="52" y2="10" stroke={gray} strokeWidth="1.5" />
+          <line x1="8" y1="36" x2="52" y2="12" stroke={gray} strokeWidth="1.5" />
+          <path d="M 12 30 L 22 12 L 32 24 L 42 12 L 50 6" fill="none" stroke={green} strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'flag':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="10" y1="36" x2="22" y2="8" stroke={green} strokeWidth="3" strokeLinecap="round" />
+          <rect x="22" y="8" width="22" height="12" rx="1.5" fill="none" stroke={strokeColor} strokeWidth="1.5" transform="rotate(8 22 8)" />
+          <line x1="44" y1="12" x2="54" y2="6" stroke={green} strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'wedge':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="8" y1="8" x2="48" y2="28" stroke={gray} strokeWidth="1.5" />
+          <line x1="8" y1="20" x2="48" y2="34" stroke={gray} strokeWidth="1.5" />
+          <path d="M 44 26 L 52 14" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'ema9':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <path d="M 6 36 Q 25 30 54 8" fill="none" stroke="#38bdf8" strokeWidth="2" />
+          <circle cx="34" cy="20" r="3.5" fill={green} />
+          <path d="M 28 12 L 34 20 L 48 10" fill="none" stroke={green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'golden_cross':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <path d="M 6 34 Q 30 24 54 8" fill="none" stroke={green} strokeWidth="2.5" />
+          <path d="M 6 18 Q 30 22 54 28" fill="none" stroke={red} strokeWidth="2" />
+          <circle cx="28" cy="22" r="3.5" fill="#ffd600" />
+        </svg>
+      );
+    case 'supertrend':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <path d="M 6 30 L 26 24 L 54 16" fill="none" stroke={green} strokeWidth="2.5" />
+          <path d="M 10 22 L 20 14 L 34 18 L 48 8" fill="none" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3 2" />
+        </svg>
+      );
+    case 'vwap':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="21" x2="54" y2="21" stroke="#38bdf8" strokeWidth="2" strokeDasharray="4 2" />
+          <line x1="6" y1="10" x2="54" y2="10" stroke={gray} strokeWidth="1" />
+          <line x1="6" y1="32" x2="54" y2="32" stroke={gray} strokeWidth="1" />
+          <path d="M 12 28 L 24 21 L 46 8" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'smc_ob':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="10" y="16" width="38" height="14" rx="2" fill="rgba(16,185,129,0.15)" stroke={green} strokeWidth="1.2" />
+          <path d="M 6 8 L 24 22 L 40 6" fill="none" stroke={green} strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'bos':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="16" y1="18" x2="48" y2="18" stroke={gray} strokeWidth="1.5" strokeDasharray="2 2" />
+          <path d="M 10 32 L 20 18 L 30 26 L 46 8" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'sweep':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="22" x2="54" y2="22" stroke={gray} strokeWidth="1.5" />
+          <path d="M 14 14 L 28 36 L 44 8" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'volume_shocker':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="8" y="26" width="7" height="12" fill={gray} />
+          <rect x="18" y="24" width="7" height="14" fill={gray} />
+          <rect x="28" y="27" width="7" height="11" fill={gray} />
+          <rect x="38" y="8" width="10" height="30" rx="1.5" fill={green} />
+        </svg>
+      );
+    case 'oi':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="14" y="14" width="12" height="24" rx="2" fill={green} />
+          <rect x="32" y="8" width="12" height="30" rx="2" fill="#38bdf8" />
+        </svg>
+      );
+    case 'pcr':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <path d="M 10 32 A 20 20 0 0 1 50 32" fill="none" stroke={gray} strokeWidth="3" />
+          <line x1="30" y1="32" x2="18" y2="18" stroke={green} strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="30" cy="32" r="3" fill="#ffd600" />
+        </svg>
+      );
+    case 'orb':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="10" y="14" width="22" height="18" fill="rgba(255,255,255,0.06)" stroke={gray} strokeWidth="1" />
+          <path d="M 24 22 L 36 10 L 50 6" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'ai_meter':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <rect x="10" y="24" width="6" height="14" rx="1" fill={green} />
+          <rect x="19" y="18" width="6" height="20" rx="1" fill={green} />
+          <rect x="28" y="12" width="6" height="26" rx="1" fill={green} />
+          <rect x="37" y="6" width="6" height="32" rx="1" fill="#00e5ff" />
+          <circle cx="48" cy="10" r="3.5" fill="#ffd600" />
+        </svg>
+      );
+    case 'rsi_osc':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="10" x2="54" y2="10" stroke={red} strokeWidth="1" strokeDasharray="2 2" />
+          <line x1="6" y1="32" x2="54" y2="32" stroke={green} strokeWidth="1" strokeDasharray="2 2" />
+          <path d="M 8 28 L 20 34 L 32 18 L 44 24 L 52 8" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'macd_osc':
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <line x1="6" y1="21" x2="54" y2="21" stroke={gray} strokeWidth="1" />
+          <rect x="16" y="21" width="5" height="8" fill={red} />
+          <rect x="24" y="14" width="5" height="7" fill={green} />
+          <rect x="32" y="8" width="5" height="13" fill={green} />
+          <rect x="40" y="12" width="5" height="9" fill={green} />
+          <path d="M 8 28 Q 28 8 52 14" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+        </svg>
+      );
+    default:
+      return (
+        <svg width="60" height="42" viewBox="0 0 60 42" style={{ display: 'block' }}>
+          <path d="M 8 32 L 20 20 L 32 24 L 52 8" fill="none" stroke={green} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+  }
+};
+
+// ── 1. Complete Sequential Trading Strategy Matrix (1 to 30) ──
+export const SEQUENTIAL_STRATEGY_SERIES: StrategyPattern[] = [
   {
-    day: 1,
+    id: 1,
     day_tag: '1',
     symbol_icon: '🔨',
-    title: 'Hammer & Inverted Hammer at Key Support Zone',
-    category: 'Candlestick Patterns',
+    chart_type: 'hammer',
+    title: 'Hammer & Inverted Hammer Price Rejection',
+    category: 'Candlestick Mechanics',
     single_line: 'Long lower shadow at least 2x the body at major support signifies institutional liquidity sweep and aggressive buyer absorption.',
     is_bullish: true,
     is_bearish: false,
-    bullish_display: '🟢 BULLISH BUY: Hammer forms after downtrend at major Support / S1 Pivot. Lower wick ≥ 2x body length with strong volume spike.',
-    bearish_display: '🔴 BEARISH REVERSAL: Inverted Hammer fails to follow through and breaks below low → signals continuation of selling.',
+    bullish_logic: '🟢 BULLISH BUY: Hammer forms after downtrend at major Support / S1 Pivot. Lower wick ≥ 2x body length with strong volume spike.',
+    bearish_logic: '🔴 BEARISH REVERSAL: Inverted Hammer fails to follow through and breaks below low → signals continuation of selling.',
     entry_trigger: 'Buy on breakout above the Hammer candle high with volume confirmation.',
     stop_loss: 'Strict SL 2 ticks below Hammer low (Swing Low).',
     target_1: 'Target 1: Previous swing high (1:1.5 R:R)',
@@ -89,16 +363,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 2,
+    id: 2,
     day_tag: '2',
     symbol_icon: '🔄',
-    title: 'Bullish & Bearish Engulfing Setup',
-    category: 'Candlestick Patterns',
+    chart_type: 'engulfing',
+    title: 'Bullish & Bearish Engulfing Absorption Wave',
+    category: 'Candlestick Mechanics',
     single_line: 'A massive body candle completely engulfing the prior opposite candle demonstrates total institutional control over order flow.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Large green candle fully engulfs prior red candle body + wicks at support with volume surge.',
-    bearish_display: '🔴 BEARISH SHORT: Large red candle fully engulfs prior green candle body at key resistance / 52-week high.',
+    bullish_logic: '🟢 BULLISH BUY: Large green candle fully engulfs prior red candle body + wicks at support with volume surge.',
+    bearish_logic: '🔴 BEARISH SHORT: Large red candle fully engulfs prior green candle body at key resistance / 52-week high.',
     entry_trigger: 'Enter on the close of the engulfing candle or on a minor 50% retracement retest.',
     stop_loss: 'SL 1 tick below Engulfing candle low for Long / above high for Short.',
     target_1: 'Target 1: 1:1.5 R:R',
@@ -117,16 +392,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buyers',
   },
   {
-    day: 3,
+    id: 3,
     day_tag: '3',
     symbol_icon: '☀️',
-    title: 'Morning Star (Bullish) & Evening Star (Bearish)',
-    category: 'Candlestick Patterns',
+    chart_type: 'morning_star',
+    title: 'Morning Star & Evening Star 3-Phase Turnaround',
+    category: 'Candlestick Mechanics',
     single_line: '3-Candle structure: strong impulse candle, indecision doji/spinning top at extreme, followed by massive reversal candle closing past 50% of candle 1.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Morning Star (Red Candle → Gap/Small Doji at Support → Big Green Candle closing above 60% of Candle 1).',
-    bearish_display: '🔴 BEARISH SHORT: Evening Star (Green Candle → Small Doji at Resistance → Big Red Candle closing below 60% of Candle 1).',
+    bullish_logic: '🟢 BULLISH BUY: Morning Star (Red Candle → Gap/Small Doji at Support → Big Green Candle closing above 60% of Candle 1).',
+    bearish_logic: '🔴 BEARISH SHORT: Evening Star (Green Candle → Small Doji at Resistance → Big Red Candle closing below 60% of Candle 1).',
     entry_trigger: 'Buy on close of 3rd confirmation candle.',
     stop_loss: 'SL below the lowest point of the 2nd candle (Star Doji).',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -144,16 +420,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/swing-buy',
   },
   {
-    day: 4,
+    id: 4,
     day_tag: '4',
     symbol_icon: '🏹',
+    chart_type: 'shooting_star',
     title: 'Shooting Star & Hanging Man Reversal Formations',
-    category: 'Candlestick Patterns',
+    category: 'Candlestick Mechanics',
     single_line: 'Long upper shadow at least 2x body height at swing resistance indicates buyers were completely exhausted and sellers reclaimed dominance.',
     is_bullish: false,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH INVERSION: Hanging Man requires a strong green candle close above its high to invalidate and create a short squeeze.',
-    bearish_display: '🔴 BEARISH SHORT: Shooting Star forms after extended uptrend at R1 Pivot / Resistance with upper shadow ≥ 2x body length.',
+    bullish_logic: '🟢 BULLISH INVERSION: Hanging Man requires a strong green candle close above its high to invalidate and create a short squeeze.',
+    bearish_logic: '🔴 BEARISH SHORT: Shooting Star forms after extended uptrend at R1 Pivot / Resistance with upper shadow ≥ 2x body length.',
     entry_trigger: 'Short on breakdown below the Shooting Star low.',
     stop_loss: 'SL 2 ticks above Shooting Star high.',
     target_1: 'Target 1: 1:2.0 R:R (20 EMA support)',
@@ -169,16 +446,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-sellers',
   },
   {
-    day: 5,
+    id: 5,
     day_tag: '5',
     symbol_icon: '⚔️',
-    title: 'Piercing Pattern & Dark Cloud Cover Formations',
-    category: 'Candlestick Patterns',
+    chart_type: 'piercing',
+    title: 'Piercing Pattern & Dark Cloud Cover Midpoint Shifts',
+    category: 'Candlestick Mechanics',
     single_line: 'Opening gap followed by aggressive institutional counter-drive closing beyond the 50% midpoint of the previous candle body.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Piercing Pattern opens with gap down but bulls drive price to close above 50% of prior red candle body.',
-    bearish_display: '🔴 BEARISH SHORT: Dark Cloud Cover opens with gap up at resistance but bears drive price to close below 50% of prior green candle body.',
+    bullish_logic: '🟢 BULLISH BUY: Piercing Pattern opens with gap down but bulls drive price to close above 50% of prior red candle body.',
+    bearish_logic: '🔴 BEARISH SHORT: Dark Cloud Cover opens with gap up at resistance but bears drive price to close below 50% of prior green candle body.',
     entry_trigger: 'Enter on follow-through candle breaking the piercing candle high.',
     stop_loss: 'SL below the session low of the piercing candle.',
     target_1: 'Target 1: 1:1.5 R:R',
@@ -194,16 +472,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 6,
+    id: 6,
     day_tag: '6',
     symbol_icon: '🎖️',
-    title: 'Three White Soldiers & Three Black Crows',
-    category: 'Candlestick Patterns',
+    chart_type: 'soldiers',
+    title: 'Three White Soldiers & Three Black Crows Expansion',
+    category: 'Candlestick Mechanics',
     single_line: 'Three consecutive strong full-body candles opening within previous body and making consecutive higher closes with expanding volume.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Three White Soldiers breakout from consolidation with consecutive higher highs, small wicks, expanding volume.',
-    bearish_display: '🔴 BEARISH SHORT: Three Black Crows breakdown with consecutive lower lows, heavy red volume → strong short momentum.',
+    bullish_logic: '🟢 BULLISH BUY: Three White Soldiers breakout from consolidation with consecutive higher highs, small wicks, expanding volume.',
+    bearish_logic: '🔴 BEARISH SHORT: Three Black Crows breakdown with consecutive lower lows, heavy red volume → strong short momentum.',
     entry_trigger: 'Enter on the close of the 2nd candle or on minor pullback after 3rd candle.',
     stop_loss: 'SL below the low of the 1st soldier candle.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -219,16 +498,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/momentum',
   },
   {
-    day: 7,
+    id: 7,
     day_tag: '7',
     symbol_icon: '🤰',
-    title: 'Bullish & Bearish Harami / Inside Bar Breakout',
-    category: 'Candlestick Patterns',
+    chart_type: 'harami',
+    title: 'Harami Compression & Inside Bar Breakout',
+    category: 'Candlestick Mechanics',
     single_line: 'Small body candle completely enclosed within prior large mother candle indicates extreme volatility contraction ready to explode.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Bullish Harami / Inside Bar at support. Buy when candle breaks and closes above mother bar high.',
-    bearish_display: '🔴 BEARISH SHORT: Bearish Harami / Inside Bar at resistance. Short when candle breaks and closes below mother bar low.',
+    bullish_logic: '🟢 BULLISH BUY: Bullish Harami / Inside Bar at support. Buy when candle breaks and closes above mother bar high.',
+    bearish_logic: '🔴 BEARISH SHORT: Bearish Harami / Inside Bar at resistance. Short when candle breaks and closes below mother bar low.',
     entry_trigger: 'Buy on breakout above mother bar high.',
     stop_loss: 'SL below mother bar low (or inside bar low for tighter risk).',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -244,16 +524,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/breakout',
   },
   {
-    day: 8,
+    id: 8,
     day_tag: '8',
     symbol_icon: '🪜',
-    title: 'Tweezer Bottom & Tweezer Top Price Action',
-    category: 'Candlestick Patterns',
+    chart_type: 'tweezers',
+    title: 'Tweezer Bottom & Tweezer Top Boundary Tests',
+    category: 'Candlestick Mechanics',
     single_line: 'Two consecutive candles with identical lows or highs show an impenetrable price floor/ceiling where market orders were completely absorbed.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Tweezer Bottom (Two matching lows at major support/200 EMA). Buy on close above 2nd candle high.',
-    bearish_display: '🔴 BEARISH SHORT: Tweezer Top (Two matching highs at resistance). Short on close below 2nd candle low.',
+    bullish_logic: '🟢 BULLISH BUY: Tweezer Bottom (Two matching lows at major support/200 EMA). Buy on close above 2nd candle high.',
+    bearish_logic: '🔴 BEARISH SHORT: Tweezer Top (Two matching highs at resistance). Short on close below 2nd candle low.',
     entry_trigger: 'Buy on close of confirmation candle.',
     stop_loss: 'SL 2 ticks below the matching tweezer lows.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -269,16 +550,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 9,
+    id: 9,
     day_tag: '9',
     symbol_icon: '🌟',
-    title: 'Marubozu Full-Body Momentum Candles',
-    category: 'Candlestick Patterns',
+    chart_type: 'marubozu',
+    title: 'Marubozu Full-Body Momentum Directives',
+    category: 'Candlestick Mechanics',
     single_line: 'Full body candle with virtually zero wicks (Open = Low, Close = High) signifies unstoppable institutional one-way directional aggression.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Bullish Marubozu (Open = Low, Close = High) breaking out of multi-day range on 3x+ volume.',
-    bearish_display: '🔴 BEARISH SHORT: Bearish Marubozu (Open = High, Close = Low) breaking down below key support.',
+    bullish_logic: '🟢 BULLISH BUY: Bullish Marubozu (Open = Low, Close = High) breaking out of multi-day range on 3x+ volume.',
+    bearish_logic: '🔴 BEARISH SHORT: Bearish Marubozu (Open = High, Close = Low) breaking down below key support.',
     entry_trigger: 'Enter on close of Marubozu or on 50% midpoint pullback.',
     stop_loss: 'SL below 50% midpoint of Marubozu body.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -294,16 +576,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/price-shockers',
   },
   {
-    day: 10,
+    id: 10,
     day_tag: '10',
     symbol_icon: '🪰',
-    title: 'Dragonfly Doji & Gravestone Doji Reversals',
-    category: 'Candlestick Patterns',
+    chart_type: 'dragonfly',
+    title: 'Dragonfly Doji & Gravestone Doji Rejections',
+    category: 'Candlestick Mechanics',
     single_line: 'Open, high, and close near identical with a giant lower or upper shadow indicating extreme rejection of lower/higher prices.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Dragonfly Doji at major support / 200 EMA indicates massive buying rejection of lower price zone.',
-    bearish_display: '🔴 BEARISH SHORT: Gravestone Doji at resistance indicates bulls were completely rejected at highs.',
+    bullish_logic: '🟢 BULLISH BUY: Dragonfly Doji at major support / 200 EMA indicates massive buying rejection of lower price zone.',
+    bearish_logic: '🔴 BEARISH SHORT: Gravestone Doji at resistance indicates bulls were completely rejected at highs.',
     entry_trigger: 'Buy on next candle closing above Dragonfly high.',
     stop_loss: 'SL below Dragonfly long shadow tail.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -319,16 +602,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/breakout',
   },
   {
-    day: 11,
+    id: 11,
     day_tag: '11',
     symbol_icon: '💫',
+    chart_type: 'spinning_top',
     title: 'Spinning Top & High Wave Indecision Candles',
-    category: 'Candlestick Patterns',
+    category: 'Candlestick Mechanics',
     single_line: 'Small real body with long upper and lower shadows reflects extreme tug-of-war where previous trend loses momentum before major reversal.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Spinning Top at bottom of downtrend followed by strong green expansion candle breaking high.',
-    bearish_display: '🔴 BEARISH SHORT: Spinning Top at top of uptrend followed by red expansion candle breaking low.',
+    bullish_logic: '🟢 BULLISH BUY: Spinning Top at bottom of downtrend followed by strong green expansion candle breaking high.',
+    bearish_logic: '🔴 BEARISH SHORT: Spinning Top at top of uptrend followed by red expansion candle breaking low.',
     entry_trigger: 'Enter on the breakout direction of the high/low range.',
     stop_loss: 'SL at opposite extreme of the spinning top.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -344,16 +628,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 12,
+    id: 12,
     day_tag: '12',
     symbol_icon: '🧱',
-    title: 'Support & Resistance Breakout with Volume Expansion',
-    category: 'Chart Formations',
+    chart_type: 'breakout',
+    title: 'Structural Resistance Breakout & Volume Expansion',
+    category: 'Geometric Formations',
     single_line: 'Price compresses against horizontal barrier 3+ times; when breakout candle closes beyond with 2x+ average volume, explosive continuation follows.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Clean breakout above major multi-day Resistance with Volume Ratio > 2.0x and closing above level.',
-    bearish_display: '🔴 BEARISH SHORT: Breakdown below major multi-day Support with Volume Ratio > 2.0x and closing below level.',
+    bullish_logic: '🟢 BULLISH BUY: Clean breakout above major multi-day Resistance with Volume Ratio > 2.0x and closing above level.',
+    bearish_logic: '🔴 BEARISH SHORT: Breakdown below major multi-day Support with Volume Ratio > 2.0x and closing below level.',
     entry_trigger: 'Enter on breakout candle close or on retest of the broken level (preferred).',
     stop_loss: 'SL below breakout candle low or back inside broken zone.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -369,16 +654,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/price-shockers',
   },
   {
-    day: 13,
+    id: 13,
     day_tag: '13',
     symbol_icon: '🪓',
-    title: 'Double Bottom (W-Pattern) & Double Top (M-Pattern)',
-    category: 'Chart Formations',
+    chart_type: 'double_bottom',
+    title: 'Double Bottom (W) & Double Top (M) Reversal Cycles',
+    category: 'Geometric Formations',
     single_line: 'Two tests of a support/resistance level forming a W or M structure; breakout through the central neckline confirms massive trend reversal.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: W-Pattern Double Bottom forms at support with 2nd bottom showing RSI bullish divergence. Buy on neckline breakout.',
-    bearish_display: '🔴 BEARISH SHORT: M-Pattern Double Top forms at resistance with 2nd top showing RSI bearish divergence. Sell on neckline breakdown.',
+    bullish_logic: '🟢 BULLISH BUY: W-Pattern Double Bottom forms at support with 2nd bottom showing RSI bullish divergence. Buy on neckline breakout.',
+    bearish_logic: '🔴 BEARISH SHORT: M-Pattern Double Top forms at resistance with 2nd top showing RSI bearish divergence. Sell on neckline breakdown.',
     entry_trigger: 'Buy on candle close breaking above the central W neckline with high volume.',
     stop_loss: 'SL below the right shoulder/trough of the W-pattern.',
     target_1: 'Target 1: Height of W-pattern projected upward',
@@ -394,16 +680,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/weekly-buy',
   },
   {
-    day: 14,
+    id: 14,
     day_tag: '14',
     symbol_icon: '👤',
-    title: 'Inverse Head & Shoulders & Regular Head & Shoulders',
-    category: 'Chart Formations',
+    chart_type: 'head_shoulders',
+    title: 'Head & Shoulders Structural Exhaustion Framework',
+    category: 'Geometric Formations',
     single_line: 'Three-trough structure (Left Shoulder, Lower Head, Higher Right Shoulder) indicating seller exhaustion and institutional accumulation.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Inverse H&S forms after downtrend. Right shoulder forms above Head. Buy when Neckline breaks with high volume.',
-    bearish_display: '🔴 BEARISH SHORT: Regular H&S forms at top. Right shoulder fails to make new high. Sell when Neckline breaks downward.',
+    bullish_logic: '🟢 BULLISH BUY: Inverse H&S forms after downtrend. Right shoulder forms above Head. Buy when Neckline breaks with high volume.',
+    bearish_logic: '🔴 BEARISH SHORT: Regular H&S forms at top. Right shoulder fails to make new high. Sell when Neckline breaks downward.',
     entry_trigger: 'Buy on close above neckline or on neckline retest.',
     stop_loss: 'SL below the low of the Right Shoulder.',
     target_1: 'Target 1: Distance from Head to Neckline added to breakout point',
@@ -419,16 +706,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/monthly-buy',
   },
   {
-    day: 15,
+    id: 15,
     day_tag: '15',
     symbol_icon: '☕',
-    title: 'Cup & Handle Pattern (Institutional Shakeout)',
-    category: 'Chart Formations',
+    chart_type: 'cup_handle',
+    title: 'Cup & Handle Base Accumulation Matrix',
+    category: 'Geometric Formations',
     single_line: 'Rounded U-shaped accumulation base followed by a shallow downward handle shakeout; breakout above the rim signals massive multi-month rally.',
     is_bullish: true,
     is_bearish: false,
-    bullish_display: '🟢 BULLISH BUY: U-shaped Cup + Handle retrace < 38.2% of cup depth. Enter on breakout above rim resistance with 2x+ volume.',
-    bearish_display: '🔴 BEARISH AVOID: If handle retraces deeper than 50% of cup depth, pattern fails and breaks down.',
+    bullish_logic: '🟢 BULLISH BUY: U-shaped Cup + Handle retrace < 38.2% of cup depth. Enter on breakout above rim resistance with 2x+ volume.',
+    bearish_logic: '🔴 BEARISH AVOID: If handle retraces deeper than 50% of cup depth, pattern fails and breaks down.',
     entry_trigger: 'Buy on candle close breaking above the cup rim resistance.',
     stop_loss: 'SL below the lowest point of the handle.',
     target_1: 'Target 1: Depth of the cup added to breakout level (1:2.5 R:R)',
@@ -444,16 +732,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/future-stocks',
   },
   {
-    day: 16,
+    id: 16,
     day_tag: '16',
     symbol_icon: '📐',
-    title: 'Ascending Triangle & Symmetrical Triangle Breakout',
-    category: 'Chart Formations',
+    chart_type: 'triangle',
+    title: 'Ascending & Symmetrical Triangle Volatility Squeeze',
+    category: 'Geometric Formations',
     single_line: 'Flat horizontal resistance with rising higher lows creates intense volatility compression until price violently explodes upward.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Ascending Triangle (Flat Top + Rising Trendline) breaks out upward with volume spike.',
-    bearish_display: '🔴 BEARISH SHORT: Descending Triangle (Flat Bottom + Falling Trendline) breaks down downward with volume spike.',
+    bullish_logic: '🟢 BULLISH BUY: Ascending Triangle (Flat Top + Rising Trendline) breaks out upward with volume spike.',
+    bearish_logic: '🔴 BEARISH SHORT: Descending Triangle (Flat Bottom + Falling Trendline) breaks down downward with volume spike.',
     entry_trigger: 'Buy on close above flat resistance with volume > 1.5x.',
     stop_loss: 'SL below the most recent higher low inside triangle.',
     target_1: 'Target 1: Widest height of triangle added to breakout',
@@ -469,16 +758,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/breakout',
   },
   {
-    day: 17,
+    id: 17,
     day_tag: '17',
     symbol_icon: '🚩',
-    title: 'Bull Flag & Bear Flag Fast-Trend Continuation',
-    category: 'Chart Formations',
+    chart_type: 'flag',
+    title: 'Bull Flag & Bear Flag Velocity Continuation',
+    category: 'Geometric Formations',
     single_line: 'Steep near-vertical flagpole impulse followed by tight 3-5 candle parallel channel pullback; breakout of channel continues impulse with equal flagpole length.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Bull Flag pole (+3% to +8% rally) + tight low-volume flag channel. Buy when upper flag trendline breaks.',
-    bearish_display: '🔴 BEARISH SHORT: Bear Flag pole (sharp drop) + low-volume upward flag channel. Sell when lower flag trendline breaks.',
+    bullish_logic: '🟢 BULLISH BUY: Bull Flag pole (+3% to +8% rally) + tight low-volume flag channel. Buy when upper flag trendline breaks.',
+    bearish_logic: '🔴 BEARISH SHORT: Bear Flag pole (sharp drop) + low-volume upward flag channel. Sell when lower flag trendline breaks.',
     entry_trigger: 'Buy immediately on breakout of upper flag boundary with volume.',
     stop_loss: 'SL below the lowest point of the flag channel.',
     target_1: 'Target 1: Length of Flagpole added to breakout point (1:2.5 R:R)',
@@ -494,16 +784,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/momentum',
   },
   {
-    day: 18,
+    id: 18,
     day_tag: '18',
     symbol_icon: '📊',
-    title: 'Falling Bullish Wedge & Rising Bearish Wedge',
-    category: 'Chart Formations',
+    chart_type: 'wedge',
+    title: 'Falling Bullish & Rising Bearish Wedge Compression',
+    category: 'Geometric Formations',
     single_line: 'Both trendlines converge in the same downward direction with drying volume; upside breakout triggers sharp explosive reversal.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Falling Wedge converging downward after selloff. Buy when upper resistance trendline breaks with volume.',
-    bearish_display: '🔴 BEARISH SHORT: Rising Wedge converging upward in mature rally. Short when lower support trendline breaks.',
+    bullish_logic: '🟢 BULLISH BUY: Falling Wedge converging downward after selloff. Buy when upper resistance trendline breaks with volume.',
+    bearish_logic: '🔴 BEARISH SHORT: Rising Wedge converging upward in mature rally. Short when lower support trendline breaks.',
     entry_trigger: 'Buy on candle close breaking above upper wedge trendline.',
     stop_loss: 'SL below lowest point of the wedge pattern.',
     target_1: 'Target 1: 1:2.0 R:R (Top of the wedge structure)',
@@ -519,16 +810,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/breakout',
   },
   {
-    day: 19,
+    id: 19,
     day_tag: '19',
     symbol_icon: '⚡',
-    title: '9 EMA + 15-Min Breakout & Retest with Order Flow Confirmation',
-    category: 'EMA & Indicators',
+    chart_type: 'ema9',
+    title: '9 EMA + 15-Minute Breakout & Retest Protocol',
+    category: 'Dynamic Moving Averages',
     single_line: 'When a strong 15-minute candle breaks key resistance and retests the rising 9 EMA with a green confirmation candle + volume > 1.5x, enter for high-probability momentum.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: 15-min candle closes above Resistance/EMA 9. Wait for retest pullback touching 9 EMA. Enter on next green candle with Volume > 1.5x.',
-    bearish_display: '🔴 BEARISH SHORT: 15-min candle closes below Support/EMA 9. Wait for upward retest rejection at 9 EMA. Enter on next red candle breakdown.',
+    bullish_logic: '🟢 BULLISH BUY: 15-min candle closes above Resistance/EMA 9. Wait for retest pullback touching 9 EMA. Enter on next green candle with Volume > 1.5x.',
+    bearish_logic: '🔴 BEARISH SHORT: 15-min candle closes below Support/EMA 9. Wait for upward retest rejection at 9 EMA. Enter on next red candle breakdown.',
     entry_trigger: 'Buy immediately on close of first green confirmation candle after retesting 9 EMA on 15m chart.',
     stop_loss: 'Strict SL below the retest candle low (or 9 EMA − 0.25%).',
     target_1: 'Target 1: 1:1.5 Risk-to-Reward (Day High / Next Resistance)',
@@ -553,16 +845,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/quant-screener',
   },
   {
-    day: 20,
+    id: 20,
     day_tag: '20',
     symbol_icon: '📈',
-    title: '20 EMA + 50 EMA Golden Cross & Alignment System',
-    category: 'EMA & Indicators',
+    chart_type: 'golden_cross',
+    title: '20 EMA + 50 EMA Trend Cross & Alignment Engine',
+    category: 'Dynamic Moving Averages',
     single_line: 'When 20 EMA crosses above 50 EMA and both slope upward at 45 degrees with Price > 200 EMA, a powerful multi-week trend is initiated.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: 20 EMA crosses above 50 EMA (Golden Cross). Price pulls back to 20 EMA → Buy on green candle.',
-    bearish_display: '🔴 BEARISH SHORT: 20 EMA crosses below 50 EMA (Death Cross). Price rallies to 20 EMA → Sell on red candle.',
+    bullish_logic: '🟢 BULLISH BUY: 20 EMA crosses above 50 EMA (Golden Cross). Price pulls back to 20 EMA → Buy on green candle.',
+    bearish_logic: '🔴 BEARISH SHORT: 20 EMA crosses below 50 EMA (Death Cross). Price rallies to 20 EMA → Sell on red candle.',
     entry_trigger: 'Buy on pullback to 20 EMA following the cross.',
     stop_loss: 'SL below 50 EMA or recent swing low.',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -578,16 +871,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/ema-screener',
   },
   {
-    day: 21,
+    id: 21,
     day_tag: '21',
     symbol_icon: '🧭',
-    title: 'Supertrend (10, 3) + 200 EMA Trend Engine',
-    category: 'EMA & Indicators',
+    chart_type: 'supertrend',
+    title: 'Supertrend (10, 3) + 200 EMA Filter Matrix',
+    category: 'Dynamic Moving Averages',
     single_line: 'Filter trades by 200 EMA (bias filter); only take Supertrend GREEN buy signals when Price > 200 EMA for effortless trend following.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Price > 200 EMA AND Supertrend (10,3) turns GREEN with volume confirmation.',
-    bearish_display: '🔴 BEARISH SHORT: Price < 200 EMA AND Supertrend (10,3) turns RED with volume confirmation.',
+    bullish_logic: '🟢 BULLISH BUY: Price > 200 EMA AND Supertrend (10,3) turns GREEN with volume confirmation.',
+    bearish_logic: '🔴 BEARISH SHORT: Price < 200 EMA AND Supertrend (10,3) turns RED with volume confirmation.',
     entry_trigger: 'Buy on the close of the candle where Supertrend flips to Green above 200 EMA.',
     stop_loss: 'SL at Supertrend green line (dynamic trailing stop).',
     target_1: 'Target 1: 1:2.0 R:R',
@@ -603,16 +897,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/momentum',
   },
   {
-    day: 22,
+    id: 22,
     day_tag: '22',
     symbol_icon: '🌊',
-    title: 'VWAP + Volume Spike Intraday Breakout',
-    category: 'EMA & Indicators',
+    chart_type: 'vwap',
+    title: 'VWAP Institutional Execution & Standard Deviation Bands',
+    category: 'Dynamic Moving Averages',
     single_line: 'VWAP represents the institutional average execution price; price breaking above VWAP with a 2x volume spike confirms massive institutional buying.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Price crosses above VWAP + Upper Band with Volume > 2x average. Retest of VWAP holds as support.',
-    bearish_display: '🔴 BEARISH SHORT: Price breaks below VWAP with heavy volume and fails to re-cross above VWAP.',
+    bullish_logic: '🟢 BULLISH BUY: Price crosses above VWAP + Upper Band with Volume > 2x average. Retest of VWAP holds as support.',
+    bearish_logic: '🔴 BEARISH SHORT: Price breaks below VWAP with heavy volume and fails to re-cross above VWAP.',
     entry_trigger: 'Buy on breakout above VWAP or on first pullback bounce at VWAP line.',
     stop_loss: 'SL 0.25% below VWAP line.',
     target_1: 'Target 1: VWAP + 1.0 Standard Deviation Band',
@@ -628,16 +923,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/volume-best',
   },
   {
-    day: 23,
+    id: 23,
     day_tag: '23',
     symbol_icon: '🏦',
-    title: 'Order Block (OB) & Fair Value Gap (FVG) Retest Strategy',
-    category: 'Smart Money (SMC) & Flow',
+    chart_type: 'smc_ob',
+    title: 'Order Block (OB) & Fair Value Gap (FVG) Mitigation',
+    category: 'Institutional Order Flow',
     single_line: 'Last down candle before a massive explosive upward impulse creates a Bullish Order Block (OB); when price returns to mitigate the FVG/OB, enter with institutional limit orders.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Price drops into Bullish Order Block (OB) and fills the Fair Value Gap (FVG). Enter on lower timeframe shift.',
-    bearish_display: '🔴 BEARISH SHORT: Price rallies into Bearish Order Block (OB) and fills FVG. Enter short on rejection.',
+    bullish_logic: '🟢 BULLISH BUY: Price drops into Bullish Order Block (OB) and fills the Fair Value Gap (FVG). Enter on lower timeframe shift.',
+    bearish_logic: '🔴 BEARISH SHORT: Price rallies into Bearish Order Block (OB) and fills FVG. Enter short on rejection.',
     entry_trigger: 'Enter on 50% midpoint of the Order Block with confirmation candle.',
     stop_loss: 'SL 1 tick below the Order Block invalidation level (very tight SL).',
     target_1: 'Target 1: Liquidity High (1:3.0 R:R)',
@@ -653,16 +949,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/target-matrix',
   },
   {
-    day: 24,
+    id: 24,
     day_tag: '24',
     symbol_icon: '🔄',
+    chart_type: 'bos',
     title: 'Break of Structure (BOS) & Change of Character (CHoCH)',
-    category: 'Smart Money (SMC) & Flow',
+    category: 'Institutional Order Flow',
     single_line: 'CHoCH signals the first structural trend reversal when a key swing point is breached; subsequent BOS confirms the continuation of the new institutional trend.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Bullish CHoCH breaks prior lower high. Wait for pullback to discount OB, then enter on Bullish BOS.',
-    bearish_display: '🔴 BEARISH SHORT: Bearish CHoCH breaks prior higher low. Wait for pullback to premium OB, then enter on Bearish BOS.',
+    bullish_logic: '🟢 BULLISH BUY: Bullish CHoCH breaks prior lower high. Wait for pullback to discount OB, then enter on Bullish BOS.',
+    bearish_logic: '🔴 BEARISH SHORT: Bearish CHoCH breaks prior higher low. Wait for pullback to premium OB, then enter on Bearish BOS.',
     entry_trigger: 'Enter on pullback after CHoCH confirmation.',
     stop_loss: 'SL below the structural swing low that caused CHoCH.',
     target_1: 'Target 1: 1:2.5 R:R',
@@ -678,16 +975,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/quant-screener',
   },
   {
-    day: 25,
+    id: 25,
     day_tag: '25',
     symbol_icon: '🪤',
-    title: 'Liquidity Sweep & Stop Hunt False Breakdown Reversal',
-    category: 'Smart Money (SMC) & Flow',
+    chart_type: 'sweep',
+    title: 'Liquidity Sweeps & Turtle Soup Reversal Traps',
+    category: 'Institutional Order Flow',
     single_line: 'Smart money forces price to breach popular retail support/resistance to trigger stop losses and collect liquidity, then violently reverses.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Price pierces support, triggers retail stop losses, but candle immediately closes back ABOVE support with a long wick (Turtle Soup).',
-    bearish_display: '🔴 BEARISH SHORT: Price pierces resistance, traps retail buyers, then closes back BELOW resistance with heavy upper wick.',
+    bullish_logic: '🟢 BULLISH BUY: Price pierces support, triggers retail stop losses, but candle immediately closes back ABOVE support with a long wick (Turtle Soup).',
+    bearish_logic: '🔴 BEARISH SHORT: Price pierces resistance, traps retail buyers, then closes back BELOW resistance with heavy upper wick.',
     entry_trigger: 'Buy immediately as price re-claims the broken support level.',
     stop_loss: 'SL below the sweep wick low (very tight risk).',
     target_1: 'Target 1: Opposite liquidity pool (Resistance High)',
@@ -703,16 +1001,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buyers',
   },
   {
-    day: 26,
+    id: 26,
     day_tag: '26',
     symbol_icon: '💥',
-    title: '3-Day / 5-Day / 7-Day Volume Shocker Breakout Rule',
-    category: 'Smart Money (SMC) & Flow',
+    chart_type: 'volume_shocker',
+    title: 'Multi-Day Volume Expansion & Institutional Shocker Ratio',
+    category: 'Institutional Order Flow',
     single_line: 'When daily volume exceeds 3x to 7x the historical average along with a price surge, it indicates institutional block accumulation that persists for 3–10 sessions.',
     is_bullish: true,
     is_bearish: false,
-    bullish_display: '🟢 BULLISH BUY: Volume Shockers Ratio > 3.0x with Price Gain > 2.0% and Delivery % > 50%. High-conviction swing hold.',
-    bearish_display: '🔴 BEARISH WARNING: Volume Shocker with Price Drop > 3% signals massive institutional unloading / distribution.',
+    bullish_logic: '🟢 BULLISH BUY: Volume Shockers Ratio > 3.0x with Price Gain > 2.0% and Delivery % > 50%. High-conviction swing hold.',
+    bearish_logic: '🔴 BEARISH WARNING: Volume Shocker with Price Drop > 3% signals massive institutional unloading / distribution.',
     entry_trigger: 'Buy on confirmation of volume expansion day close or day 2 opening dip.',
     stop_loss: 'SL below the low of the volume expansion candle.',
     target_1: 'Target 1: 5% - 8% gain in 3 sessions (1:2.0 R:R)',
@@ -728,16 +1027,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/volume-3d-shockers',
   },
   {
-    day: 27,
+    id: 27,
     day_tag: '27',
     symbol_icon: '📊',
-    title: 'Open Interest (OI) Long Buildup & Short Covering Squeeze',
-    category: 'Smart Money (SMC) & Flow',
+    chart_type: 'oi',
+    title: 'Open Interest (OI) Long Buildup & Short Squeeze Dynamics',
+    category: 'Institutional Order Flow',
     single_line: 'Long Buildup (Price ↑ + OI ↑) signals fresh institutional capital inflow; Short Covering (Price ↑ + OI ↓) triggers explosive short squeezes.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Long Buildup (Price +2% + OI +15%) or Short Squeeze (Price breaks resistance as Call OI unwinds).',
-    bearish_display: '🔴 BEARISH SHORT: Short Buildup (Price -2% + OI +15%) or Long Unwinding (Price drops + OI drops).',
+    bullish_logic: '🟢 BULLISH BUY: Long Buildup (Price +2% + OI +15%) or Short Squeeze (Price breaks resistance as Call OI unwinds).',
+    bearish_logic: '🔴 BEARISH SHORT: Short Buildup (Price -2% + OI +15%) or Long Unwinding (Price drops + OI drops).',
     entry_trigger: 'Buy when Long Buildup is detected across near and next month futures contracts.',
     stop_loss: 'SL at day low or below highest Put OI strike support.',
     target_1: 'Target 1: Next Call OI resistance strike (1:2.0 R:R)',
@@ -753,16 +1053,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/long-buildup',
   },
   {
-    day: 28,
+    id: 28,
     day_tag: '28',
     symbol_icon: '⚖️',
-    title: 'Option Chain PCR (Put-Call Ratio) Contrarian Turnaround',
-    category: 'Smart Money (SMC) & Flow',
+    chart_type: 'pcr',
+    title: 'Option Chain PCR Sentiment Equilibrium & Reversals',
+    category: 'Institutional Order Flow',
     single_line: 'Extreme Put-Call Ratio readings indicate retail panic or complacency; PCR < 0.60 signals extreme oversold buy opportunity, PCR > 1.40 signals top.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: Nifty/Stock PCR drops to 0.55–0.70 at support while Put writing increases at round strikes → contrarian rally.',
-    bearish_display: '🔴 BEARISH SHORT: PCR spikes above 1.50 at resistance with heavy Call unwinding → contrarian selloff risk.',
+    bullish_logic: '🟢 BULLISH BUY: Nifty/Stock PCR drops to 0.55–0.70 at support while Put writing increases at round strikes → contrarian rally.',
+    bearish_logic: '🔴 BEARISH SHORT: PCR spikes above 1.50 at resistance with heavy Call unwinding → contrarian selloff risk.',
     entry_trigger: 'Buy when PCR starts rebounding from extreme low with green price candle.',
     stop_loss: 'SL below recent panic low.',
     target_1: 'Target 1: Mean reversion to PCR 1.0 (1:2.5 R:R)',
@@ -778,16 +1079,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/oi-analysis',
   },
   {
-    day: 29,
+    id: 29,
     day_tag: '29',
     symbol_icon: '⏰',
-    title: 'Opening Range Breakout (ORB 15-Minute Rule)',
-    category: 'Candlestick Patterns',
+    chart_type: 'orb',
+    title: 'Opening Range Breakout (ORB 15-Minute Protocol)',
+    category: 'Candlestick Mechanics',
     single_line: 'Mark the High and Low of the first 15-minute candle (09:15–09:30 IST); when candle 2 or 3 breaks and closes outside the range, trade the expansion in that direction.',
     is_bullish: true,
     is_bearish: true,
-    bullish_display: '🟢 BULLISH BUY: 15-min candle (09:15-09:30) high is breached and confirmed by 2nd candle closing above high + Volume > 1.5x.',
-    bearish_display: '🔴 BEARISH SHORT: 15-min candle low is breached and confirmed by candle closing below low + heavy red volume.',
+    bullish_logic: '🟢 BULLISH BUY: 15-min candle (09:15-09:30) high is breached and confirmed by 2nd candle closing above high + Volume > 1.5x.',
+    bearish_logic: '🔴 BEARISH SHORT: 15-min candle low is breached and confirmed by candle closing below low + heavy red volume.',
     entry_trigger: 'Enter immediately on close of breakout candle above ORB High.',
     stop_loss: 'SL at the midpoint of the 15-min opening candle (or ORB Low for tight ranges).',
     target_1: 'Target 1: ORB Range height added to breakout level (1:1.5 R:R)',
@@ -803,16 +1105,17 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
     scanner_path: '/top-buy',
   },
   {
-    day: 30,
+    id: 30,
     day_tag: '30',
     symbol_icon: '🏆',
-    title: '200-Point Institutional AI Master Buy Checklist (All-in-One Rule)',
-    category: 'Smart Money (SMC) & Flow',
+    chart_type: 'ai_meter',
+    title: 'Institutional 200-Point AI Multi-Factor Engine',
+    category: 'Institutional Order Flow',
     single_line: 'Combines 12 multi-factor pillars (Technicals 50, Fundamentals 40, Derivatives 35, Volume 20, Relative Strength 15, SMC 15) to identify 90%+ institutional high-conviction buys.',
     is_bullish: true,
     is_bearish: false,
-    bullish_display: '🟢 ULTIMATE HIGH-CONVICTION BUY: AI Score ≥ 85/100 (170/200 pts) with Bullish Stack, Volume Expansion > 2x, and Long Buildup.',
-    bearish_display: '🔴 HIGH-RISK SELL: AI Score < 40/100 with Short Buildup, Negative RS, and Breakdown below 200 EMA.',
+    bullish_logic: '🟢 ULTIMATE HIGH-CONVICTION BUY: AI Score ≥ 85/100 (170/200 pts) with Bullish Stack, Volume Expansion > 2x, and Long Buildup.',
+    bearish_logic: '🔴 HIGH-RISK SELL: AI Score < 40/100 with Short Buildup, Negative RS, and Breakdown below 200 EMA.',
     entry_trigger: 'Buy stocks appearing on High-Conviction AI Master List with score > 85.',
     stop_loss: 'SL at algorithmically calculated support (typically 1.5% below entry).',
     target_1: 'Target 1: 1:2.0 R:R (T1 hit rate 89%)',
@@ -833,13 +1136,14 @@ export const SEQUENTIAL_STRATEGY_SERIES: MasterclassStrategy[] = [
   },
 ];
 
-// ── 2. Technical Indicator Mathematical Formula Library (Detailed Mathematics & Derivations) ──
-export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
+// ── 2. Technical Indicator Mathematical Library ──
+export const TECHNICAL_INDICATOR_LIBRARY: IndicatorMath[] = [
   {
     name: 'Relative Strength Index',
     symbol_icon: '📈',
     acronym: 'RSI (14)',
     category: 'Momentum',
+    chart_type: 'rsi_osc',
     math_formula: 'RSI = 100 - [100 / (1 + RS)]   where RS = (Smoothed Avg 14-Day Gain) / (Smoothed Avg 14-Day Loss)',
     calculation_steps: [
       '1. Price Change: ΔP = Close(t) - Close(t-1)',
@@ -861,6 +1165,7 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     symbol_icon: '🔀',
     acronym: 'MACD (12, 26, 9)',
     category: 'Momentum',
+    chart_type: 'macd_osc',
     math_formula: 'MACD Line = EMA(12) - EMA(26) | Signal Line = EMA(9, MACD Line) | Histogram = MACD Line - Signal Line',
     calculation_steps: [
       '1. Fast EMA = 12-period exponential moving average of closing prices.',
@@ -878,10 +1183,11 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     scanner_path: '/indicators',
   },
   {
-    name: 'Put-Call Ratio & Option Chain Greek Sentiment',
+    name: 'Put-Call Ratio & Option Greek Sentiment',
     symbol_icon: '⚖️',
     acronym: 'PCR (Options)',
     category: 'Derivatives & OI',
+    chart_type: 'pcr',
     math_formula: 'PCR = Total Put Open Interest (Σ Put OI) ÷ Total Call Open Interest (Σ Call OI)',
     calculation_steps: [
       '1. Sum all outstanding open interest contracts for Puts across all active strikes: Σ Put OI.',
@@ -902,6 +1208,7 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     symbol_icon: '🧭',
     acronym: 'ADX (14)',
     category: 'Trend',
+    chart_type: 'supertrend',
     math_formula: 'ADX = 14-Period EMA of DX   where DX = [|+DI - -DI| / (+DI + -DI)] × 100',
     calculation_steps: [
       '1. Directional Movement: +DM = Today High - Prev High, -DM = Prev Low - Today Low.',
@@ -923,6 +1230,7 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     symbol_icon: '🌊',
     acronym: 'VWAP',
     category: 'Volume / Flow',
+    chart_type: 'vwap',
     math_formula: 'VWAP = Σ(Typical Price × Volume) ÷ Σ(Volume)   where Typical Price = (High + Low + Close) / 3',
     calculation_steps: [
       '1. Typical Price: TP(t) = [High(t) + Low(t) + Close(t)] / 3.',
@@ -944,6 +1252,7 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     symbol_icon: '🛡️',
     acronym: 'Supertrend (10, 3)',
     category: 'Trend',
+    chart_type: 'supertrend',
     math_formula: 'Upper Band = (H+L)/2 + (3 × ATR) | Lower Band = (H+L)/2 - (3 × ATR) | Dynamic Flip Rule',
     calculation_steps: [
       '1. Calculate 10-period Average True Range (ATR).',
@@ -965,6 +1274,7 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     symbol_icon: '🎯',
     acronym: 'BB (20, 2)',
     category: 'Volatility',
+    chart_type: 'breakout',
     math_formula: 'Middle = SMA(20) | Upper = SMA(20) + (2 × σ) | Lower = SMA(20) - (2 × σ)  where σ = 20-Day Std Dev',
     calculation_steps: [
       '1. Middle Band = 20-period simple moving average of closing prices: SMA(20).',
@@ -986,6 +1296,7 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     symbol_icon: '📐',
     acronym: 'ATR (14)',
     category: 'Volatility',
+    chart_type: 'triangle',
     math_formula: 'ATR = (1/14) Σ max[(H-L), |H-PrevC|, |L-PrevC|] | Position Size = (Capital × 1%) ÷ (1.5 × ATR)',
     calculation_steps: [
       '1. True Range = max of: (High - Low), |High - Prev Close|, |Low - Prev Close|.',
@@ -1003,30 +1314,11 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     scanner_path: '/today-result',
   },
   {
-    name: 'Stochastic Oscillator Momentum',
-    symbol_icon: '⚡',
-    acronym: 'Stochastic (14, 3, 3)',
-    category: 'Momentum',
-    math_formula: '%K = [(Close - Lowest Low 14) / (Highest High 14 - Lowest Low 14)] × 100 | %D = SMA(3, %K)',
-    calculation_steps: [
-      '1. Find Lowest Low (L14) and Highest High (H14) over the past 14 periods.',
-      '2. Fast Stochastic %K = [(Close - L14) / (H14 - L14)] * 100.',
-      '3. Slow %K = 3-period SMA of Fast %K.',
-      '4. %D Line = 3-period SMA of Slow %K.',
-    ],
-    single_line: 'Compares closing price to price range over a given period; %K crossing above %D below 20 triggers sharp oversold reversal buy.',
-    bullish_math: '🟢 Bullish Formula: %K crosses ABOVE %D while both are below 20 (Oversold Bullish Crossover) + green candle confirmation.',
-    bearish_math: '🔴 Bearish Formula: %K crosses BELOW %D while both are above 80 (Overbought Bearish Crossover) + red candle breakdown.',
-    ideal_parameters: '%K Period = 14, %K Smoothing = 3, %D Period = 3',
-    interpretation: 'Identifies exact turning points when momentum shifts inside a trading range.',
-    pro_tip: 'In strong trending markets, only take Stochastic oversold crossovers in the direction of the 50 EMA trend.',
-    scanner_path: '/indicators',
-  },
-  {
-    name: 'Exponential Moving Average Alignment Stack',
+    name: 'Exponential Moving Average Stack',
     symbol_icon: '🥞',
     acronym: 'EMA Stack (9, 20, 50, 200)',
     category: 'Trend',
+    chart_type: 'golden_cross',
     math_formula: 'EMA(t) = [Price(t) × k] + [EMA(t-1) × (1 - k)]   where k = 2 / (Period + 1)',
     calculation_steps: [
       '1. Weighting multiplier: k = 2 / (Period + 1).',
@@ -1044,10 +1336,11 @@ export const TECHNICAL_INDICATOR_LIBRARY: IndicatorFormula[] = [
     scanner_path: '/ema-screener',
   },
   {
-    name: 'Smart Money Concepts (SMC) & Fair Value Gap',
+    name: 'Smart Money (SMC) Imbalance & Order Block',
     symbol_icon: '🏦',
     acronym: 'SMC (OB & FVG)',
     category: 'Derivatives & OI',
+    chart_type: 'smc_ob',
     math_formula: 'FVG = Low(Candle 1) - High(Candle 3) [Bullish Imbalance] | OB = Last Down Candle before BOS',
     calculation_steps: [
       '1. Detect explosive 3-candle displacement wave.',
@@ -1100,7 +1393,7 @@ export default function FormulaPage() {
         s.category.toLowerCase().includes(q) ||
         s.indicators.some(i => i.toLowerCase().includes(q)) ||
         s.example.toLowerCase().includes(q) ||
-        String(s.day) === q
+        String(s.id) === q
       );
     });
   }, [searchQuery, selectedCategory]);
@@ -1125,10 +1418,10 @@ export default function FormulaPage() {
     { label: 'All (30)', value: 'All' },
     { label: '🟢 Bullish Setups', value: 'Bullish' },
     { label: '🔴 Bearish Setups', value: 'Bearish' },
-    { label: '🕯️ Candlestick Patterns', value: 'Candlestick Patterns' },
-    { label: '📐 Chart Formations', value: 'Chart Formations' },
-    { label: '📈 EMA & Indicators', value: 'EMA & Indicators' },
-    { label: '🏦 Smart Money & Flow', value: 'Smart Money (SMC) & Flow' },
+    { label: '🕯️ Candlestick Mechanics', value: 'Candlestick Mechanics' },
+    { label: '📐 Geometric Formations', value: 'Geometric Formations' },
+    { label: '📈 Dynamic Moving Averages', value: 'Dynamic Moving Averages' },
+    { label: '🏦 Institutional Order Flow', value: 'Institutional Order Flow' },
   ];
 
   const handleAccordionChange = (panel: string) => (_: React.SyntheticEvent, isExpanded: boolean) => {
@@ -1137,7 +1430,7 @@ export default function FormulaPage() {
 
   return (
     <Box sx={{ pb: 6 }}>
-      {/* ── Top Hero Header (Pure Study & Educational Notebook) ── */}
+      {/* ── Top Hero Header (Personal Study & Technical Library) ── */}
       <Paper
         elevation={0}
         sx={{
@@ -1156,32 +1449,32 @@ export default function FormulaPage() {
           <Box sx={{ flex: 1 }}>
             <Stack direction="row" alignItems="center" spacing={1} mb={1} flexWrap="wrap">
               <Chip
-                icon={<School sx={{ fontSize: 16 }} />}
-                label="Strategy Guide (1 to 30)"
+                icon={<MenuBook sx={{ fontSize: 16 }} />}
+                label="Personal Study &amp; Technical Analysis Handbook"
                 color="success"
                 size="small"
                 sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
               />
               <Chip
                 icon={<Verified sx={{ fontSize: 14 }} />}
-                label="Technical Indicator Mathematical Library"
+                label="Mathematical Formula Library"
                 size="small"
                 variant="outlined"
                 sx={{ fontWeight: 800, fontSize: '0.68rem', height: 22 }}
               />
               <Chip
-                label="Sequential 1–30"
+                label="All-in-One 1–30 Matrix"
                 size="small"
                 sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.12)', color: '#00e676', height: 22 }}
               />
             </Stack>
 
             <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -0.5, mb: 0.8 }}>
-              🎓 Strategy Guide &amp; Mathematical Formula Library
+              📊 Proprietary Strategy Handbook &amp; Mathematical Formula Library
             </Typography>
 
-            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 850, lineHeight: 1.5, mb: 1.5 }}>
-              Comprehensive educational study notebook containing full mathematical formulas, single-line rules, exact Stop Loss / Target levels, and indicator derivations from 1 to 30 in sequential order.
+            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 880, lineHeight: 1.5, mb: 1.5 }}>
+              All-in-one personal study reference featuring miniature candlestick diagrams, quantitative single-line rules, exact Stop Loss / Target levels, and indicator mathematical derivations in clean 1 to 30 sequence.
             </Typography>
           </Box>
         </Stack>
@@ -1189,11 +1482,11 @@ export default function FormulaPage() {
         {/* Top Summary Metrics */}
         <Grid container spacing={1.5} mt={0.5}>
           {[
-            { label: 'Strategy Series', value: '1 → 30', color: '#00e5ff', icon: <School /> },
-            { label: 'Bullish Buy Rules', value: '22 Strategies', color: '#00e676', icon: <TrendingUp /> },
-            { label: 'Bearish Exit Rules', value: '18 Strategies', color: '#ff1744', icon: <TrendingDown /> },
+            { label: 'Strategy Matrix', value: '1 → 30 Rules', color: '#00e5ff', icon: <School /> },
+            { label: 'Bullish Formations', value: '22 Strategies', color: '#00e676', icon: <TrendingUp /> },
+            { label: 'Bearish Formations', value: '18 Strategies', color: '#ff1744', icon: <TrendingDown /> },
             { label: 'Mathematical Library', value: 'RSI, MACD, PCR, ADX', color: '#ffd600', icon: <Calculate /> },
-            { label: 'Smart Money SMC', value: 'OB, FVG, BOS, CHoCH', color: '#d500f9', icon: <AutoAwesome /> },
+            { label: 'Order Flow (SMC)', value: 'OB, FVG, BOS, CHoCH', color: '#d500f9', icon: <AutoAwesome /> },
           ].map(m => (
             <Grid item xs={6} sm={4} md={2.4} key={m.label}>
               <Box
@@ -1240,7 +1533,7 @@ export default function FormulaPage() {
             '& .MuiTab-root': { fontWeight: 800, fontSize: '0.85rem', py: 1.8 },
           }}
         >
-          <Tab icon={<School sx={{ fontSize: 18 }} />} iconPosition="start" label="🎓 Strategy Guide (1 to 30)" />
+          <Tab icon={<MenuBook sx={{ fontSize: 18 }} />} iconPosition="start" label="📚 Price Action & Strategy Library (1 to 30)" />
           <Tab icon={<Calculate sx={{ fontSize: 18 }} />} iconPosition="start" label="📐 Technical Indicator Formulas (RSI, MACD, PCR, ADX, VWAP)" />
         </Tabs>
 
@@ -1317,7 +1610,7 @@ export default function FormulaPage() {
           {viewMode === 'cards' && (
             <Grid container spacing={2}>
               {filteredMasterclass.map(item => (
-                <Grid item xs={12} md={6} lg={4} key={item.day}>
+                <Grid item xs={12} md={6} lg={4} key={item.id}>
                   <Card
                     elevation={0}
                     sx={{
@@ -1326,12 +1619,12 @@ export default function FormulaPage() {
                       flexDirection: 'column',
                       borderRadius: 3,
                       border: '1.5px solid',
-                      borderColor: item.day === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+                      borderColor: item.id === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
                       bgcolor: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
                       transition: 'all 0.22s ease-in-out',
                       '&:hover': {
                         transform: 'translateY(-4px)',
-                        borderColor: item.day === 19 ? '#059669' : 'primary.main',
+                        borderColor: item.id === 19 ? '#059669' : 'primary.main',
                         boxShadow: isDark ? '0 12px 30px rgba(0,0,0,0.5)' : '0 12px 30px rgba(0,0,0,0.08)',
                       },
                     }}
@@ -1340,7 +1633,7 @@ export default function FormulaPage() {
                     <Box
                       sx={{
                         height: 4,
-                        background: item.day === 19
+                        background: item.id === 19
                           ? 'linear-gradient(90deg, #10b981 0%, #06b6d4 100%)'
                           : item.is_bullish && item.is_bearish
                           ? 'linear-gradient(90deg, #00e676 0%, #ff1744 100%)'
@@ -1351,22 +1644,28 @@ export default function FormulaPage() {
                     />
 
                     <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                      {/* Header Row */}
-                      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1} gap={1}>
+                      {/* Header Row with Mini SVG Illustration */}
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1} gap={1}>
                         <Chip
                           icon={<span style={{ fontSize: 13, marginRight: 2 }}>{item.symbol_icon}</span>}
-                          label={`#${item.day}`}
+                          label={`#${item.id}`}
                           size="small"
                           sx={{
                             fontWeight: 900,
                             fontSize: '0.72rem',
                             height: 22,
-                            bgcolor: item.day === 19 ? 'rgba(16,185,129,0.2)' : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                            color: item.day === 19 ? '#10b981' : 'text.primary',
+                            bgcolor: item.id === 19 ? 'rgba(16,185,129,0.2)' : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                            color: item.id === 19 ? '#10b981' : 'text.primary',
                             border: '1px solid',
-                            borderColor: item.day === 19 ? 'rgba(16,185,129,0.4)' : 'divider',
+                            borderColor: item.id === 19 ? 'rgba(16,185,129,0.4)' : 'divider',
                           }}
                         />
+
+                        {/* Tiny Pattern Chart Visual */}
+                        <Box sx={{ px: 1, py: 0.3, borderRadius: 1.5, bgcolor: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', border: '1px solid', borderColor: 'divider' }}>
+                          <MiniPatternChart type={item.chart_type} isDark={isDark} />
+                        </Box>
+
                         <Chip
                           label={item.win_rate}
                           size="small"
@@ -1394,7 +1693,7 @@ export default function FormulaPage() {
                           borderRadius: 2,
                           bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
                           borderLeft: '3px solid',
-                          borderColor: item.day === 19 ? '#10b981' : 'primary.main',
+                          borderColor: item.id === 19 ? '#10b981' : 'primary.main',
                         }}
                       >
                         <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: 'text.secondary', fontStyle: 'italic', lineHeight: 1.45 }}>
@@ -1414,7 +1713,7 @@ export default function FormulaPage() {
                           }}
                         >
                           <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#00e676', lineHeight: 1.4 }}>
-                            {item.bullish_display}
+                            {item.bullish_logic}
                           </Typography>
                         </Box>
                       )}
@@ -1431,7 +1730,7 @@ export default function FormulaPage() {
                           }}
                         >
                           <Typography sx={{ fontSize: '0.73rem', fontWeight: 800, color: '#ff1744', lineHeight: 1.4 }}>
-                            {item.bearish_display}
+                            {item.bearish_logic}
                           </Typography>
                         </Box>
                       )}
@@ -1477,13 +1776,13 @@ export default function FormulaPage() {
             <Stack spacing={1.5}>
               {filteredMasterclass.map(item => (
                 <Accordion
-                  key={item.day}
-                  expanded={expandedDay === String(item.day)}
-                  onChange={handleAccordionChange(String(item.day))}
+                  key={item.id}
+                  expanded={expandedDay === String(item.id)}
+                  onChange={handleAccordionChange(String(item.id))}
                   sx={{
                     borderRadius: 2.5,
                     border: '1px solid',
-                    borderColor: item.day === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
+                    borderColor: item.id === 19 ? '#10b981' : isDark ? 'rgba(255,255,255,0.08)' : 'divider',
                     bgcolor: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
                     overflow: 'hidden',
                     '&:before': { display: 'none' },
@@ -1493,14 +1792,17 @@ export default function FormulaPage() {
                     <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1.5} width="100%" pr={1}>
                       <Chip
                         icon={<span style={{ fontSize: 13, marginRight: 2 }}>{item.symbol_icon}</span>}
-                        label={`#${item.day}`}
+                        label={`#${item.id}`}
                         size="small"
-                        color={item.day === 19 ? 'success' : 'primary'}
+                        color={item.id === 19 ? 'success' : 'primary'}
                         sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
                       />
                       <Typography variant="subtitle1" fontWeight={800} sx={{ flex: 1 }}>
                         {item.symbol_icon} {item.title}
                       </Typography>
+                      <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                        <MiniPatternChart type={item.chart_type} isDark={isDark} />
+                      </Box>
                       <Stack direction="row" spacing={1}>
                         <Chip
                           label={item.win_rate}
@@ -1556,7 +1858,7 @@ export default function FormulaPage() {
                             </Typography>
                           </Stack>
                           <Typography variant="body2" fontWeight={800} color="#00e676" mb={1} sx={{ lineHeight: 1.5 }}>
-                            {item.bullish_display}
+                            {item.bullish_logic}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" fontWeight={700} display="block">
                             • Trigger: {item.entry_trigger}
@@ -1581,7 +1883,7 @@ export default function FormulaPage() {
                             </Typography>
                           </Stack>
                           <Typography variant="body2" fontWeight={800} color="#ff1744" mb={1} sx={{ lineHeight: 1.5 }}>
-                            {item.bearish_display}
+                            {item.bearish_logic}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" fontWeight={700} display="block">
                             • Stop Loss: {item.stop_loss}
@@ -1608,7 +1910,7 @@ export default function FormulaPage() {
                       <Grid item xs={12} md={6}>
                         <Paper sx={{ p: 1.75, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
                           <Typography variant="subtitle2" fontWeight={800} mb={1}>
-                            ⚠️ Strategy Rules &amp; Retail Traps to Avoid
+                            ⚠️ Strategy Rules &amp; Traps to Avoid
                           </Typography>
                           <Stack spacing={0.6}>
                             {item.rules.map((r, i) => (
@@ -1639,7 +1941,7 @@ export default function FormulaPage() {
                                 ))}
                               </Stack>
                               <Typography variant="caption" color="primary.main" fontWeight={700} display="block" mt={1}>
-                                💡 Real Market Example: {item.example}
+                                💡 Market Case Study: {item.example}
                               </Typography>
                             </Box>
 
@@ -1669,7 +1971,8 @@ export default function FormulaPage() {
                 <TableHead sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8faff' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 900 }}>#</TableCell>
-                    <TableCell sx={{ fontWeight: 900 }}>Strategy &amp; Single-Line Understanding</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Visual</TableCell>
+                    <TableCell sx={{ fontWeight: 900 }}>Strategy &amp; Single-Line Rule</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Bullish Trigger (Green)</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Bearish Warning (Red)</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Win Rate</TableCell>
@@ -1678,25 +1981,27 @@ export default function FormulaPage() {
                 </TableHead>
                 <TableBody>
                   {filteredMasterclass.map(item => (
-                    <TableRow key={item.day} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
+                    <TableRow key={item.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(item.scanner_path)}>
                       <TableCell>
                         <Chip
-                          icon={<span style={{ fontSize: 12 }}>{item.symbol_icon}</span>}
-                          label={String(item.day)}
+                          label={String(item.id)}
                           size="small"
-                          color={item.day === 19 ? 'success' : 'default'}
+                          color={item.id === 19 ? 'success' : 'default'}
                           sx={{ fontWeight: 900, height: 22 }}
                         />
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 340 }}>
+                      <TableCell>
+                        <MiniPatternChart type={item.chart_type} isDark={isDark} />
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 320 }}>
                         <Typography variant="body2" fontWeight={800}>{item.symbol_icon} {item.title}</Typography>
                         <Typography variant="caption" color="text.secondary" fontStyle="italic" display="block">{item.single_line}</Typography>
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 280 }}>
-                        <Typography variant="caption" fontWeight={800} color="#00e676">{item.bullish_display}</Typography>
+                      <TableCell sx={{ maxWidth: 260 }}>
+                        <Typography variant="caption" fontWeight={800} color="#00e676">{item.bullish_logic}</Typography>
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 280 }}>
-                        <Typography variant="caption" fontWeight={800} color="#ff1744">{item.bearish_display}</Typography>
+                      <TableCell sx={{ maxWidth: 260 }}>
+                        <Typography variant="caption" fontWeight={800} color="#ff1744">{item.bearish_logic}</Typography>
                       </TableCell>
                       <TableCell>
                         <Chip label={item.win_rate} size="small" sx={{ fontWeight: 900, bgcolor: 'rgba(0,230,118,0.15)', color: '#00e676' }} />
@@ -1750,12 +2055,17 @@ export default function FormulaPage() {
                         {ind.name}
                       </Typography>
                     </Stack>
-                    <Chip
-                      label={ind.acronym}
-                      size="small"
-                      color="primary"
-                      sx={{ fontWeight: 900, fontSize: '0.72rem', height: 22 }}
-                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ px: 1, py: 0.3, borderRadius: 1.5, bgcolor: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)', border: '1px solid', borderColor: 'divider' }}>
+                        <MiniPatternChart type={ind.chart_type} isDark={isDark} />
+                      </Box>
+                      <Chip
+                        label={ind.acronym}
+                        size="small"
+                        color="primary"
+                        sx={{ fontWeight: 900, fontSize: '0.72rem', height: 22 }}
+                      />
+                    </Box>
                   </Stack>
 
                   {/* Single Line Understanding */}
