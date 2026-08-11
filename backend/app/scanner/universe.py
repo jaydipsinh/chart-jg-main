@@ -49,6 +49,22 @@ def get_full_universe() -> List[StockInfo]:
     result: List[StockInfo] = []
 
 
+    # 0. Primary F&O Universe (All 209 F&O stocks)
+    for ticker in NIFTY_FUTURES_SYMBOLS:
+        sym = ticker.replace(".NS", "")
+        if sym not in seen:
+            seen.add(sym)
+            result.append(StockInfo(
+                symbol=sym,
+                name=COMPANY_NAMES.get(ticker, sym),
+                sector=_sector_for_symbol(sym),
+                index="F&O",
+                ticker=ticker,
+                industry=_sector_for_symbol(sym),
+                cap_category="Large Cap" if ticker in LARGE_CAP_SYMBOLS else "Mid Cap",
+                fo_eligible=True,
+            ))
+
     # 1. Large Cap
     for ticker in LARGE_CAP_SYMBOLS:
         sym = ticker.replace(".NS", "")
@@ -62,7 +78,7 @@ def get_full_universe() -> List[StockInfo]:
                 ticker=ticker,
                 industry=_sector_for_symbol(sym),
                 cap_category="Large Cap",
-                fo_eligible=(sym in FO_SET or True),
+                fo_eligible=(sym in FO_SET),
             ))
 
     # 2. Mid Cap
