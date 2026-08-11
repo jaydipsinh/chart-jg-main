@@ -209,20 +209,54 @@ def compute_institutional_trade_plan(
     ind: Dict[str, Any],
     trade_type: str = "buy"
 ) -> Dict[str, Any]:
-    """Computes institutional trade entry zones, Stop Loss, Trailing SL, Targets 1-3, R:R."""
+    """Computes institutional trade entry zones, Stop Loss, Trailing SL, Targets 1-3 strictly derived from Support & Resistance levels."""
     p = round(price, 2)
-    atr_val = atr if (atr and atr > 0) else p * 0.02
+    atr_val = atr if (atr and atr > 0) else max(1.0, p * 0.018)
+
+    # Extract or derive OHLC & Classical Pivot Support / Resistance levels
+    h = ind.get("high") or (p * 1.015)
+    l = ind.get("low") or (p * 0.985)
+    c = ind.get("close") or p
+    pivot = (h + l + c) / 3.0
+
+    # Pivot levels
+    s1_calc = (2.0 * pivot) - h
+    s2_calc = pivot - (h - l)
+    s3_calc = l - 2.0 * (h - pivot)
+
+    r1_calc = (2.0 * pivot) - l
+    r2_calc = pivot + (h - l)
+    r3_calc = h + 2.0 * (pivot - l)
+
+    # Harmonize with recent 20-day swing support and resistance if available
+    swing_supp = ind.get("support")
+    swing_res  = ind.get("resistance")
+
+    s1 = min(s1_calc, swing_supp) if swing_supp else s1_calc
+    r1 = max(r1_calc, swing_res) if swing_res else r1_calc
+    s2 = min(s2_calc, s1 * 0.975)
+    r2 = max(r2_calc, r1 * 1.035)
+    s3 = min(s3_calc, s2 * 0.96)
+    r3 = max(r3_calc, r2 * 1.05)
 
     if trade_type.lower() == "buy":
-        buy_min = round(p * 0.996, 2)
-        buy_max = round(p * 1.003, 2)
-        add_dip = round(p * 0.985, 2)
-        sl = round(p - (atr_val * 1.5), 2)
-        trail_sl = round(p - (atr_val * 0.8), 2)
-        t1 = round(p + (atr_val * 2.0), 2)
-        t2 = round(p + (atr_val * 3.5), 2)
-        t3 = round(p + (atr_val * 5.5), 2)
-        rr = round((t1 - p) / max(p - sl, 1.0), 2)
+        # Support Floor base
+        supp_base = min(s1, p * 0.99)
+        sl = round(min(supp_base * 0.985, p - (atr_val * 1.5)), 2)
+        trail_sl = round(min(p * 0.995, p - (atr_val * 0.7)), 2)
+
+        # Targets strictly derived from Resistance 1, 2, 3
+        t1 = round(max(r1, p + (atr_val * 1.8), p * 1.042), 2)
+        t2 = round(max(r2, t1 * 1.055, p + (atr_val * 3.5), p * 1.125), 2)
+        t3 = round(max(r3, t2 * 1.070, p + (atr_val * 5.5), p * 1.220), 2)
+
+        buy_min = round(max(supp_base, p * 0.992), 2)
+        buy_max = round(p * 1.004, 2)
+        add_dip = round(supp_base, 2)
+
+        risk = max(p - sl, 0.5)
+        reward = max(t1 - p, 1.0)
+        rr = round(reward / risk, 2)
         exp_ret = round(((t1 - p) / p) * 100, 2)
 
         return {
@@ -231,6 +265,10 @@ def compute_institutional_trade_plan(
             "sell_zone": None,
             "immediate_entry": "YES",
             "add_on_level": add_dip,
+            "support1": round(s1, 2),
+            "support2": round(s2, 2),
+            "resistance1": round(r1, 2),
+            "resistance2": round(r2, 2),
             "stop_loss": sl,
             "trailing_sl": trail_sl,
             "target1": t1,
@@ -241,15 +279,23 @@ def compute_institutional_trade_plan(
             "holding_period": "10-20 Days",
         }
     else:
-        sell_min = round(p * 0.997, 2)
-        sell_max = round(p * 1.004, 2)
-        add_rally = round(p * 1.015, 2)
-        sl = round(p + (atr_val * 1.5), 2)
-        trail_sl = round(p + (atr_val * 0.8), 2)
-        t1 = round(p - (atr_val * 2.0), 2)
-        t2 = round(p - (atr_val * 3.5), 2)
-        t3 = round(p - (atr_val * 5.5), 2)
-        rr = round((p - t1) / max(sl - p, 1.0), 2)
+        # Resistance Ceiling base
+        res_base = max(r1, p * 1.01)
+        sl = round(max(res_base * 1.015, p + (atr_val * 1.5)), 2)
+        trail_sl = round(max(p * 1.005, p + (atr_val * 0.7)), 2)
+
+        # Targets strictly derived from Support 1, 2, 3
+        t1 = round(min(s1, p - (atr_val * 1.8), p * 0.958), 2)
+        t2 = round(min(s2, t1 * 0.945, p - (atr_val * 3.5), p * 0.875), 2)
+        t3 = round(min(s3, t2 * 0.930, p - (atr_val * 5.5), p * 0.780), 2)
+
+        sell_min = round(p * 0.996, 2)
+        sell_max = round(min(res_base, p * 1.008), 2)
+        add_rally = round(res_base, 2)
+
+        risk = max(sl - p, 0.5)
+        reward = max(p - t1, 1.0)
+        rr = round(reward / risk, 2)
         exp_ret = round(((p - t1) / p) * 100, 2)
 
         return {
@@ -258,6 +304,10 @@ def compute_institutional_trade_plan(
             "sell_zone": f"₹{sell_min} - ₹{sell_max}",
             "immediate_entry": "YES",
             "add_on_level": add_rally,
+            "support1": round(s1, 2),
+            "support2": round(s2, 2),
+            "resistance1": round(r1, 2),
+            "resistance2": round(r2, 2),
             "stop_loss": sl,
             "trailing_sl": trail_sl,
             "target1": t1,
@@ -267,3 +317,4 @@ def compute_institutional_trade_plan(
             "expected_return_pct": abs(exp_ret),
             "holding_period": "5-15 Days",
         }
+

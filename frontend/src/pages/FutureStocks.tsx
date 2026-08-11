@@ -534,18 +534,33 @@ export default function FutureStocksPage() {
                 </>
               )}
 
-              {/* ── Targets & Risk: SL, Target 1, Target 2, Target 3 ── */}
+              {/* ── Targets & Risk: Support, Resistance, SL, Target 1, Target 2, R:R ── */}
               {(indicatorView === 'all' || indicatorView === 'targets') && (
                 <>
+                  {indicatorView === 'targets' && (
+                    <>
+                      <TableCell align="right" sx={{ minWidth: 90, color: '#38bdf8' }}>
+                        Support (S1)
+                      </TableCell>
+                      <TableCell align="right" sx={{ minWidth: 90, color: '#ff9800' }}>
+                        Resist (R1)
+                      </TableCell>
+                    </>
+                  )}
                   <TableCell align="right" sx={{ minWidth: 90, color: '#ff1744' }}>
-                    Stop Loss
+                    Stop Loss (SL)
                   </TableCell>
                   <TableCell align="right" sx={{ minWidth: 95, color: '#00e676' }}>
-                    Target 1 (1M)
+                    Target 1 (R1)
                   </TableCell>
                   <TableCell align="right" sx={{ minWidth: 95, color: '#00e676' }}>
-                    Target 2 (2-3M)
+                    Target 2 (R2)
                   </TableCell>
+                  {indicatorView === 'targets' && (
+                    <TableCell align="center" sx={{ minWidth: 85, color: '#ffd600' }}>
+                      Risk : Reward
+                    </TableCell>
+                  )}
                 </>
               )}
 
@@ -597,9 +612,15 @@ export default function FutureStocksPage() {
               const volRatio = stock.volume_ratio ?? (isUp ? 1.6 : 0.9);
               const delPct = stock.delivery_pct ?? 54.0;
 
-              const sl = stock.stop_loss || (price * 0.965);
-              const t1 = stock.target1 || (price * 1.045);
-              const t2 = stock.target2 || (price * 1.120);
+              const s1 = stock.support1 || stock.support || (price * 0.980);
+              const r1 = stock.resistance1 || stock.resistance || (price * 1.045);
+              const r2 = stock.resistance2 || (r1 * 1.065);
+              const sl = stock.stop_loss || (s1 * 0.985);
+              const t1 = stock.target1 || r1;
+              const t2 = stock.target2 || r2;
+              const riskVal = Math.max(0.5, Math.abs(price - sl));
+              const rewardVal = Math.max(1.0, Math.abs(t1 - price));
+              const rrRatio = stock.risk_reward_ratio ? stock.risk_reward_ratio.toFixed(1) : (rewardVal / riskVal).toFixed(1);
 
               // Smart Money Signal
               let smcText = stock.smart_money_flow || (isLongBuildup ? 'Smart Money Accumulation' : isUp ? 'Bullish Breakout' : 'Institutional Selling');
@@ -843,12 +864,29 @@ export default function FutureStocksPage() {
                     </>
                   )}
 
-                  {/* ── Targets & Risk: SL, T1, T2 ── */}
+                  {/* ── Targets & Risk: Support, Resistance, SL, T1, T2, R:R ── */}
                   {(indicatorView === 'all' || indicatorView === 'targets') && (
                     <>
+                      {indicatorView === 'targets' && (
+                        <>
+                          <TableCell align="right">
+                            <Typography sx={{ fontSize: '0.8rem', fontWeight: 800, color: '#38bdf8', fontVariantNumeric: 'tabular-nums' }}>
+                              ₹{s1.toFixed(1)}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="right">
+                            <Typography sx={{ fontSize: '0.8rem', fontWeight: 800, color: '#ff9800', fontVariantNumeric: 'tabular-nums' }}>
+                              ₹{r1.toFixed(1)}
+                            </Typography>
+                          </TableCell>
+                        </>
+                      )}
                       <TableCell align="right">
                         <Typography sx={{ fontSize: '0.8rem', fontWeight: 800, color: '#ff1744', fontVariantNumeric: 'tabular-nums' }}>
                           ₹{sl.toFixed(1)}
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: '#ff1744', fontWeight: 800 }}>
+                          -{(((price - sl) / price) * 100).toFixed(1)}%
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
@@ -867,6 +905,22 @@ export default function FutureStocksPage() {
                           +{(((t2 - price) / price) * 100).toFixed(1)}%
                         </Typography>
                       </TableCell>
+                      {indicatorView === 'targets' && (
+                        <TableCell align="center">
+                          <Chip
+                            label={`1 : ${rrRatio}`}
+                            size="small"
+                            sx={{
+                              fontWeight: 900,
+                              fontSize: '0.62rem',
+                              height: 19,
+                              bgcolor: 'rgba(255,214,0,0.15)',
+                              color: '#ffd600',
+                              border: '1px solid rgba(255,214,0,0.4)',
+                            }}
+                          />
+                        </TableCell>
+                      )}
                     </>
                   )}
 
