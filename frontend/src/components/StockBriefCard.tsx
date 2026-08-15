@@ -11,6 +11,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveCo
 import type { StockResult } from '../utils/types';
 import { useSessionClock } from '../hooks/useLiveMarketData';
 import { OpenInterestProfile } from './OpenInterestProfile';
+import { SWOTAnalysis } from './SWOTAnalysis';
 
 interface StockBriefCardProps {
   stock: StockResult;
@@ -312,6 +313,11 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
             {/* 📊 ANGEL BROKING OPEN INTEREST PROFILE BOX */}
             <Box sx={{ mb: 2.5 }}>
               <OpenInterestProfile stock={stock} />
+            </Box>
+
+            {/* 🏆 MOTILAL OSWAL 360 SWOT ANALYSIS BOX */}
+            <Box sx={{ mb: 2.5 }}>
+              <SWOTAnalysis stock={stock} />
             </Box>
 
             {/* 4. Bottom Left Row: FUNDAMENTALS & TECHNICAL TREND GAUGE */}
