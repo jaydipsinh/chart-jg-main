@@ -620,7 +620,13 @@ export default function FutureStocksPage() {
               const t2 = stock.target2 || r2;
               const riskVal = Math.max(0.5, Math.abs(price - sl));
               const rewardVal = Math.max(1.0, Math.abs(t1 - price));
-              const rrRatio = stock.risk_reward_ratio ? stock.risk_reward_ratio.toFixed(1) : (rewardVal / riskVal).toFixed(1);
+              const rrRatio = typeof stock.risk_reward_ratio === 'number'
+                ? stock.risk_reward_ratio.toFixed(1)
+                : typeof stock.risk_reward_ratio === 'string' && stock.risk_reward_ratio.includes(':')
+                  ? stock.risk_reward_ratio.replace(/^1\s*:\s*/, '')
+                  : typeof stock.risk_reward_ratio === 'string' && !isNaN(parseFloat(stock.risk_reward_ratio))
+                    ? parseFloat(stock.risk_reward_ratio).toFixed(1)
+                    : (rewardVal / riskVal).toFixed(1);
 
               // Smart Money Signal
               let smcText = stock.smart_money_flow || (isLongBuildup ? 'Smart Money Accumulation' : isUp ? 'Bullish Breakout' : 'Institutional Selling');

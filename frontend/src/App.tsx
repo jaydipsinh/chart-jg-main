@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
+import { ThemeProvider, CssBaseline, CircularProgress, Box, Typography, Button } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
 import { store } from './store';
@@ -69,6 +69,50 @@ const Spinner = () => (
   </Box>
 );
 
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error("ErrorBoundary caught error:", error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Box sx={{ p: 4, textAlign: 'center', maxWidth: 600, mx: 'auto', mt: 8 }}>
+          <Typography variant="h5" fontWeight={800} color="error" gutterBottom>
+            ⚠️ Something went wrong
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            {this.state.error?.message || "An unexpected error occurred."}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Button variant="contained" color="primary" onClick={() => window.location.reload()}>
+              🔄 Reload Application
+            </Button>
+            <Button variant="outlined" onClick={() => { this.setState({ hasError: false }); window.location.href = '/'; }}>
+              🏠 Go to Dashboard
+            </Button>
+          </Box>
+        </Box>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // Inner component so it can use store hooks
 const AppInner: React.FC = () => {
   const dispatch   = useAppDispatch();
@@ -79,9 +123,10 @@ const AppInner: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        <Layout themeMode={themeMode} onToggleTheme={() => dispatch(toggleTheme())}>
-          <Suspense fallback={<Spinner />}>
-            <Routes>
+        <ErrorBoundary>
+          <Layout themeMode={themeMode} onToggleTheme={() => dispatch(toggleTheme())}>
+            <Suspense fallback={<Spinner />}>
+              <Routes>
               <Route path="/"                   element={<DashboardPage />} />
               <Route path="/quant-screener"     element={<QuantScreenerPage />} />
               <Route path="/price-shockers"     element={<PriceShockersPage />} />
@@ -131,6 +176,7 @@ const AppInner: React.FC = () => {
             </Routes>
           </Suspense>
         </Layout>
+        </ErrorBoundary>
       </BrowserRouter>
     </ThemeProvider>
   );
