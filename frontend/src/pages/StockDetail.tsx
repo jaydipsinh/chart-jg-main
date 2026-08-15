@@ -379,11 +379,6 @@ export default function StockDetailPage() {
         </Paper>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          ANGEL BROKING OPEN INTEREST PROFILE WIDGET (CALL = RED, PUT = GREEN)
-         ══════════════════════════════════════════════════════════════════════ */}
-      <OpenInterestProfile stock={stock} />
-
       {/* RENDER SELECTED CARD VIEW */}
       {viewMode === 'brief' && (
         <StockBriefCard stock={stock} onOpenCalculator={() => setCalcOpen(true)} />

@@ -10,6 +10,7 @@ import {
 import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import type { StockResult } from '../utils/types';
 import { useSessionClock } from '../hooks/useLiveMarketData';
+import { OpenInterestProfile } from './OpenInterestProfile';
 
 interface StockBriefCardProps {
   stock: StockResult;
@@ -307,6 +308,11 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
                 </Grid>
               </Grid>
             </Paper>
+
+            {/* 📊 ANGEL BROKING OPEN INTEREST PROFILE BOX */}
+            <Box sx={{ mb: 2.5 }}>
+              <OpenInterestProfile stock={stock} />
+            </Box>
 
             {/* 4. Bottom Left Row: FUNDAMENTALS & TECHNICAL TREND GAUGE */}
             <Grid container spacing={2}>
