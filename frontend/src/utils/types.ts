@@ -105,7 +105,13 @@ export interface StockData {
 
   // Support/Resistance
   support?: number;
+  support1?: number;
+  support2?: number;
+  support3?: number;
   resistance?: number;
+  resistance1?: number;
+  resistance2?: number;
+  resistance3?: number;
 
   // OI patterns
   long_buildup?: boolean;
@@ -116,7 +122,14 @@ export interface StockData {
   // Trade levels
   entry_price?: number;
   target_price?: number;
+  target1?: number;
+  target2?: number;
+  target3?: number;
   stop_loss?: number;
+  stop_loss1?: number;
+  stop_loss2?: number;
+  stop_loss3?: number;
+  trailing_sl?: number;
   risk_reward_ratio?: number;
   expected_return_pct?: number;
   success_probability?: number;

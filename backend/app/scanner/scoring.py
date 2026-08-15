@@ -259,6 +259,10 @@ def compute_institutional_trade_plan(
         rr = round(reward / risk, 2)
         exp_ret = round(((t1 - p) / p) * 100, 2)
 
+        sl1 = trail_sl
+        sl2 = sl
+        sl3 = round(min(s2 * 0.985, p - (atr_val * 2.8)), 2)
+
         return {
             "trade_type": "buy",
             "buy_zone": f"₹{buy_min} - ₹{buy_max}",
@@ -267,9 +271,14 @@ def compute_institutional_trade_plan(
             "add_on_level": add_dip,
             "support1": round(s1, 2),
             "support2": round(s2, 2),
+            "support3": round(s3, 2),
             "resistance1": round(r1, 2),
             "resistance2": round(r2, 2),
+            "resistance3": round(r3, 2),
             "stop_loss": sl,
+            "stop_loss1": sl1,
+            "stop_loss2": sl2,
+            "stop_loss3": sl3,
             "trailing_sl": trail_sl,
             "target1": t1,
             "target2": t2,
@@ -283,6 +292,9 @@ def compute_institutional_trade_plan(
         res_base = max(r1, p * 1.01)
         sl = round(max(res_base * 1.015, p + (atr_val * 1.5)), 2)
         trail_sl = round(max(p * 1.005, p + (atr_val * 0.7)), 2)
+        sl1 = trail_sl
+        sl2 = sl
+        sl3 = round(max(r2 * 1.015, p + (atr_val * 2.8)), 2)
 
         # Targets strictly derived from Support 1, 2, 3
         t1 = round(min(s1, p - (atr_val * 1.8), p * 0.958), 2)
@@ -306,9 +318,14 @@ def compute_institutional_trade_plan(
             "add_on_level": add_rally,
             "support1": round(s1, 2),
             "support2": round(s2, 2),
+            "support3": round(s3, 2),
             "resistance1": round(r1, 2),
             "resistance2": round(r2, 2),
+            "resistance3": round(r3, 2),
             "stop_loss": sl,
+            "stop_loss1": sl1,
+            "stop_loss2": sl2,
+            "stop_loss3": sl3,
             "trailing_sl": trail_sl,
             "target1": t1,
             "target2": t2,

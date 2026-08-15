@@ -12,6 +12,7 @@ import type { StockResult } from '../utils/types';
 import { useSessionClock } from '../hooks/useLiveMarketData';
 import { OpenInterestProfile } from './OpenInterestProfile';
 import { SWOTAnalysis } from './SWOTAnalysis';
+import { SupportResistanceMatrix } from './SupportResistanceMatrix';
 
 interface StockBriefCardProps {
   stock: StockResult;
@@ -662,12 +663,17 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
           </Grid>
         </Grid>
 
-        {/* ================= 2. FULL LENGTH OPEN INTEREST PROFILE (ANGEL BROKING STYLE) ================= */}
+        {/* ================= 2. FULL LENGTH DYNAMIC SUPPORT & RESISTANCE MATRIX ================= */}
         <Box sx={{ mt: 3, mb: 2.5 }}>
+          <SupportResistanceMatrix stock={stock} />
+        </Box>
+
+        {/* ================= 3. FULL LENGTH OPEN INTEREST PROFILE (ANGEL BROKING STYLE) ================= */}
+        <Box sx={{ mb: 2.5 }}>
           <OpenInterestProfile stock={stock} />
         </Box>
 
-        {/* ================= 3. FULL LENGTH MOTILAL OSWAL 360 SWOT ANALYSIS ================= */}
+        {/* ================= 4. FULL LENGTH MOTILAL OSWAL 360 SWOT ANALYSIS ================= */}
         <Box sx={{ mb: 2.5 }}>
           <SWOTAnalysis stock={stock} />
         </Box>
