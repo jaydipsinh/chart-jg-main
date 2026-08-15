@@ -126,36 +126,36 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
     <Paper
       elevation={0}
       sx={{
-        p: { xs: 2, sm: 2.5 },
-        mb: 2.5,
+        p: { xs: 2, sm: 3 },
+        width: '100%',
         borderRadius: 3.5,
         border: '1.5px solid',
         borderColor: isDark ? 'rgba(56,189,248,0.25)' : '#E2E8F0',
         bgcolor: isDark ? '#0f172a' : '#FFFFFF',
-        boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.04)',
+        boxShadow: isDark ? '0 12px 36px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.04)',
       }}
     >
       {/* ── Top Header Bar (Motilal Oswal 360 Style) ── */}
-      <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} gap={1.5} mb={2}>
-        <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap">
+      <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} gap={1.5} mb={2.5}>
+        <Stack direction="row" alignItems="center" spacing={1.2} flexWrap="wrap">
           <Chip
-            icon={<Assessment sx={{ fontSize: 16, color: '#ffffff !important' }} />}
+            icon={<Assessment sx={{ fontSize: 18, color: '#ffffff !important' }} />}
             label="🏆 MOTILAL OSWAL 360 • SWOT ANALYSIS"
             sx={{
               fontWeight: 900,
-              fontSize: '0.75rem',
-              height: 28,
+              fontSize: '0.8rem',
+              height: 32,
               bgcolor: '#1E3A8A',
               color: '#ffffff',
-              boxShadow: '0 4px 14px rgba(30,58,138,0.3)',
+              boxShadow: '0 4px 14px rgba(30,58,138,0.35)',
             }}
           />
           <Chip
             label={`${swotData.totalCounts.s} Strengths • ${swotData.totalCounts.w} Weaknesses • ${swotData.totalCounts.o} Opportunities • ${swotData.totalCounts.t} Threats`}
-            size="small"
             sx={{
               fontWeight: 900,
-              fontSize: '0.68rem',
+              fontSize: '0.72rem',
+              height: 28,
               bgcolor: isDark ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
               color: 'text.primary',
             }}
@@ -170,61 +170,61 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
           onChange={(_, val) => val && setActiveTab(val)}
           sx={{ flexWrap: 'wrap', gap: 0.5 }}
         >
-          <ToggleButton value="all" sx={{ fontWeight: 800, fontSize: '0.72rem', py: 0.3, px: 1 }}>
+          <ToggleButton value="all" sx={{ fontWeight: 800, fontSize: '0.75rem', py: 0.4, px: 1.5 }}>
             All ({(swotData.totalCounts.s + swotData.totalCounts.w + swotData.totalCounts.o + swotData.totalCounts.t)})
           </ToggleButton>
-          <ToggleButton value="strengths" sx={{ fontWeight: 900, fontSize: '0.72rem', py: 0.3, px: 1, color: '#059669', '&.Mui-selected': { bgcolor: '#059669', color: '#FFF' } }}>
+          <ToggleButton value="strengths" sx={{ fontWeight: 900, fontSize: '0.75rem', py: 0.4, px: 1.5, color: '#059669', '&.Mui-selected': { bgcolor: '#059669', color: '#FFF' } }}>
             💪 Strengths ({swotData.totalCounts.s})
           </ToggleButton>
-          <ToggleButton value="weaknesses" sx={{ fontWeight: 900, fontSize: '0.72rem', py: 0.3, px: 1, color: '#D97706', '&.Mui-selected': { bgcolor: '#D97706', color: '#FFF' } }}>
+          <ToggleButton value="weaknesses" sx={{ fontWeight: 900, fontSize: '0.75rem', py: 0.4, px: 1.5, color: '#D97706', '&.Mui-selected': { bgcolor: '#D97706', color: '#FFF' } }}>
             ⚠️ Weaknesses ({swotData.totalCounts.w})
           </ToggleButton>
-          <ToggleButton value="opportunities" sx={{ fontWeight: 900, fontSize: '0.72rem', py: 0.3, px: 1, color: '#2563EB', '&.Mui-selected': { bgcolor: '#2563EB', color: '#FFF' } }}>
+          <ToggleButton value="opportunities" sx={{ fontWeight: 900, fontSize: '0.75rem', py: 0.4, px: 1.5, color: '#2563EB', '&.Mui-selected': { bgcolor: '#2563EB', color: '#FFF' } }}>
             🚀 Opportunities ({swotData.totalCounts.o})
           </ToggleButton>
-          <ToggleButton value="threats" sx={{ fontWeight: 900, fontSize: '0.72rem', py: 0.3, px: 1, color: '#DC2626', '&.Mui-selected': { bgcolor: '#DC2626', color: '#FFF' } }}>
+          <ToggleButton value="threats" sx={{ fontWeight: 900, fontSize: '0.75rem', py: 0.4, px: 1.5, color: '#DC2626', '&.Mui-selected': { bgcolor: '#DC2626', color: '#FFF' } }}>
             🛑 Threats ({swotData.totalCounts.t})
           </ToggleButton>
         </ToggleButtonGroup>
       </Stack>
 
-      {/* ── 4 SWOT Quadrant Cards Grid (Motilal Oswal 360 Layout) ── */}
-      <Grid container spacing={2}>
+      {/* ── 4 SWOT Quadrant Cards Grid (Motilal Oswal 360 Full Length Layout) ── */}
+      <Grid container spacing={2.5}>
         {/* 1. STRENGTHS BOX */}
         {(activeTab === 'all' || activeTab === 'strengths') && (
           <Grid item xs={12} md={activeTab === 'all' ? 6 : 12}>
             <Card
               elevation={0}
               sx={{
-                p: 2,
+                p: 2.5,
                 height: '100%',
-                borderRadius: 2.5,
+                borderRadius: 3,
                 border: '1.5px solid',
                 borderColor: '#10B981',
                 bgcolor: isDark ? 'rgba(16,185,129,0.06)' : '#F0FDF4',
               }}
             >
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Box sx={{ width: 28, height: 28, borderRadius: 1.5, bgcolor: '#10B981', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Stack direction="row" alignItems="center" spacing={1.2}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: '#10B981', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>
                     S
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={900} color="#059669" fontSize={13} letterSpacing={0.3}>
+                  <Typography variant="subtitle1" fontWeight={900} color="#059669" fontSize={14} letterSpacing={0.5}>
                     STRENGTHS
                   </Typography>
                 </Stack>
                 <Chip
                   label={`${swotData.totalCounts.s} Triggers`}
                   size="small"
-                  sx={{ fontWeight: 900, fontSize: '0.68rem', bgcolor: '#10B981', color: '#FFF', height: 22 }}
+                  sx={{ fontWeight: 900, fontSize: '0.72rem', bgcolor: '#10B981', color: '#FFF', height: 24 }}
                 />
               </Stack>
 
-              <Stack spacing={1}>
+              <Stack spacing={1.2}>
                 {swotData.strengths.map((item, idx) => (
-                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1}>
-                    <CheckCircle sx={{ fontSize: 15, color: '#10B981', mt: 0.2, flexShrink: 0 }} />
-                    <Typography variant="caption" sx={{ fontSize: '0.78rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.4 }}>
+                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1.2}>
+                    <CheckCircle sx={{ fontSize: 17, color: '#10B981', mt: 0.2, flexShrink: 0 }} />
+                    <Typography variant="body2" sx={{ fontSize: '0.84rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.5 }}>
                       {item}
                     </Typography>
                   </Stack>
@@ -240,35 +240,35 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
             <Card
               elevation={0}
               sx={{
-                p: 2,
+                p: 2.5,
                 height: '100%',
-                borderRadius: 2.5,
+                borderRadius: 3,
                 border: '1.5px solid',
                 borderColor: '#F59E0B',
                 bgcolor: isDark ? 'rgba(245,158,11,0.06)' : '#FFFBEB',
               }}
             >
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Box sx={{ width: 28, height: 28, borderRadius: 1.5, bgcolor: '#F59E0B', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Stack direction="row" alignItems="center" spacing={1.2}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: '#F59E0B', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>
                     W
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={900} color="#D97706" fontSize={13} letterSpacing={0.3}>
+                  <Typography variant="subtitle1" fontWeight={900} color="#D97706" fontSize={14} letterSpacing={0.5}>
                     WEAKNESSES
                   </Typography>
                 </Stack>
                 <Chip
                   label={`${swotData.totalCounts.w} Flags`}
                   size="small"
-                  sx={{ fontWeight: 900, fontSize: '0.68rem', bgcolor: '#F59E0B', color: '#FFF', height: 22 }}
+                  sx={{ fontWeight: 900, fontSize: '0.72rem', bgcolor: '#F59E0B', color: '#FFF', height: 24 }}
                 />
               </Stack>
 
-              <Stack spacing={1}>
+              <Stack spacing={1.2}>
                 {swotData.weaknesses.map((item, idx) => (
-                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1}>
-                    <Warning sx={{ fontSize: 15, color: '#F59E0B', mt: 0.2, flexShrink: 0 }} />
-                    <Typography variant="caption" sx={{ fontSize: '0.78rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.4 }}>
+                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1.2}>
+                    <Warning sx={{ fontSize: 17, color: '#F59E0B', mt: 0.2, flexShrink: 0 }} />
+                    <Typography variant="body2" sx={{ fontSize: '0.84rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.5 }}>
                       {item}
                     </Typography>
                   </Stack>
@@ -284,35 +284,35 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
             <Card
               elevation={0}
               sx={{
-                p: 2,
+                p: 2.5,
                 height: '100%',
-                borderRadius: 2.5,
+                borderRadius: 3,
                 border: '1.5px solid',
                 borderColor: '#3B82F6',
                 bgcolor: isDark ? 'rgba(59,130,246,0.06)' : '#EFF6FF',
               }}
             >
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Box sx={{ width: 28, height: 28, borderRadius: 1.5, bgcolor: '#3B82F6', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Stack direction="row" alignItems="center" spacing={1.2}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: '#3B82F6', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>
                     O
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={900} color="#2563EB" fontSize={13} letterSpacing={0.3}>
+                  <Typography variant="subtitle1" fontWeight={900} color="#2563EB" fontSize={14} letterSpacing={0.5}>
                     OPPORTUNITIES
                   </Typography>
                 </Stack>
                 <Chip
                   label={`${swotData.totalCounts.o} Catalysts`}
                   size="small"
-                  sx={{ fontWeight: 900, fontSize: '0.68rem', bgcolor: '#3B82F6', color: '#FFF', height: 22 }}
+                  sx={{ fontWeight: 900, fontSize: '0.72rem', bgcolor: '#3B82F6', color: '#FFF', height: 24 }}
                 />
               </Stack>
 
-              <Stack spacing={1}>
+              <Stack spacing={1.2}>
                 {swotData.opportunities.map((item, idx) => (
-                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1}>
-                    <Lightbulb sx={{ fontSize: 15, color: '#3B82F6', mt: 0.2, flexShrink: 0 }} />
-                    <Typography variant="caption" sx={{ fontSize: '0.78rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.4 }}>
+                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1.2}>
+                    <Lightbulb sx={{ fontSize: 17, color: '#3B82F6', mt: 0.2, flexShrink: 0 }} />
+                    <Typography variant="body2" sx={{ fontSize: '0.84rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.5 }}>
                       {item}
                     </Typography>
                   </Stack>
@@ -328,35 +328,35 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
             <Card
               elevation={0}
               sx={{
-                p: 2,
+                p: 2.5,
                 height: '100%',
-                borderRadius: 2.5,
+                borderRadius: 3,
                 border: '1.5px solid',
                 borderColor: '#EF4444',
                 bgcolor: isDark ? 'rgba(239,68,68,0.06)' : '#FEF2F2',
               }}
             >
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Box sx={{ width: 28, height: 28, borderRadius: 1.5, bgcolor: '#EF4444', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 14 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+                <Stack direction="row" alignItems="center" spacing={1.2}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: '#EF4444', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>
                     T
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={900} color="#DC2626" fontSize={13} letterSpacing={0.3}>
+                  <Typography variant="subtitle1" fontWeight={900} color="#DC2626" fontSize={14} letterSpacing={0.5}>
                     THREATS
                   </Typography>
                 </Stack>
                 <Chip
                   label={`${swotData.totalCounts.t} Risks`}
                   size="small"
-                  sx={{ fontWeight: 900, fontSize: '0.68rem', bgcolor: '#EF4444', color: '#FFF', height: 22 }}
+                  sx={{ fontWeight: 900, fontSize: '0.72rem', bgcolor: '#EF4444', color: '#FFF', height: 24 }}
                 />
               </Stack>
 
-              <Stack spacing={1}>
+              <Stack spacing={1.2}>
                 {swotData.threats.map((item, idx) => (
-                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1}>
-                    <Dangerous sx={{ fontSize: 15, color: '#EF4444', mt: 0.2, flexShrink: 0 }} />
-                    <Typography variant="caption" sx={{ fontSize: '0.78rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.4 }}>
+                  <Stack key={idx} direction="row" alignItems="flex-start" spacing={1.2}>
+                    <Dangerous sx={{ fontSize: 17, color: '#EF4444', mt: 0.2, flexShrink: 0 }} />
+                    <Typography variant="body2" sx={{ fontSize: '0.84rem', color: isDark ? '#E2E8F0' : '#1E293B', fontWeight: 600, lineHeight: 1.5 }}>
                       {item}
                     </Typography>
                   </Stack>
@@ -368,7 +368,7 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
       </Grid>
 
       {/* ── Takeaway Footer ── */}
-      <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ mt: 2.5, pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
         <Typography variant="caption" color="text.secondary" fontWeight={700}>
           Motilal Oswal 360 Quantitative SWOT Engine • Dynamically calculated from EMA moving averages, RSI momentum, delivery volume, and derivatives open interest.
         </Typography>

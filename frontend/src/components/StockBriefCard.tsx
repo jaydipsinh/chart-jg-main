@@ -310,16 +310,6 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
               </Grid>
             </Paper>
 
-            {/* 📊 ANGEL BROKING OPEN INTEREST PROFILE BOX */}
-            <Box sx={{ mb: 2.5 }}>
-              <OpenInterestProfile stock={stock} />
-            </Box>
-
-            {/* 🏆 MOTILAL OSWAL 360 SWOT ANALYSIS BOX */}
-            <Box sx={{ mb: 2.5 }}>
-              <SWOTAnalysis stock={stock} />
-            </Box>
-
             {/* 4. Bottom Left Row: FUNDAMENTALS & TECHNICAL TREND GAUGE */}
             <Grid container spacing={2}>
               {/* Fundamentals Box */}
@@ -671,6 +661,16 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
             </Paper>
           </Grid>
         </Grid>
+
+        {/* ================= 2. FULL LENGTH OPEN INTEREST PROFILE (ANGEL BROKING STYLE) ================= */}
+        <Box sx={{ mt: 3, mb: 2.5 }}>
+          <OpenInterestProfile stock={stock} />
+        </Box>
+
+        {/* ================= 3. FULL LENGTH MOTILAL OSWAL 360 SWOT ANALYSIS ================= */}
+        <Box sx={{ mb: 2.5 }}>
+          <SWOTAnalysis stock={stock} />
+        </Box>
 
         {/* ================= BOTTOM FOOTER BANNER & DISCLAIMER ================= */}
         <Divider sx={{ my: 2.5 }} />
