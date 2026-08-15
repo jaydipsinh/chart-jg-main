@@ -9,12 +9,13 @@ import {
 import {
   ArrowBack, Refresh, Calculate, Dashboard, Analytics, WarningAmber,
   Verified, TrendingUp, TrendingDown, Security, Speed,
-  CheckCircle, FlashOn, AutoAwesome, Whatshot, School,
+  CheckCircle, FlashOn, AutoAwesome, Whatshot, School, BarChart,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStockDetail } from '../services/api';
 import { StockBriefCard } from '../components/StockBriefCard';
 import { StockReportCard } from '../components/StockReportCard';
+import { OpenInterestProfile } from '../components/OpenInterestProfile';
 import { useSessionClock } from '../hooks/useLiveMarketData';
 import type { StockResult } from '../utils/types';
 
@@ -27,7 +28,7 @@ export default function StockDetailPage() {
   const [calcOpen, setCalcOpen] = useState(false);
   const [lots, setLots] = useState(1);
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
-  const [viewMode, setViewMode] = useState<'brief' | 'full'>('brief');
+  const [viewMode, setViewMode] = useState<'brief' | 'full' | 'oi_profile'>('brief');
 
   // Session clock for IST market hours & auto-polling rate
   const { refreshMs, isMarketOpen, sessionLabel, dataModeLabel } = useSessionClock();
@@ -170,10 +171,13 @@ export default function StockDetailPage() {
           size="small"
         >
           <ToggleButton value="brief" sx={{ fontWeight: 800 }}>
-            📊 BRIEF CARD (IMAGE STYLE)
+            📊 BRIEF CARD
           </ToggleButton>
           <ToggleButton value="full" sx={{ fontWeight: 800 }}>
             🏆 FULL BLOOMBERG REPORT
+          </ToggleButton>
+          <ToggleButton value="oi_profile" sx={{ fontWeight: 800, color: '#0284c7', '&.Mui-selected': { bgcolor: '#0284c7', color: '#ffffff' } }}>
+            📊 ANGEL BROKING OI PROFILE
           </ToggleButton>
         </ToggleButtonGroup>
 
@@ -375,11 +379,25 @@ export default function StockDetailPage() {
         </Paper>
       )}
 
+      {/* ══════════════════════════════════════════════════════════════════════
+          ANGEL BROKING OPEN INTEREST PROFILE WIDGET (CALL = RED, PUT = GREEN)
+         ══════════════════════════════════════════════════════════════════════ */}
+      <OpenInterestProfile stock={stock} />
+
       {/* RENDER SELECTED CARD VIEW */}
-      {viewMode === 'brief' ? (
+      {viewMode === 'brief' && (
         <StockBriefCard stock={stock} onOpenCalculator={() => setCalcOpen(true)} />
-      ) : (
+      )}
+      {viewMode === 'full' && (
         <StockReportCard stock={stock} />
+      )}
+      {viewMode === 'oi_profile' && (
+        <Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="h6" fontWeight={900} mb={1.5}>
+            ⚡ Detailed Open Interest &amp; Derivatives Breakdown
+          </Typography>
+          <StockBriefCard stock={stock} onOpenCalculator={() => setCalcOpen(true)} />
+        </Paper>
       )}
 
       {/* Trade Calculator Modal */}
