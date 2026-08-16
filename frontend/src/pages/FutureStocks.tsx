@@ -40,8 +40,8 @@ export default function FutureStocksPage() {
 
   // Table pagination & sorting
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [orderBy, setOrderBy] = useState<string>('change_pct');
+  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [orderBy, setOrderBy] = useState<string>('score');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
 
   const { data, isLoading, error, refetch, isFetching } = useQuery({
@@ -59,21 +59,40 @@ export default function FutureStocksPage() {
 
   const rawStocks: StockResult[] = (data?.stocks as any) ?? [];
 
-  // Filter stocks by search query
+  // Filter stocks by search query with intelligent fuzzy & token matching
   const filteredStocks = useMemo(() => {
+    if (!searchQuery.trim()) return rawStocks;
+    const rawQ = searchQuery.toLowerCase().trim();
+    const cleanQ = rawQ.replace(/[^a-z0-9]/g, '');
+    const tokens = rawQ.split(/\s+/).filter(Boolean);
+
     return rawStocks.filter(s => {
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase().trim();
-      return (
-        s.symbol.toLowerCase().includes(q) ||
-        (s.name && s.name.toLowerCase().includes(q)) ||
-        (s.sector && s.sector.toLowerCase().includes(q)) ||
-        (s.signal && s.signal.toLowerCase().includes(q))
-      );
+      const sym = (s.symbol || '').toLowerCase();
+      const cleanSym = sym.replace(/[^a-z0-9]/g, '');
+      const name = (s.name || '').toLowerCase();
+      const cleanName = name.replace(/[^a-z0-9]/g, '');
+      const sec = (s.sector || '').toLowerCase();
+      const sig = (s.signal || '').toLowerCase();
+
+      // Direct match
+      if (sym.includes(rawQ) || name.includes(rawQ) || sec.includes(rawQ) || sig.includes(rawQ)) {
+        return true;
+      }
+      // Cleaned alphanumeric match (e.g. bankbaroda matches BANKBARODA.NS & Bank of Baroda)
+      if (cleanQ && (cleanSym.includes(cleanQ) || cleanName.includes(cleanQ))) {
+        return true;
+      }
+      // Multi-word token match (e.g. "inox wind", "tata steel", "state bank")
+      if (tokens.length > 1) {
+        return tokens.every(tok =>
+          sym.includes(tok) || name.includes(tok) || cleanSym.includes(tok) || cleanName.includes(tok)
+        );
+      }
+      return false;
     });
   }, [rawStocks, searchQuery]);
 
-  // Sort stocks
+  // Sort stocks (Best Buy / Highest Score first by default)
   const sortedStocks = useMemo(() => {
     const list = [...filteredStocks];
     list.sort((a: any, b: any) => {
@@ -93,8 +112,8 @@ export default function FutureStocksPage() {
         aVal = a.macd ?? 0;
         bVal = b.macd ?? 0;
       } else if (orderBy === 'score') {
-        aVal = a.score ?? a.buy_score ?? 0;
-        bVal = b.score ?? b.buy_score ?? 0;
+        aVal = tradeType === 'sell' ? (a.sell_score ?? a.score ?? 0) : (a.buy_score ?? a.score ?? 0);
+        bVal = tradeType === 'sell' ? (b.sell_score ?? b.score ?? 0) : (b.buy_score ?? b.score ?? 0);
       } else if (orderBy === 'current_price') {
         aVal = a.current_price ?? 0;
         bVal = b.current_price ?? 0;
@@ -111,7 +130,7 @@ export default function FutureStocksPage() {
       return 0;
     });
     return list;
-  }, [filteredStocks, orderBy, order]);
+  }, [filteredStocks, orderBy, order, tradeType]);
 
   // Paginated slice
   const paginatedStocks = useMemo(() => {

@@ -65,39 +65,55 @@ def _filter_and_paginate(
     signal:       Optional[str] = None,
     rsi:          Optional[str] = None,
     page:         int = 1,
-    limit:        int = 10,
+    limit:        int = 500,
 ):
     if sector and sector.upper() != "ALL":
-        results = [r for r in results if r.sector.lower() == sector.lower()]
+        results = [r for r in results if (getattr(r, "sector", "") or "").lower() == sector.lower()]
 
     if cap_category and cap_category.upper() != "ALL":
         cat = cap_category.strip().upper()
         if "LARGE" in cat:
-            results = [r for r in results if (r.cap_category or "").upper() == "LARGE CAP"]
+            results = [r for r in results if (getattr(r, "cap_category", "") or "").upper() == "LARGE CAP"]
         elif "MID" in cat:
-            results = [r for r in results if (r.cap_category or "").upper() == "MID CAP"]
+            results = [r for r in results if (getattr(r, "cap_category", "") or "").upper() == "MID CAP"]
         elif "SMALL" in cat:
-            results = [r for r in results if (r.cap_category or "").upper() == "SMALL CAP"]
+            results = [r for r in results if (getattr(r, "cap_category", "") or "").upper() == "SMALL CAP"]
         elif "F&O" in cat or "FO" in cat:
-            results = [r for r in results if r.fo_eligible]
+            results = [r for r in results if getattr(r, "fo_eligible", True)]
 
     if signal and signal.upper() != "ALL":
         sig = signal.strip().upper()
-        results = [r for r in results if (r.signal or "").upper() == sig]
+        results = [r for r in results if (getattr(r, "signal", "") or "").upper() == sig]
 
     if rsi and rsi.upper() != "ALL":
         rsi_str = rsi.strip().upper()
         if "BULLISH" in rsi_str:
-            results = [r for r in results if (r.rsi or 50) >= 50]
+            results = [r for r in results if (getattr(r, "rsi", 50) or 50) >= 50]
         elif "STRONG" in rsi_str:
-            results = [r for r in results if (r.rsi or 50) >= 60]
+            results = [r for r in results if (getattr(r, "rsi", 50) or 50) >= 60]
 
     if search:
-        q = search.lower().strip()
-        results = [
-            r for r in results
-            if q in r.symbol.lower() or q in r.name.lower() or q in r.sector.lower()
-        ]
+        import re
+        raw_q = search.lower().strip()
+        clean_q = re.sub(r'[^a-z0-9]', '', raw_q)
+        words = raw_q.split()
+
+        def _matches(r):
+            sym = (getattr(r, "symbol", "") or "").lower()
+            clean_sym = re.sub(r'[^a-z0-9]', '', sym)
+            name = (getattr(r, "name", "") or "").lower()
+            clean_name = re.sub(r'[^a-z0-9]', '', name)
+            sec = (getattr(r, "sector", "") or "").lower()
+
+            if raw_q in sym or raw_q in name or raw_q in sec:
+                return True
+            if clean_q and (clean_q in clean_sym or clean_q in clean_name):
+                return True
+            if len(words) > 1:
+                return all(w in sym or w in name or w in clean_sym or w in clean_name for w in words)
+            return False
+
+        results = [r for r in results if _matches(r)]
 
     total_count = len(results)
     start_idx = (page - 1) * limit
@@ -312,7 +328,7 @@ async def get_future_stocks(
     search:       Optional[str] = Query(None),
     trade_type:   str   = Query("buy"),
     page:         int   = Query(1, ge=1),
-    limit:        int   = Query(10),
+    limit:        int   = Query(500, le=1000),
 ):
     """Full Indian stock directory filtered by Cap Category (Large, Mid, Small Cap, F&O), Sector, Indicators, and Signals."""
     results = run_full_scan(force=force, trade_type=trade_type)

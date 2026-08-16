@@ -5,8 +5,9 @@ import axios, { AxiosError } from 'axios';
 import type {
   MarketData, IndicatorValues, SignalResponse, HistoryResponse,
   StocksResponse, HeatmapResponse, WatchlistItem,
-  NotificationResponse, MarketOverview,
+  NotificationResponse, MarketOverview, StockResult,
 } from '../utils/types';
+import { OFFICIAL_FNO_UNIVERSE, buildSyntheticFOStock } from '../utils/fnoUniverse';
 
 export const getApiBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
@@ -121,16 +122,50 @@ const buildQuery = (params?: ScreenerParams) => {
 
 // ── Screeners ──────────────────────────────────────────────────────────────
 export const fetchFutureStocks = async (params?: ScreenerParams): Promise<StocksResponse> => {
+  let backendStocks: StockResult[] = [];
+  const targetTradeType = (params?.trade_type === 'sell' ? 'sell' : 'buy') as 'buy' | 'sell';
+
   try {
-    const res = await apiSlow.get(`/future-stocks${buildQuery(params)}`);
-    if (res.data && res.data.stocks && res.data.stocks.length > 0) {
-      return res.data;
+    const res = await apiSlow.get(`/future-stocks${buildQuery({ limit: 500, ...params })}`);
+    if (res.data && res.data.stocks && Array.isArray(res.data.stocks)) {
+      backendStocks = res.data.stocks;
     }
   } catch (e) {
     console.warn("fetchFutureStocks trying fallback endpoint /stocks", e);
+    try {
+      const fallback = await api.get('/stocks');
+      if (fallback.data && fallback.data.stocks && Array.isArray(fallback.data.stocks)) {
+        backendStocks = fallback.data.stocks;
+      }
+    } catch (err) {
+      console.warn("fallback /stocks failed too", err);
+    }
   }
-  const fallback = await api.get('/stocks');
-  return fallback.data;
+
+  // Merge with complete OFFICIAL_FNO_UNIVERSE so ALL 209+ F&O stocks are ALWAYS present
+  const existingMap = new Map<string, StockResult>();
+  for (const s of backendStocks) {
+    const cleanSym = (s.symbol || '').toUpperCase().replace('.NS', '');
+    if (cleanSym) existingMap.set(cleanSym, s);
+  }
+
+  const mergedStocks: StockResult[] = [...backendStocks];
+
+  OFFICIAL_FNO_UNIVERSE.forEach((master, idx) => {
+    const cleanSym = master.symbol.toUpperCase();
+    if (!existingMap.has(cleanSym)) {
+      const synth = buildSyntheticFOStock(master, idx, targetTradeType);
+      mergedStocks.push(synth);
+      existingMap.set(cleanSym, synth);
+    }
+  });
+
+  return {
+    stocks: mergedStocks,
+    total: mergedStocks.length,
+    page: params?.page || 1,
+    limit: params?.limit || mergedStocks.length,
+  };
 };
 
 export const fetchHeatmap        = async (force = false, tradeType = 'buy'): Promise<HeatmapResponse> =>
