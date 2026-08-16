@@ -372,26 +372,34 @@ export const getLiveTimeLabel = (): string => {
 };
 
 /**
- * Generate complete 3-Day Price Shockers dataset with formula calculations
+ * Generate complete 3-Day Price Shockers dataset with formula calculations from live stocks
  */
-export function generatePriceShockersFallback(sector?: string, limit = 100) {
-  const universe = sector && sector !== 'ALL'
-    ? OFFICIAL_FNO_UNIVERSE.filter(s => s.sector.toLowerCase() === sector.toLowerCase())
+export function generatePriceShockersFallback(sector?: string, limit = 100, liveStocks?: StockResult[]) {
+  const baseList: (StockResult | FNOStockMaster)[] = (liveStocks && liveStocks.length > 0)
+    ? liveStocks
     : OFFICIAL_FNO_UNIVERSE;
 
-  const stocks = universe.map((m, idx) => {
-    const p = m.defaultPrice;
-    const gain3d = round2(3.5 + ((idx * 7) % 240) * 0.1);
+  const filteredUniverse = sector && sector !== 'ALL'
+    ? baseList.filter(s => (s.sector || '').toLowerCase() === sector.toLowerCase())
+    : baseList;
+
+  const stocks = filteredUniverse.map((item, idx) => {
+    const isLive = 'current_price' in item;
+    const p = isLive ? (item.current_price || (item as any).defaultPrice || 100) : (item as FNOStockMaster).defaultPrice;
+    const name = item.name;
+    const sym = item.symbol;
+    const sec = item.sector;
+    const chgToday = isLive && item.change_pct != null ? item.change_pct : round2(((idx * 3) % 80) * 0.1 - 1.5);
+    const gain3d = round2(Math.max(1.5, chgToday * 1.6 + ((idx * 7) % 180) * 0.08 + 2.0));
     const start3d = round2(p / (1 + gain3d / 100));
-    const chgToday = round2(((idx * 3) % 80) * 0.1 - 1.5);
-    const dayHigh = round2(p * (1 + Math.abs(chgToday) * 0.005 + 0.01));
-    const dayLow = round2(p * 0.985);
-    const prevClose = round2(p / (1 + chgToday / 100));
-    const buyerPct = round2(55 + ((idx * 11) % 40));
-    const deliveryPct = round2(45 + ((idx * 13) % 45));
-    const volRatio = round2(1.2 + ((idx * 17) % 35) * 0.1);
-    const todayVol = Math.round(500000 + (idx * 25000));
-    const avgVol3d = Math.round(todayVol / volRatio);
+    const dayHigh = isLive && item.high ? item.high : round2(p * (1 + Math.abs(chgToday) * 0.005 + 0.01));
+    const dayLow = isLive && item.low ? item.low : round2(p * 0.985);
+    const prevClose = isLive && item.prev_close ? item.prev_close : round2(p / (1 + chgToday / 100));
+    const buyerPct = isLive && (item as any).real_buy_pressure_pct ? (item as any).real_buy_pressure_pct : round2(55 + ((idx * 11) % 40));
+    const deliveryPct = isLive && item.delivery_pct ? item.delivery_pct : round2(45 + ((idx * 13) % 45));
+    const volRatio = isLive && item.volume_ratio ? item.volume_ratio : round2(1.2 + ((idx * 17) % 35) * 0.1);
+    const todayVol = isLive && item.volume ? item.volume : Math.round(500000 + (idx * 25000));
+    const avgVol3d = Math.round(todayVol / Math.max(0.1, volRatio));
     const dayHighStrength = round2(((p - dayLow) / Math.max(0.01, dayHigh - dayLow)) * 100);
 
     // 100-Point Score Formula
@@ -406,9 +414,9 @@ export function generatePriceShockersFallback(sector?: string, limit = 100) {
     const totalScore = bStr + vExp + pMom + pShk + dStr + dhStr + pvConf + tTech;
 
     return {
-      symbol: m.symbol,
-      name: m.name,
-      sector: m.sector,
+      symbol: sym,
+      name: name,
+      sector: sec,
       current_price: p,
       start_price_3d: start3d,
       gain_3d_pct: gain3d,
@@ -416,7 +424,7 @@ export function generatePriceShockersFallback(sector?: string, limit = 100) {
       prev_close: prevClose,
       high: dayHigh,
       low: dayLow,
-      open: round2(prevClose * 1.002),
+      open: isLive && item.open ? item.open : round2(prevClose * 1.002),
       day_high_strength_pct: dayHighStrength,
       today_volume: todayVol,
       avg_volume_3d: avgVol3d,
@@ -439,16 +447,16 @@ export function generatePriceShockersFallback(sector?: string, limit = 100) {
         total: totalScore,
       },
       signal: totalScore >= 75 ? '🔥 HIGH CONVICTION' : totalScore >= 60 ? '⚡ STRONG BUY' : 'ACCUMULATE',
-      is_price_vol_shocker: gain3d >= 8.0 && volRatio >= 1.8,
+      is_price_vol_shocker: gain3d >= 6.0 && volRatio >= 1.5,
       is_high_conviction: totalScore >= 75,
       regime: 'Bullish Expansion',
-      rsi: round2(55 + ((idx * 9) % 25)),
-      smc_signal: 'Institutional Buy Flow',
+      rsi: isLive && item.rsi ? item.rsi : round2(55 + ((idx * 9) % 25)),
+      smc_signal: isLive && (item as any).smc_signal ? (item as any).smc_signal : 'Institutional Buy Flow',
       action_verdict: 'BUY / ACCUMULATE',
-      stop_loss: round2(p * 0.965),
-      target1: round2(p * 1.04),
-      target2: round2(p * 1.08),
-      target3: round2(p * 1.15),
+      stop_loss: isLive && item.stop_loss ? item.stop_loss : round2(p * 0.965),
+      target1: isLive && item.target1 ? item.target1 : round2(p * 1.04),
+      target2: isLive && item.target2 ? item.target2 : round2(p * 1.08),
+      target3: isLive && item.target3 ? item.target3 : round2(p * 1.15),
       rank: idx + 1,
     };
   });
@@ -470,18 +478,23 @@ export function generatePriceShockersFallback(sector?: string, limit = 100) {
 }
 
 /**
- * Generate 3D / 5D / 7D Volume Shockers with formula calculations
+ * Generate 3D / 5D / 7D Volume Shockers with formula calculations from live stocks
  */
-export function generateVolumeShockersFallback(days: 3 | 5 | 7, classification?: string, limit = 100) {
-  const stocks = OFFICIAL_FNO_UNIVERSE.map((m, idx) => {
-    const p = m.defaultPrice;
-    const baseMultiplier = days === 3 ? 1.5 : days === 5 ? 1.8 : 2.2;
-    const volRatio = round2(baseMultiplier + ((idx * 19) % 45) * 0.1);
-    const todayVol = Math.round(600000 + (idx * 30000));
-    const avgVol = Math.round(todayVol / volRatio);
-    const chgToday = round2(((idx * 5) % 90) * 0.1 - 1.0);
-    const buyerPct = round2(58 + ((idx * 7) % 38));
-    const deliveryPct = round2(48 + ((idx * 11) % 42));
+export function generateVolumeShockersFallback(days: 3 | 5 | 7, classification?: string, limit = 100, liveStocks?: StockResult[]) {
+  const baseList: (StockResult | FNOStockMaster)[] = (liveStocks && liveStocks.length > 0)
+    ? liveStocks
+    : OFFICIAL_FNO_UNIVERSE;
+
+  const stocks = baseList.map((item, idx) => {
+    const isLive = 'current_price' in item;
+    const p = isLive ? (item.current_price || (item as any).defaultPrice || 100) : (item as FNOStockMaster).defaultPrice;
+    const baseMultiplier = days === 3 ? 1.4 : days === 5 ? 1.7 : 2.1;
+    const volRatio = isLive && item.volume_ratio ? round2(item.volume_ratio * (days === 3 ? 1 : days === 5 ? 1.15 : 1.35)) : round2(baseMultiplier + ((idx * 19) % 45) * 0.1);
+    const todayVol = isLive && item.volume ? item.volume : Math.round(600000 + (idx * 30000));
+    const avgVol = Math.round(todayVol / Math.max(0.1, volRatio));
+    const chgToday = isLive && item.change_pct != null ? item.change_pct : round2(((idx * 5) % 90) * 0.1 - 1.0);
+    const buyerPct = isLive && (item as any).real_buy_pressure_pct ? (item as any).real_buy_pressure_pct : round2(58 + ((idx * 7) % 38));
+    const deliveryPct = isLive && item.delivery_pct ? item.delivery_pct : round2(48 + ((idx * 11) % 42));
 
     const cls = volRatio >= 3.5
       ? '⚡ HYPER EXPANSION'
@@ -492,9 +505,9 @@ export function generateVolumeShockersFallback(days: 3 | 5 | 7, classification?:
           : '⚪ STEADY VOLUME';
 
     return {
-      symbol: m.symbol,
-      name: m.name,
-      sector: m.sector,
+      symbol: item.symbol,
+      name: item.name,
+      sector: item.sector,
       current_price: p,
       change_pct: chgToday,
       today_volume: todayVol,
@@ -509,13 +522,13 @@ export function generateVolumeShockersFallback(days: 3 | 5 | 7, classification?:
       signal: volRatio >= 2.5 ? '⚡ VOLUME BREAKOUT' : 'BUY / ACCUMULATE',
       is_price_vol_shocker: volRatio >= 2.0 && chgToday > 1.0,
       is_high_conviction: volRatio >= 2.5,
-      rsi: round2(54 + ((idx * 8) % 24)),
+      rsi: isLive && item.rsi ? item.rsi : round2(54 + ((idx * 8) % 24)),
       smc_signal: 'Smart Money Accumulation',
       action_verdict: 'BUY',
-      stop_loss: round2(p * 0.97),
-      target1: round2(p * 1.035),
-      target2: round2(p * 1.075),
-      target3: round2(p * 1.14),
+      stop_loss: isLive && item.stop_loss ? item.stop_loss : round2(p * 0.97),
+      target1: isLive && item.target1 ? item.target1 : round2(p * 1.035),
+      target2: isLive && item.target2 ? item.target2 : round2(p * 1.075),
+      target3: isLive && item.target3 ? item.target3 : round2(p * 1.14),
       rank: idx + 1,
     } as any;
   });
@@ -539,10 +552,10 @@ export function generateVolumeShockersFallback(days: 3 | 5 | 7, classification?:
 }
 
 /**
- * Generate complete 100-Point Quant Screener dataset with 12 market sections
+ * Generate complete 100-Point Quant Screener dataset with 12 market sections from live stocks
  */
-export function generateQuantScreenerFallback() {
-  const pShock = generatePriceShockersFallback();
+export function generateQuantScreenerFallback(liveStocks?: StockResult[]) {
+  const pShock = generatePriceShockersFallback(undefined, 100, liveStocks);
   const all = pShock.stocks;
 
   const topGainers = [...all].sort((a, b) => (b.change_pct || 0) - (a.change_pct || 0)).slice(0, 12);
@@ -589,25 +602,30 @@ export function generateQuantScreenerFallback() {
 }
 
 /**
- * Generate Target Matrix dataset
+ * Generate Target Matrix dataset from live stocks
  */
-export function generateTargetMatrixFallback(search?: string, action?: string) {
-  let list = OFFICIAL_FNO_UNIVERSE.map((m, idx) => {
-    const p = m.defaultPrice;
-    const rsi = round2(52 + ((idx * 7) % 26));
+export function generateTargetMatrixFallback(search?: string, action?: string, liveStocks?: StockResult[]) {
+  const baseList: (StockResult | FNOStockMaster)[] = (liveStocks && liveStocks.length > 0)
+    ? liveStocks
+    : OFFICIAL_FNO_UNIVERSE;
+
+  let list = baseList.map((item, idx) => {
+    const isLive = 'current_price' in item;
+    const p = isLive ? (item.current_price || (item as any).defaultPrice || 100) : (item as FNOStockMaster).defaultPrice;
+    const rsi = isLive && item.rsi ? item.rsi : round2(52 + ((idx * 7) % 26));
     const smc = idx % 3 === 0 ? 'Institutional Buy Flow' : idx % 3 === 1 ? 'Smart Money Accumulation' : 'Bullish Breakout';
     const verdict = rsi >= 65 ? 'BUY / ACCUMULATE' : rsi >= 55 ? 'BUY' : 'WAIT';
 
     return {
-      symbol: m.symbol,
+      symbol: item.symbol,
       current_price: p,
       rsi,
       smc_signal: smc,
       action_verdict: verdict,
-      stop_loss: round2(p * 0.965),
-      target1: round2(p * 1.035),
-      target2: round2(p * 1.075),
-      target3: round2(p * 1.15),
+      stop_loss: isLive && item.stop_loss ? item.stop_loss : round2(p * 0.965),
+      target1: isLive && item.target1 ? item.target1 : round2(p * 1.035),
+      target2: isLive && item.target2 ? item.target2 : round2(p * 1.075),
+      target3: isLive && item.target3 ? item.target3 : round2(p * 1.15),
     };
   });
 

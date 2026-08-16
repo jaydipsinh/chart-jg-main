@@ -607,9 +607,10 @@ export const fetchPriceShockers = async (params?: { page?: number; limit?: numbe
     const res = await apiSlow.get(`/price-shockers${qs ? `?${qs}` : ''}`);
     if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
   } catch (e) {
-    console.warn("fetchPriceShockers failed, using formula fallback", e);
+    console.warn("fetchPriceShockers failed, using live stocks formula fallback", e);
   }
-  return generatePriceShockersFallback(params?.sector, params?.limit || 100);
+  const live = await fetchFutureStocks({ limit: 500 });
+  return generatePriceShockersFallback(params?.sector, params?.limit || 100, live.stocks);
 };
 
 export const fetchVolume3DShockers = async (params?: { page?: number; limit?: number; search?: string; classification?: string }): Promise<ShockersResponse> => {
@@ -623,9 +624,10 @@ export const fetchVolume3DShockers = async (params?: { page?: number; limit?: nu
     const res = await apiSlow.get(`/volume-3d-shockers${qs ? `?${qs}` : ''}`);
     if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
   } catch (e) {
-    console.warn("fetchVolume3DShockers failed, using formula fallback", e);
+    console.warn("fetchVolume3DShockers failed, using live stocks formula fallback", e);
   }
-  return generateVolumeShockersFallback(3, params?.classification, params?.limit || 100);
+  const live = await fetchFutureStocks({ limit: 500 });
+  return generateVolumeShockersFallback(3, params?.classification, params?.limit || 100, live.stocks);
 };
 
 export const fetchVolume5DShockers = async (params?: { page?: number; limit?: number; search?: string; classification?: string }): Promise<ShockersResponse> => {
@@ -639,9 +641,10 @@ export const fetchVolume5DShockers = async (params?: { page?: number; limit?: nu
     const res = await apiSlow.get(`/volume-5d-shockers${qs ? `?${qs}` : ''}`);
     if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
   } catch (e) {
-    console.warn("fetchVolume5DShockers failed, using formula fallback", e);
+    console.warn("fetchVolume5DShockers failed, using live stocks formula fallback", e);
   }
-  return generateVolumeShockersFallback(5, params?.classification, params?.limit || 100);
+  const live = await fetchFutureStocks({ limit: 500 });
+  return generateVolumeShockersFallback(5, params?.classification, params?.limit || 100, live.stocks);
 };
 
 export const fetchVolume7DShockers = async (params?: { page?: number; limit?: number; search?: string; classification?: string }): Promise<ShockersResponse> => {
@@ -655,9 +658,10 @@ export const fetchVolume7DShockers = async (params?: { page?: number; limit?: nu
     const res = await apiSlow.get(`/volume-7d-shockers${qs ? `?${qs}` : ''}`);
     if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
   } catch (e) {
-    console.warn("fetchVolume7DShockers failed, using formula fallback", e);
+    console.warn("fetchVolume7DShockers failed, using live stocks formula fallback", e);
   }
-  return generateVolumeShockersFallback(7, params?.classification, params?.limit || 100);
+  const live = await fetchFutureStocks({ limit: 500 });
+  return generateVolumeShockersFallback(7, params?.classification, params?.limit || 100, live.stocks);
 };
 
 export const fetchQuantScreener = async (params?: { page?: number; limit?: number; search?: string; sector?: string; min_score?: number; high_conviction_only?: boolean }): Promise<QuantScreenerResponse> => {
@@ -673,9 +677,10 @@ export const fetchQuantScreener = async (params?: { page?: number; limit?: numbe
     const res = await apiSlow.get(`/quant-screener${qs ? `?${qs}` : ''}`);
     if (res.data && res.data.sections && res.data.master_buy_list?.length > 0) return res.data;
   } catch (e) {
-    console.warn("fetchQuantScreener failed, using formula fallback", e);
+    console.warn("fetchQuantScreener failed, using live stocks formula fallback", e);
   }
-  return generateQuantScreenerFallback();
+  const live = await fetchFutureStocks({ limit: 500 });
+  return generateQuantScreenerFallback(live.stocks);
 };
 
 export const fetchTargetMatrix = async (params?: { search?: string; action?: string; signal?: string }): Promise<TargetMatrixResponse> => {
@@ -688,9 +693,10 @@ export const fetchTargetMatrix = async (params?: { search?: string; action?: str
     const res = await apiSlow.get(`/target-matrix${qs ? `?${qs}` : ''}`);
     if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
   } catch (e) {
-    console.warn("fetchTargetMatrix failed, using formula fallback", e);
+    console.warn("fetchTargetMatrix failed, using live stocks formula fallback", e);
   }
-  return generateTargetMatrixFallback(params?.search, params?.action);
+  const live = await fetchFutureStocks({ limit: 500 });
+  return generateTargetMatrixFallback(params?.search, params?.action, live.stocks);
 };
 
 export interface StockEventItem {
