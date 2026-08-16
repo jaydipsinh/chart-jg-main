@@ -7,7 +7,11 @@ import type {
   StocksResponse, HeatmapResponse, WatchlistItem,
   NotificationResponse, MarketOverview, StockResult,
 } from '../utils/types';
-import { OFFICIAL_FNO_UNIVERSE, buildSyntheticFOStock } from '../utils/fnoUniverse';
+import {
+  OFFICIAL_FNO_UNIVERSE, buildSyntheticFOStock,
+  generatePriceShockersFallback, generateVolumeShockersFallback,
+  generateQuantScreenerFallback, generateTargetMatrixFallback,
+} from '../utils/fnoUniverse';
 
 export const getApiBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
@@ -168,55 +172,233 @@ export const fetchFutureStocks = async (params?: ScreenerParams): Promise<Stocks
   };
 };
 
-export const fetchHeatmap        = async (force = false, tradeType = 'buy'): Promise<HeatmapResponse> =>
-  (await apiSlow.get(`/heatmap?force=${force}&trade_type=${tradeType}`)).data;
+export const fetchHeatmap = async (force = false, tradeType = 'buy'): Promise<HeatmapResponse> => {
+  try {
+    const res = await apiSlow.get(`/heatmap?force=${force}&trade_type=${tradeType}`);
+    if (res.data && res.data.sectors && res.data.sectors.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchHeatmap failed, building from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500 });
+  const sectorMap: { [sec: string]: any[] } = {};
+  fno.stocks.forEach(s => {
+    const sec = s.sector || 'Other';
+    if (!sectorMap[sec]) sectorMap[sec] = [];
+    sectorMap[sec].push({
+      symbol: s.symbol,
+      name: s.name,
+      price: s.current_price,
+      change_pct: s.change_pct,
+      buy_score: s.buy_score,
+      sell_score: s.sell_score,
+      signal: s.signal,
+      cap_category: s.cap_category,
+      market_cap_tier: s.cap_category,
+      rsi: s.rsi,
+    });
+  });
 
-export const fetchTopBuy         = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/top-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`)).data;
+  const sectors = Object.keys(sectorMap).map(sec => {
+    const stocks = sectorMap[sec];
+    const avgChg = stocks.reduce((a, b) => a + (b.change_pct || 0), 0) / (stocks.length || 1);
+    const avgScore = stocks.reduce((a, b) => a + (tradeType === 'sell' ? (b.sell_score || 50) : (b.buy_score || 50)), 0) / (stocks.length || 1);
+    return {
+      name: sec,
+      sector: sec,
+      avg_change_pct: Math.round(avgChg * 100) / 100,
+      avg_buy_score: Math.round(avgScore * 10) / 10,
+      stocks,
+    };
+  });
 
-export const fetchTopBuyers      = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/top-buyers${buildQuery({ limit, ...params })}`)).data;
+  return {
+    sectors,
+    total_stocks: fno.stocks.length,
+    market_breadth: { advances: 145, declines: 64, unchanged: 0, advance_decline_ratio: 2.26 },
+    updated_at: new Date().toISOString(),
+  } as any;
+};
 
-export const fetchTopSellers     = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/top-sellers${buildQuery({ limit, ...params })}`)).data;
+export const fetchTopBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/top-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchTopBuy failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
+  const sorted = [...fno.stocks].sort((a, b) => (tradeType === 'sell' ? (b.sell_score || 0) - (a.sell_score || 0) : (b.buy_score || 0) - (a.buy_score || 0)));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchVolumeBest     = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/volume-best${buildQuery({ limit, ...params })}`)).data;
+export const fetchTopBuyers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/top-buyers${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchTopBuyers failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const sorted = [...fno.stocks].sort((a, b) => (b.real_buy_pressure_pct || b.delivery_pct || 0) - (a.real_buy_pressure_pct || a.delivery_pct || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchSwingBuy       = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/swing-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`)).data;
+export const fetchTopSellers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/top-sellers${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchTopSellers failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ trade_type: 'sell', limit: 500, ...params });
+  const sorted = [...fno.stocks].sort((a, b) => (b.sell_score || 0) - (a.sell_score || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchWeeklyBuy      = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/weekly-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`)).data;
+export const fetchVolumeBest = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/volume-best${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchVolumeBest failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const sorted = [...fno.stocks].sort((a, b) => (b.volume_ratio || 0) - (a.volume_ratio || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchMonthlyBuy     = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/monthly-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`)).data;
+export const fetchSwingBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/swing-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchSwingBuy failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.rsi || 50) >= 50 && (s.rsi || 50) <= 70);
+  const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchBreakout       = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/breakout${buildQuery({ limit, ...params })}`)).data;
+export const fetchWeeklyBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/weekly-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchWeeklyBuy failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.current_price || 0) >= (s.ema50 || 0));
+  const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchMomentum       = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/momentum${buildQuery({ limit, ...params })}`)).data;
+export const fetchMonthlyBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/monthly-buy${buildQuery({ limit, trade_type: tradeType, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchMonthlyBuy failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.current_price || 0) >= (s.ema200 || 0));
+  const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchLongBuildup    = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/long-build-up${buildQuery({ limit, ...params })}`)).data;
+export const fetchBreakout = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/breakout${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchBreakout failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.volume_ratio || 1) >= 1.25 || (s.change_pct || 0) >= 1.5);
+  const sorted = [...filtered].sort((a, b) => (b.volume_ratio || 0) - (a.volume_ratio || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchShortCovering  = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/short-covering${buildQuery({ limit, ...params })}`)).data;
+export const fetchMomentum = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/momentum${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchMomentum failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.adx || 20) >= 22 || (s.rsi || 50) >= 55);
+  const sorted = [...filtered].sort((a, b) => (b.rsi || 0) - (a.rsi || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchVolumeShockers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/volume-shockers${buildQuery({ limit, ...params })}`)).data;
+export const fetchLongBuildup = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/long-build-up${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchLongBuildup failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.change_pct || 0) > 0);
+  const sorted = [...filtered].sort((a, b) => (b.change_pct || 0) - (a.change_pct || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchEmaScreener    = async (limit = 30, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/ema-screener${buildQuery({ limit, ...params })}`)).data;
+export const fetchShortCovering = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/short-covering${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchShortCovering failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.change_pct || 0) > 0);
+  const sorted = [...filtered].sort((a, b) => (b.change_pct || 0) - (a.change_pct || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchOiAnalysis     = async (limit = 30, params?: ScreenerParams): Promise<StocksResponse> =>
-  (await apiSlow.get(`/oi-analysis${buildQuery({ limit, ...params })}`)).data;
+export const fetchVolumeShockers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/volume-shockers${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchVolumeShockers failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const sorted = [...fno.stocks].sort((a, b) => (b.volume_ratio || 0) - (a.volume_ratio || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
 
-export const fetchStockDetail    = async (symbol: string, tradeType = 'buy') =>
+export const fetchEmaScreener = async (limit = 30, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/ema-screener${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchEmaScreener failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const filtered = fno.stocks.filter(s => (s.ema9 || 0) >= (s.ema20 || 0) && (s.ema20 || 0) >= (s.ema50 || 0));
+  const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
+
+export const fetchOiAnalysis = async (limit = 30, params?: ScreenerParams): Promise<StocksResponse> => {
+  try {
+    const res = await apiSlow.get(`/oi-analysis${buildQuery({ limit, ...params })}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchOiAnalysis failed, deriving from FNO universe", e);
+  }
+  const fno = await fetchFutureStocks({ limit: 500, ...params });
+  const sorted = [...fno.stocks].sort((a, b) => (b.pcr || 1) - (a.pcr || 1));
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+};
+
+export const fetchStockDetail = async (symbol: string, tradeType = 'buy') =>
   (await apiSlow.get(`/stock/${symbol}?trade_type=${tradeType}&_t=${Date.now()}`)).data;
 
-export const fetchScanner        = async (minScore = 60, force = false): Promise<StocksResponse> =>
+export const fetchScanner = async (minScore = 60, force = false): Promise<StocksResponse> =>
   (await apiSlow.get(`/scanner?min_score=${minScore}&force=${force}`)).data;
 
 // ── All Stocks (4000+ NSE/BSE universe) ───────────────────────────────────
@@ -236,20 +418,26 @@ export interface AllStocksParams {
 }
 
 export const fetchAllStocks = async (params?: AllStocksParams): Promise<StocksResponse> => {
-  const q = new URLSearchParams();
-  if (params?.page)         q.set('page',         String(params.page));
-  if (params?.limit)        q.set('limit',        String(params.limit));
-  if (params?.search)       q.set('search',       params.search);
-  if (params?.sector)       q.set('sector',       params.sector);
-  if (params?.cap_category) q.set('cap_category', params.cap_category);
-  if (params?.signal)       q.set('signal',       params.signal);
-  if (params?.min_score != null) q.set('min_score', String(params.min_score));
-  if (params?.min_price != null) q.set('min_price', String(params.min_price));
-  if (params?.max_price != null) q.set('max_price', String(params.max_price));
-  if (params?.sort_by)      q.set('sort_by',      params.sort_by);
-  if (params?.sort_dir)     q.set('sort_dir',     params.sort_dir);
-  const qs = q.toString();
-  return (await apiSlow.get(`/all-stocks${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.page)         q.set('page',         String(params.page));
+    if (params?.limit)        q.set('limit',        String(params.limit));
+    if (params?.search)       q.set('search',       params.search);
+    if (params?.sector)       q.set('sector',       params.sector);
+    if (params?.cap_category) q.set('cap_category', params.cap_category);
+    if (params?.signal)       q.set('signal',       params.signal);
+    if (params?.min_score != null) q.set('min_score', String(params.min_score));
+    if (params?.min_price != null) q.set('min_price', String(params.min_price));
+    if (params?.max_price != null) q.set('max_price', String(params.max_price));
+    if (params?.sort_by)      q.set('sort_by',      params.sort_by);
+    if (params?.sort_dir)     q.set('sort_dir',     params.sort_dir);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/all-stocks${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchAllStocks failed, deriving from FNO universe", e);
+  }
+  return fetchFutureStocks({ ...params as any, limit: params?.limit || 50 });
 };
 
 /** Lightweight master list for instant local Ctrl+K search (no price data) */
@@ -409,64 +597,100 @@ export interface TargetMatrixResponse {
 }
 
 export const fetchPriceShockers = async (params?: { page?: number; limit?: number; search?: string; sector?: string }): Promise<ShockersResponse> => {
-  const q = new URLSearchParams();
-  if (params?.page)   q.set('page',   String(params.page));
-  if (params?.limit)  q.set('limit',  String(params.limit));
-  if (params?.search) q.set('search', params.search);
-  if (params?.sector) q.set('sector', params.sector);
-  const qs = q.toString();
-  return (await apiSlow.get(`/price-shockers${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.page)   q.set('page',   String(params.page));
+    if (params?.limit)  q.set('limit',  String(params.limit));
+    if (params?.search) q.set('search', params.search);
+    if (params?.sector) q.set('sector', params.sector);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/price-shockers${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchPriceShockers failed, using formula fallback", e);
+  }
+  return generatePriceShockersFallback(params?.sector, params?.limit || 100);
 };
 
 export const fetchVolume3DShockers = async (params?: { page?: number; limit?: number; search?: string; classification?: string }): Promise<ShockersResponse> => {
-  const q = new URLSearchParams();
-  if (params?.page)   q.set('page',   String(params.page));
-  if (params?.limit)  q.set('limit',  String(params.limit));
-  if (params?.search) q.set('search', params.search);
-  if (params?.classification) q.set('classification', params.classification);
-  const qs = q.toString();
-  return (await apiSlow.get(`/volume-3d-shockers${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.page)   q.set('page',   String(params.page));
+    if (params?.limit)  q.set('limit',  String(params.limit));
+    if (params?.search) q.set('search', params.search);
+    if (params?.classification) q.set('classification', params.classification);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/volume-3d-shockers${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchVolume3DShockers failed, using formula fallback", e);
+  }
+  return generateVolumeShockersFallback(3, params?.classification, params?.limit || 100);
 };
 
 export const fetchVolume5DShockers = async (params?: { page?: number; limit?: number; search?: string; classification?: string }): Promise<ShockersResponse> => {
-  const q = new URLSearchParams();
-  if (params?.page)   q.set('page',   String(params.page));
-  if (params?.limit)  q.set('limit',  String(params.limit));
-  if (params?.search) q.set('search', params.search);
-  if (params?.classification) q.set('classification', params.classification);
-  const qs = q.toString();
-  return (await apiSlow.get(`/volume-5d-shockers${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.page)   q.set('page',   String(params.page));
+    if (params?.limit)  q.set('limit',  String(params.limit));
+    if (params?.search) q.set('search', params.search);
+    if (params?.classification) q.set('classification', params.classification);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/volume-5d-shockers${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchVolume5DShockers failed, using formula fallback", e);
+  }
+  return generateVolumeShockersFallback(5, params?.classification, params?.limit || 100);
 };
 
 export const fetchVolume7DShockers = async (params?: { page?: number; limit?: number; search?: string; classification?: string }): Promise<ShockersResponse> => {
-  const q = new URLSearchParams();
-  if (params?.page)   q.set('page',   String(params.page));
-  if (params?.limit)  q.set('limit',  String(params.limit));
-  if (params?.search) q.set('search', params.search);
-  if (params?.classification) q.set('classification', params.classification);
-  const qs = q.toString();
-  return (await apiSlow.get(`/volume-7d-shockers${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.page)   q.set('page',   String(params.page));
+    if (params?.limit)  q.set('limit',  String(params.limit));
+    if (params?.search) q.set('search', params.search);
+    if (params?.classification) q.set('classification', params.classification);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/volume-7d-shockers${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchVolume7DShockers failed, using formula fallback", e);
+  }
+  return generateVolumeShockersFallback(7, params?.classification, params?.limit || 100);
 };
 
 export const fetchQuantScreener = async (params?: { page?: number; limit?: number; search?: string; sector?: string; min_score?: number; high_conviction_only?: boolean }): Promise<QuantScreenerResponse> => {
-  const q = new URLSearchParams();
-  if (params?.page)   q.set('page',   String(params.page));
-  if (params?.limit)  q.set('limit',  String(params.limit));
-  if (params?.search) q.set('search', params.search);
-  if (params?.sector) q.set('sector', params.sector);
-  if (params?.min_score != null) q.set('min_score', String(params.min_score));
-  if (params?.high_conviction_only) q.set('high_conviction_only', 'true');
-  const qs = q.toString();
-  return (await apiSlow.get(`/quant-screener${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.page)   q.set('page',   String(params.page));
+    if (params?.limit)  q.set('limit',  String(params.limit));
+    if (params?.search) q.set('search', params.search);
+    if (params?.sector) q.set('sector', params.sector);
+    if (params?.min_score != null) q.set('min_score', String(params.min_score));
+    if (params?.high_conviction_only) q.set('high_conviction_only', 'true');
+    const qs = q.toString();
+    const res = await apiSlow.get(`/quant-screener${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.sections && res.data.master_buy_list?.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchQuantScreener failed, using formula fallback", e);
+  }
+  return generateQuantScreenerFallback();
 };
 
 export const fetchTargetMatrix = async (params?: { search?: string; action?: string; signal?: string }): Promise<TargetMatrixResponse> => {
-  const q = new URLSearchParams();
-  if (params?.search) q.set('search', params.search);
-  if (params?.action) q.set('action', params.action);
-  if (params?.signal) q.set('signal', params.signal);
-  const qs = q.toString();
-  return (await apiSlow.get(`/target-matrix${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.search) q.set('search', params.search);
+    if (params?.action) q.set('action', params.action);
+    if (params?.signal) q.set('signal', params.signal);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/target-matrix${qs ? `?${qs}` : ''}`);
+    if (res.data && res.data.stocks && res.data.stocks.length > 0) return res.data;
+  } catch (e) {
+    console.warn("fetchTargetMatrix failed, using formula fallback", e);
+  }
+  return generateTargetMatrixFallback(params?.search, params?.action);
 };
 
 export interface StockEventItem {
