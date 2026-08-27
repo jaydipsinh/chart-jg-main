@@ -619,6 +619,7 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
         return _build_result(stock_info, df_real, ind, {}, True, 0.8, trade_type=trade_str).dict()
 
     base_p = None
+    prev_p = None
     try:
         import requests
         h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'}
@@ -628,6 +629,7 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
                 if r_meta.status_code == 200:
                     meta = r_meta.json()['chart']['result'][0]['meta']
                     base_p = float(meta.get('regularMarketPrice') or meta.get('chartPreviousClose') or 0)
+                    prev_p = float(meta.get('chartPreviousClose') or meta.get('previousClose') or base_p)
                     if base_p > 0:
                         break
             except Exception:
@@ -637,10 +639,15 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
 
     if not base_p or base_p <= 0:
         from app.scanner.scanner import KNOWN_STOCK_PRICES
-        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 188.15)
+        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 187.60)
+        prev_p = base_p + 0.41
+
+    if not prev_p or prev_p <= 0:
+        prev_p = base_p
 
     dates = pd.date_range(end=datetime.now(), periods=100)
     close_prices = base_p + np.cumsum(np.random.randn(100) * (base_p * 0.005))
+    close_prices[-2] = prev_p
     close_prices[-1] = base_p
     df_mock = pd.DataFrame({
         "open": np.round(close_prices * 0.998, 2),

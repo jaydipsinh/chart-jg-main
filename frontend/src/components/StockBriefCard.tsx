@@ -34,9 +34,10 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
   const [lots, setLots] = useState(1);
 
 
-  const price = stock.current_price || 209.67;
-  const changePct = stock.change_pct ?? -1.3;
-  const changeVal = stock.change ?? -2.74;
+  const price = stock.current_price || 187.60;
+  const prevClose = stock.prev_close || (price > 0 ? price / (1 + (stock.change_pct || 0) / 100) : price);
+  const changeVal = stock.change ?? (prevClose > 0 ? (price - prevClose) : 0);
+  const changePct = stock.change_pct ?? (prevClose > 0 ? (((price - prevClose) / prevClose) * 100) : 0);
   const isBear = changePct < 0 || stock.signal === 'SELL' || stock.signal === 'STRONG SELL';
   const isBull = !isBear;
 
