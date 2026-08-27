@@ -310,32 +310,49 @@ def _safe_round(val: Optional[float]) -> Optional[float]:
 
 
 KNOWN_STOCK_PRICES = {
-    "RELIANCE": 2980.0, "TCS": 4250.0, "HDFCBANK": 1640.0, "INFY": 1820.0, "ICICIBANK": 1180.0,
-    "BHARTIARTL": 1450.0, "SBIN": 820.0, "ITC": 490.0, "LT": 3650.0, "HCLTECH": 1720.0,
-    "KOTAKBANK": 1810.0, "M&M": 2850.0, "AXISBANK": 1170.0, "SUNPHARMA": 1710.0, "TITAN": 3480.0,
-    "MARUTI": 12400.0, "ULTRACEMCO": 11200.0, "ASIANPAINT": 2950.0, "NTPC": 410.0, "POWERGRID": 335.0,
-    "TATASTEEL": 158.0, "BAJFINANCE": 7150.0, "ADANIENT": 3050.0, "COALINDIA": 510.0, "ONGC": 315.0,
-    "JSWSTEEL": 940.0, "GRASIM": 2680.0, "HDFCLIFE": 710.0, "TECHM": 1520.0, "WIPRO": 530.0,
-    "HINDUNILVR": 2720.0, "NESTLEIND": 2480.0, "DRREDDY": 6650.0, "CIPLA": 1560.0, "APOLLOHOSP": 6850.0,
-    "EICHERMOT": 4850.0, "BPCL": 345.0, "BEL": 305.0, "DIVISLAB": 4850.0, "HEROMOTOCO": 5420.0,
-    "SHRIRAMFIN": 3120.0, "TRENT": 7150.0, "INDUSINDBK": 1410.0, "BAJAJ-AUTO": 9850.0, "ADANIPORTS": 1460.0,
-    "BRITANNIA": 5850.0, "BAJAJFINSV": 1780.0, "TATACONSUM": 1180.0, "TATAMOTORS": 1050.0, "SBILIFE": 1780.0,
-    "BANKBARODA": 252.0, "INOXWIND": 215.0, "HAL": 4650.0, "VEDL": 440.0, "ZOMATO": 260.0,
-    "SUZLON": 78.0, "IRFC": 178.0, "RVNL": 560.0, "HUDCO": 285.0, "IREDA": 235.0, "PAYTM": 680.0,
-    "BSE": 2650.0, "CDSL": 1480.0, "JIOFIN": 325.0, "MRF": 135000.0, "BOSCHLTD": 31500.0,
-    "PAGEIND": 43500.0, "ABBOTINDIA": 28500.0, "SHREECEM": 25400.0, "DIXON": 12800.0, "OFSS": 11200.0,
+    "RELIANCE": 1380.0, "TCS": 4450.0, "HDFCBANK": 1650.0, "INFY": 1920.0, "ICICIBANK": 1280.0,
+    "BHARTIARTL": 1580.0, "SBIN": 880.0, "ITC": 510.0, "LT": 3750.0, "HCLTECH": 1820.0,
+    "KOTAKBANK": 1850.0, "M&M": 3150.0, "AXISBANK": 1220.0, "SUNPHARMA": 1780.0, "TITAN": 3520.0,
+    "MARUTI": 12800.0, "ULTRACEMCO": 11500.0, "ASIANPAINT": 3100.0, "NTPC": 425.0, "POWERGRID": 345.0,
+    "TATASTEEL": 168.0, "BAJFINANCE": 7450.0, "ADANIENT": 3150.0, "COALINDIA": 525.0, "ONGC": 330.0,
+    "JSWSTEEL": 960.0, "GRASIM": 2750.0, "HDFCLIFE": 725.0, "TECHM": 1580.0, "WIPRO": 550.0,
+    "HINDUNILVR": 2780.0, "NESTLEIND": 2550.0, "DRREDDY": 6850.0, "CIPLA": 1620.0, "APOLLOHOSP": 7150.0,
+    "EICHERMOT": 4950.0, "BPCL": 355.0, "BEL": 385.0, "DIVISLAB": 4950.0, "HEROMOTOCO": 5550.0,
+    "SHRIRAMFIN": 3250.0, "TRENT": 7450.0, "INDUSINDBK": 1450.0, "BAJAJ-AUTO": 10200.0, "ADANIPORTS": 1520.0,
+    "BRITANNIA": 5950.0, "BAJAJFINSV": 1850.0, "TATACONSUM": 1220.0, "TATAMOTORS": 1080.0, "SBILIFE": 1820.0,
+    "BANKBARODA": 268.0, "INOXWIND": 235.0, "HAL": 4850.0, "VEDL": 465.0, "ZOMATO": 275.0,
+    "SUZLON": 82.0, "IRFC": 185.0, "RVNL": 585.0, "HUDCO": 295.0, "IREDA": 245.0, "PAYTM": 720.0,
+    "BSE": 2850.0, "CDSL": 1550.0, "JIOFIN": 345.0, "MRF": 138000.0, "BOSCHLTD": 32500.0,
+    "PAGEIND": 44500.0, "ABBOTINDIA": 29200.0, "SHREECEM": 26100.0, "DIXON": 13400.0, "OFSS": 11800.0,
 }
 
 def _generate_synthetic_df(symbol: str, ticker: str) -> pd.DataFrame:
     import numpy as np
     import pandas as pd
+    import requests
     from datetime import datetime
 
     clean = symbol.upper().replace(".NS", "")
-    base_p = KNOWN_STOCK_PRICES.get(clean)
+    t = ticker if ticker.endswith(".NS") or ticker.startswith("^") else f"{clean}.NS"
+    base_p = None
+
+    # Fetch live price quote from Yahoo Chart v8 API
+    try:
+        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{t}?interval=1d&range=5d'
+        r = requests.get(url, headers=h, timeout=2.5)
+        if r.status_code == 200:
+            meta = r.json()['chart']['result'][0]['meta']
+            base_p = float(meta.get('regularMarketPrice') or meta.get('chartPreviousClose') or 0)
+    except Exception:
+        pass
+
     if not base_p or base_p <= 0:
-        h = sum(ord(c) for c in clean)
-        base_p = float(50 + (h * 17) % 3500)
+        base_p = KNOWN_STOCK_PRICES.get(clean)
+
+    if not base_p or base_p <= 0:
+        h_val = sum(ord(c) for c in clean)
+        base_p = float(50 + (h_val * 17) % 3500)
 
     dates = pd.date_range(end=datetime.now(), periods=100)
     np.random.seed(sum(ord(c) for c in clean) % 10000)
