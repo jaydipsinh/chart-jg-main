@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchMarketOverview, fetchFutureStocks } from '../services/api';
 import { GlobalMarketStatus } from './GlobalMarketStatus';
 import { MarketStatusBar } from './MarketStatusBar';
+import { DataSourceSelector } from './DataSourceSelector';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { markAllRead } from '../store';
 import type { StockResult } from '../utils/types';
@@ -501,6 +502,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, themeMode, onToggleThe
               )}
             </Box>
           )}
+
+          {/* Data Source Engine Selector */}
+          <DataSourceSelector compact />
 
           {/* Session badge */}
           <GlobalMarketStatus variant="compact" />

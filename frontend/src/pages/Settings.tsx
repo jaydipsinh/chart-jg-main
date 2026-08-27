@@ -6,8 +6,9 @@ import {
 } from '@mui/material';
 import {
   Settings, Refresh, Delete, CheckCircle, Warning,
-  Storage, Public, Bolt,
+  Storage, Public, Bolt, RocketLaunch, ShowChart, Key,
 } from '@mui/icons-material';
+import { DataSourceSelector } from '../components/DataSourceSelector';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setTheme, setRefreshInterval } from '../store';
 import { clearCache, getApiBaseUrl } from '../services/api';
@@ -79,6 +80,40 @@ export default function SettingsPage() {
       </Stack>
 
       <Grid container spacing={3}>
+        {/* ── Data Engine Selection (Angel One vs Yahoo Finance) ── */}
+        <Grid item xs={12}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 2.5,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'secondary.main',
+              background: themeMode === 'dark' ? 'rgba(124,77,255,0.06)' : '#f3e5f5',
+            }}
+          >
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5} justifyContent="space-between" flexWrap="wrap" gap={1}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <RocketLaunch color="secondary" />
+                <Typography variant="subtitle1" fontWeight={800}>
+                  Active Data Source Engine (Angel One SmartAPI / Yahoo Finance)
+                </Typography>
+              </Stack>
+              <DataSourceSelector />
+            </Stack>
+
+            <Typography variant="body2" color="text.secondary" mb={2}>
+              Choose your active data feed. When <b>Angel One SmartAPI</b> is selected, all 34 screeners stream live ticks using your configured Angel One API credentials (<code>ANGEL_API_KEY</code>, <code>ANGEL_CLIENT_ID: A291133</code>).
+            </Typography>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
+              <Chip label="Client ID: A291133" size="small" color="secondary" sx={{ fontWeight: 800 }} />
+              <Chip label="API Key: KvtCKM7Z" size="small" variant="outlined" sx={{ fontWeight: 700 }} />
+              <Chip label="TOTP Auth: Configured" size="small" color="success" sx={{ fontWeight: 800 }} />
+            </Stack>
+          </Paper>
+        </Grid>
+
         {/* ── Backend Live Server Configuration ── */}
         <Grid item xs={12}>
           <Paper

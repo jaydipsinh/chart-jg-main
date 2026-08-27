@@ -21,6 +21,7 @@ import {
 } from '../services/api';
 import { StockTable } from '../components/StockTable';
 import { LiveBadge } from '../components/LiveBadge';
+import { DataSourceSelector } from '../components/DataSourceSelector';
 import { useSessionClock } from '../hooks/useLiveMarketData';
 import type { StockResult } from '../utils/types';
 
@@ -226,6 +227,7 @@ export default function DashboardPage() {
         </Typography>
         <Chip label="NSE • 500+ Shares" size="small" color="primary" sx={{ fontWeight: 800, height: 20, fontSize: '0.65rem' }} />
         <LiveBadge variant="chip" />
+        <DataSourceSelector />
         {!isMarketOpen && (
           <Chip
             label={dataMode === 'eod' ? "Today's EOD" : 'Prev Close'}

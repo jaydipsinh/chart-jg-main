@@ -37,13 +37,16 @@ export const api = axios.create({
   },
 });
 
-// Update baseURL dynamically per request if changed in Settings
+// Update baseURL & provider dynamically per request if changed
 api.interceptors.request.use((config) => {
   config.baseURL = getApiBaseUrl();
+  const provider = (typeof window !== 'undefined' && localStorage.getItem('PREFERRED_DATA_PROVIDER')) || 'angel_one';
+  config.params = { provider, ...(config.params || {}) };
+  config.headers['X-Data-Provider'] = provider;
   return config;
 });
 
-// Separate instance for slow scanner endpoints (full scan can take 30–60s first time)
+// Separate instance for slow scanner endpoints
 export const apiSlow = axios.create({
   baseURL: getApiBaseUrl(),
   timeout: 90000,
@@ -57,6 +60,9 @@ export const apiSlow = axios.create({
 
 apiSlow.interceptors.request.use((config) => {
   config.baseURL = getApiBaseUrl();
+  const provider = (typeof window !== 'undefined' && localStorage.getItem('PREFERRED_DATA_PROVIDER')) || 'angel_one';
+  config.params = { provider, ...(config.params || {}) };
+  config.headers['X-Data-Provider'] = provider;
   return config;
 });
 
