@@ -621,24 +621,32 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
     base_p = None
     try:
         import requests
-        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-        r_meta = requests.get(f'https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?interval=1d&range=5d', headers=h, timeout=5)
-        if r_meta.status_code == 200:
-            meta = r_meta.json()['chart']['result'][0]['meta']
-            base_p = float(meta.get('regularMarketPrice') or meta.get('chartPreviousClose') or 0)
+        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'}
+        for domain in ['query2.finance.yahoo.com', 'query1.finance.yahoo.com']:
+            try:
+                r_meta = requests.get(f'https://{domain}/v8/finance/chart/{ticker}?interval=1d&range=5d', headers=h, timeout=4)
+                if r_meta.status_code == 200:
+                    meta = r_meta.json()['chart']['result'][0]['meta']
+                    base_p = float(meta.get('regularMarketPrice') or meta.get('chartPreviousClose') or 0)
+                    if base_p > 0:
+                        break
+            except Exception:
+                continue
     except Exception:
         pass
 
     if not base_p or base_p <= 0:
-        base_p = 350.0
+        from app.scanner.scanner import KNOWN_STOCK_PRICES
+        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 188.15)
+
     dates = pd.date_range(end=datetime.now(), periods=100)
     close_prices = base_p + np.cumsum(np.random.randn(100) * (base_p * 0.005))
     close_prices[-1] = base_p
     df_mock = pd.DataFrame({
-        "open": close_prices * 0.998,
-        "high": close_prices * 1.012,
-        "low": close_prices * 0.988,
-        "close": close_prices,
+        "open": np.round(close_prices * 0.998, 2),
+        "high": np.round(close_prices * 1.012, 2),
+        "low": np.round(close_prices * 0.988, 2),
+        "close": np.round(close_prices, 2),
         "volume": np.random.randint(20000, 150000, size=100)
     }, index=dates)
 
