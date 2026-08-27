@@ -225,7 +225,7 @@ export const OFFICIAL_FNO_UNIVERSE: FNOStockMaster[] = [
   { symbol: "TATAINVEST", name: "Tata Investment Corporation Ltd", sector: "Banking & Finance", cap_category: "Mid Cap", defaultPrice: 6850.0, lot_size: 100 },
   { symbol: "TATAMOTORS", name: "Tata Motors Ltd", sector: "Auto & Ancillaries", cap_category: "Large Cap", defaultPrice: 1050.0, lot_size: 575 },
   { symbol: "TATAPOWER", name: "Tata Power Company Ltd", sector: "Energy & Power", cap_category: "Large Cap", defaultPrice: 425.0, lot_size: 1350 },
-  { symbol: "TATASTEEL", name: "Tata Steel Ltd", sector: "Metals & Mining", cap_category: "Large Cap", defaultPrice: 158.0, lot_size: 5500 },
+  { symbol: "TATASTEEL", name: "Tata Steel Ltd", sector: "Metals & Mining", cap_category: "Large Cap", defaultPrice: 188.15, lot_size: 5500 },
   { symbol: "TATATECH", name: "Tata Technologies Ltd", sector: "IT & Tech", cap_category: "Mid Cap", defaultPrice: 980.0, lot_size: 500 },
   { symbol: "TCS", name: "Tata Consultancy Services Ltd", sector: "IT & Tech", cap_category: "Large Cap", defaultPrice: 4250.0, lot_size: 175 },
   { symbol: "TECHM", name: "Tech Mahindra Ltd", sector: "IT & Tech", cap_category: "Large Cap", defaultPrice: 1520.0, lot_size: 600 },

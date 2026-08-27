@@ -170,7 +170,7 @@ def fetch_daily(ticker: str, period: str = "200d", force: bool = False) -> Optio
                             # real-time regularMarketPrice tick from Yahoo.
                             # When market is CLOSED: keep the OHLCV close as-is
                             # (it is the official EOD price; reg_price may lag).
-                            if market_live and reg_price and float(reg_price) > 0:
+                            if reg_price and float(reg_price) > 0:
                                 df.iloc[-1, df.columns.get_loc('close')] = float(reg_price)
 
                             df = _sanitize_df(ticker, df)
