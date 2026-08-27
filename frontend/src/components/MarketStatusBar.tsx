@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { keyframes } from '@mui/system';
 import { useSessionClock, useEngineStatus, useEngineOverview, useMarketEngine } from '../hooks/useLiveMarketData';
+import { DataSourceSelector } from './DataSourceSelector';
 
 // ── Animations ─────────────────────────────────────────────────────────────
 
@@ -229,6 +230,13 @@ export const MarketStatusBar: React.FC = () => {
             flexShrink: 0,
           }}
         />
+
+        <Separator />
+
+        {/* ── Active Data Engine Selector (Angel One vs Yahoo Finance) ──────── */}
+        <Box sx={{ flexShrink: 0, mx: 0.5 }}>
+          <DataSourceSelector compact />
+        </Box>
 
         {/* ── Countdown ────────────────────────────────────────────────── */}
         {clock.countdown && (
