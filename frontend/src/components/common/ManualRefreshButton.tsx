@@ -11,11 +11,18 @@ const spin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
+const pulseBlink = keyframes`
+  0%   { box-shadow: 0 0 0 0px rgba(0, 229, 255, 0.8), 0 3px 14px rgba(0,176,255,0.5); transform: scale(1); }
+  50%  { box-shadow: 0 0 0 10px rgba(0, 229, 255, 0), 0 6px 22px rgba(0,229,255,0.85); transform: scale(1.03); }
+  100% { box-shadow: 0 0 0 0px rgba(0, 229, 255, 0), 0 3px 14px rgba(0,176,255,0.5); transform: scale(1); }
+`;
+
 interface ManualRefreshButtonProps {
   variant?: 'button' | 'icon' | 'chip';
   size?: 'small' | 'medium' | 'large';
   color?: 'primary' | 'secondary' | 'inherit' | 'success' | 'warning';
   showLabel?: boolean;
+  highlightBlink?: boolean;
 }
 
 export const ManualRefreshButton: React.FC<ManualRefreshButtonProps> = ({
@@ -23,6 +30,7 @@ export const ManualRefreshButton: React.FC<ManualRefreshButtonProps> = ({
   size = 'small',
   color = 'primary',
   showLabel = true,
+  highlightBlink = true,
 }) => {
   const { manualRefresh, isRefreshing, lastRefreshedAt } = useMarketEngine();
   const [toastOpen, setToastOpen] = useState(false);
@@ -118,15 +126,17 @@ export const ManualRefreshButton: React.FC<ManualRefreshButtonProps> = ({
             py: size === 'small' ? 0.5 : size === 'medium' ? 0.75 : 1.0,
             minHeight: size === 'medium' ? 36 : undefined,
             letterSpacing: 0.3,
-            boxShadow: '0 3px 12px rgba(0,176,255,0.35)',
+            boxShadow: '0 3px 14px rgba(0,176,255,0.45)',
             background: 'linear-gradient(135deg, #00b0ff 0%, #0072ff 100%)',
-            border: '1px solid rgba(255,255,255,0.3)',
+            border: '1.5px solid rgba(255,255,255,0.4)',
             color: '#fff',
+            animation: highlightBlink && !isLoading ? `${pulseBlink} 2.2s ease-in-out infinite` : 'none',
             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             '&:hover': {
               background: 'linear-gradient(135deg, #33c9ff 0%, #0059e6 100%)',
-              boxShadow: '0 5px 18px rgba(0,176,255,0.55)',
-              transform: 'translateY(-1.5px) scale(1.02)',
+              boxShadow: '0 5px 22px rgba(0,176,255,0.7)',
+              transform: 'translateY(-1.5px) scale(1.04)',
+              animation: 'none',
             },
             '&:active': {
               transform: 'translateY(0) scale(0.98)',

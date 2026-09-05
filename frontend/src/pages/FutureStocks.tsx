@@ -16,6 +16,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { fetchFutureStocks, exportCSV } from '../services/api';
 import type { StockResult } from '../utils/types';
+import { ManualRefreshButton } from '../components/common/ManualRefreshButton';
 
 const SECTORS = [
   'All', 'Banking & Finance', 'IT & Tech', 'Energy & Power', 'Auto & Ancillaries',
@@ -53,6 +54,7 @@ export default function FutureStocksPage() {
         trade_type: tradeType,
         cap_category: capCategory !== 'ALL' ? capCategory : undefined,
         limit: 500,
+        force: true,
       }),
     refetchInterval: 300_000,
   });
@@ -222,7 +224,8 @@ export default function FutureStocksPage() {
             </Typography>
           </Box>
 
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+          <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
+            <ManualRefreshButton variant="button" size="medium" highlightBlink />
             <ToggleButtonGroup
               value={tradeType}
               exclusive
@@ -322,9 +325,7 @@ export default function FutureStocksPage() {
           </Stack>
 
           <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="Refresh Live Quotes">
-              <IconButton size="small" onClick={() => refetch()}><Refresh /></IconButton>
-            </Tooltip>
+            <ManualRefreshButton variant="button" size="medium" highlightBlink />
             <Tooltip title="Export CSV">
               <IconButton size="small" onClick={() => exportCSV(minScore)}><Download /></IconButton>
             </Tooltip>
