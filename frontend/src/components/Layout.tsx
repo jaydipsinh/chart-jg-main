@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  Box, Drawer, AppBar, Toolbar, Typography, IconButton,
+  Box, Stack, Drawer, AppBar, Toolbar, Typography, IconButton,
   List, ListItemButton, ListItemIcon, ListItemText,
   Divider, Badge, Chip, Tooltip, useTheme, useMediaQuery,
   TextField, Autocomplete, BottomNavigation, BottomNavigationAction,
