@@ -175,12 +175,20 @@ export function useMarketEngine() {
   const { data: status } = useEngineStatus();
   const clock = useSessionClock();
   const queryClient = useQueryClient();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<string | null>(null);
 
-  const manualRefresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['engine-status'] });
-    queryClient.invalidateQueries({ queryKey: ['engine-overview'] });
-    queryClient.invalidateQueries({ queryKey: ['live-stock'] });
-    queryClient.invalidateQueries({ queryKey: ['market-overview'] });
+  const manualRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      // Invalidate all queries across the entire React Query cache
+      await queryClient.invalidateQueries();
+      setLastRefreshedAt(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    } catch (e) {
+      console.warn("manualRefresh error:", e);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
   }, [queryClient]);
 
   return {
@@ -197,5 +205,7 @@ export function useMarketEngine() {
     isMarketOpen:  clock.isMarketOpen,
     refreshMs:     clock.refreshMs,
     manualRefresh,
+    isRefreshing,
+    lastRefreshedAt,
   };
 }

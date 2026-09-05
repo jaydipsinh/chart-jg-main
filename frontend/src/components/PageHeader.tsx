@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, IconButton, Typography, Chip, Stack, useTheme, useMediaQuery } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
+import { ManualRefreshButton } from './common/ManualRefreshButton';
 
 interface PageHeaderProps {
   title: string;
@@ -113,8 +114,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           />
         )}
 
-        {/* Actions slot */}
-        {actions && <Box sx={{ flexShrink: 0 }}>{actions}</Box>}
+        {/* Actions slot + Manual Refresh Button */}
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
+          {actions}
+          <ManualRefreshButton variant={isMobile ? 'icon' : 'button'} size="small" />
+        </Stack>
       </Stack>
 
       {/* Subtitle */}

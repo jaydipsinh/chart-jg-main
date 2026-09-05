@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { TrendingUp, TrendingDown, Circle } from '@mui/icons-material';
 import type { StockResult } from '../utils/types';
+import { ManualRefreshButton } from './common/ManualRefreshButton';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Column {
@@ -411,6 +412,9 @@ const MarketStatusBar: React.FC<{ marketOpen?: boolean; lastUpdated?: string; is
         <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>Auto-refreshing every 10s</Typography>
       </>
     )}
+    <Box sx={{ ml: 'auto' }}>
+      <ManualRefreshButton variant="button" size="small" />
+    </Box>
   </Stack>
 );
 

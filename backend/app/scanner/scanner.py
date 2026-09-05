@@ -320,7 +320,7 @@ KNOWN_STOCK_PRICES = {
     "EICHERMOT": 4950.0, "BPCL": 355.0, "BEL": 410.25, "DIVISLAB": 4950.0, "HEROMOTOCO": 5550.0,
     "SHRIRAMFIN": 3250.0, "TRENT": 7450.0, "INDUSINDBK": 1450.0, "BAJAJ-AUTO": 10200.0, "ADANIPORTS": 1520.0,
     "BRITANNIA": 5950.0, "BAJAJFINSV": 1850.0, "TATACONSUM": 1220.0, "TATAMOTORS": 1080.0, "SBILIFE": 1820.0,
-    "BANKBARODA": 241.71, "INOXWIND": 71.97, "HAL": 4890.2, "VEDL": 465.0, "ZOMATO": 275.0,
+    "BANKBARODA": 239.0, "INOXWIND": 71.97, "HAL": 4890.2, "VEDL": 465.0, "ZOMATO": 275.0,
     "SUZLON": 82.0, "IRFC": 185.0, "RVNL": 585.0, "HUDCO": 295.0, "IREDA": 245.0, "PAYTM": 720.0,
     "BSE": 2850.0, "CDSL": 1550.0, "JIOFIN": 345.0, "MRF": 138000.0, "BOSCHLTD": 32500.0,
     "PAGEIND": 44500.0, "ABBOTINDIA": 29200.0, "SHREECEM": 26100.0, "DIXON": 13400.0, "OFSS": 11800.0,
@@ -337,15 +337,18 @@ def _generate_synthetic_df(symbol: str, ticker: str) -> pd.DataFrame:
     base_p = None
 
     # Fetch live price quote from Yahoo Chart v8 API
-    try:
-        h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{t}?interval=1d&range=5d'
-        r = requests.get(url, headers=h, timeout=2.5)
-        if r.status_code == 200:
-            meta = r.json()['chart']['result'][0]['meta']
-            base_p = float(meta.get('regularMarketPrice') or meta.get('chartPreviousClose') or 0)
-    except Exception:
-        pass
+    for host in ['query2.finance.yahoo.com', 'query1.finance.yahoo.com']:
+        try:
+            h = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+            url = f'https://{host}/v8/finance/chart/{t}?interval=1d&range=5d'
+            r = requests.get(url, headers=h, timeout=3.5)
+            if r.status_code == 200:
+                meta = r.json()['chart']['result'][0]['meta']
+                base_p = float(meta.get('regularMarketPrice') or meta.get('chartPreviousClose') or 0)
+                if base_p > 0:
+                    break
+        except Exception:
+            pass
 
     if not base_p or base_p <= 0:
         base_p = KNOWN_STOCK_PRICES.get(clean)

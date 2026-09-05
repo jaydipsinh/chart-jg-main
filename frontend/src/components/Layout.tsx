@@ -21,6 +21,7 @@ import { fetchMarketOverview, fetchFutureStocks } from '../services/api';
 import { GlobalMarketStatus } from './GlobalMarketStatus';
 import { MarketStatusBar } from './MarketStatusBar';
 import { DataSourceSelector } from './DataSourceSelector';
+import { ManualRefreshButton } from './common/ManualRefreshButton';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { markAllRead } from '../store';
 import type { StockResult } from '../utils/types';
@@ -503,8 +504,16 @@ export const Layout: React.FC<LayoutProps> = ({ children, themeMode, onToggleThe
             </Box>
           )}
 
-          {/* Data Source Engine Selector */}
-          <DataSourceSelector compact />
+          {/* Data Source Engine Selector + Prominent Medium Manual Refresh Button */}
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mr: 1 }}>
+            <DataSourceSelector compact />
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <ManualRefreshButton variant="button" size="medium" />
+            </Box>
+            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+              <ManualRefreshButton variant="icon" size="medium" />
+            </Box>
+          </Stack>
 
           {/* Session badge */}
           <GlobalMarketStatus variant="compact" />
