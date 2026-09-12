@@ -3,6 +3,7 @@
  * Provides instant guaranteed catalog coverage, realistic pricing, and search aliases.
  */
 import type { StockResult } from './types';
+import livePricesMap from './live_prices.json';
 
 export interface FNOStockMaster {
   symbol: string;
@@ -254,7 +255,8 @@ export const OFFICIAL_FNO_UNIVERSE: FNOStockMaster[] = [
  * Generate default realistic StockResult for any F&O stock
  */
 export function buildSyntheticFOStock(m: FNOStockMaster, index: number, tradeType: 'buy' | 'sell' = 'buy'): StockResult {
-  const p = m.defaultPrice;
+  const livePrice = (livePricesMap as Record<string, number>)[m.symbol];
+  const p = (livePrice && livePrice > 0) ? livePrice : m.defaultPrice;
   const isBuy = tradeType === 'buy';
   const score = Math.max(62, Math.min(96, 94 - (index % 30)));
   const changePct = isBuy ? (0.5 + (index % 45) * 0.1) : -(0.5 + (index % 45) * 0.1);
