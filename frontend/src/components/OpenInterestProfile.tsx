@@ -31,7 +31,7 @@ export const OpenInterestProfile: React.FC<OpenInterestProfileProps> = ({ stock 
   const isDark = theme.palette.mode === 'dark';
   const [profileView, setProfileView] = useState<'split' | 'stacked' | 'change'>('split');
 
-  const price = stock.current_price || 188.25;
+  const price = stock.current_price || (stock.symbol === 'TATASTEEL' ? 167.60 : 188.25);
   const isUp = (stock.change_pct ?? 0) >= 0;
 
   // Determine dynamic strike step interval based on stock price

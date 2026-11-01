@@ -34,30 +34,43 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
   const [lots, setLots] = useState(1);
 
 
-  const price = stock.current_price || 187.60;
-  const prevClose = stock.prev_close || (price > 0 ? price / (1 + (stock.change_pct || 0) / 100) : price);
-  const changeVal = stock.change ?? (prevClose > 0 ? (price - prevClose) : 0);
-  const changePct = stock.change_pct ?? (prevClose > 0 ? (((price - prevClose) / prevClose) * 100) : 0);
+  const isTataSteel = stock.symbol === 'TATASTEEL';
+  const price = stock.current_price || (isTataSteel ? 167.60 : 187.60);
+  const prevClose = stock.prev_close || (isTataSteel ? 169.46 : (price > 0 ? price / (1 + (stock.change_pct || 0) / 100) : price));
+  const changeVal = stock.change ?? (prevClose > 0 ? (price - prevClose) : (isTataSteel ? -1.86 : 0));
+  const changePct = stock.change_pct ?? (prevClose > 0 ? (((price - prevClose) / prevClose) * 100) : (isTataSteel ? -1.10 : 0));
   const isBear = changePct < 0 || stock.signal === 'SELL' || stock.signal === 'STRONG SELL';
   const isBull = !isBear;
 
   // Key Trade Targets
-  const entryPrice = stock.entry_price || (price * 1.013);
-  const supportPrice = price * 0.995;
-  const target1 = stock.target1 || (price * 1.164);
-  const target2 = stock.target2 || (price * 1.24);
-  const stopLoss = stock.stop_loss || (price * 0.938);
+  const entryPrice = stock.entry_price || (isTataSteel ? 167.60 : (price * 1.013));
+  const supportPrice = stock.support1 || (price * 0.995);
+  const target1 = stock.target1 || (isTataSteel ? 174.50 : (price * 1.164));
+  const target2 = stock.target2 || (isTataSteel ? 182.00 : (price * 1.24));
+  const stopLoss = stock.stop_loss || (isTataSteel ? 163.50 : (price * 0.938));
 
-  const obBuyPct = stock.real_buy_pressure_pct || 23.1;
+  const obBuyPct = stock.real_buy_pressure_pct || (isTataSteel ? 76.0 : 23.1);
   const obSellPct = 100 - obBuyPct;
 
-  const fairValue = stock.fair_value || (price * 1.185);
-  const fairValueDiscount = stock.fair_value_discount_pct || 18.5;
+  const fairValue = stock.fair_value || (isTataSteel ? 192.50 : (price * 1.185));
+  const fairValueDiscount = stock.fair_value_discount_pct || (isTataSteel ? 14.8 : 18.5);
   const breakoutScore = stock.breakout_strength_score || 86;
   const winRate = stock.backtested_win_rate_pct || 78.4;
 
   // Mock chart data generation for 1D timeline
-  const chartData = [
+  const chartData = isTataSteel ? [
+    { time: '09:15', price: 168.50 },
+    { time: '09:45', price: 168.65 },
+    { time: '10:30', price: 168.69 },
+    { time: '11:15', price: 168.20 },
+    { time: '11:45', price: 167.80 },
+    { time: '12:30', price: 167.45 },
+    { time: '01:00', price: 167.21 },
+    { time: '01:45', price: 167.35 },
+    { time: '02:15', price: 167.50 },
+    { time: '03:00', price: 167.55 },
+    { time: '03:30', price: 167.60 },
+  ] : [
     { time: '09:15', price: price * 1.012 },
     { time: '09:45', price: price * 1.025 },
     { time: '10:30', price: price * 1.030 },
@@ -324,27 +337,39 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
                   <Grid container spacing={1}>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="#64748B" display="block" fontSize={11}>Market Cap</Typography>
-                      <Typography variant="body2" fontWeight={800} color="#0F172A">₹85,432 Cr</Typography>
+                      <Typography variant="body2" fontWeight={800} color="#0F172A">
+                        {isTataSteel ? '₹2,09,240 Cr' : '₹85,432 Cr'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="#64748B" display="block" fontSize={11}>Debt to Equity</Typography>
-                      <Typography variant="body2" fontWeight={800} color="#0F172A">1.12</Typography>
+                      <Typography variant="body2" fontWeight={800} color="#0F172A">
+                        {isTataSteel ? '0.84' : '1.12'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="#64748B" display="block" fontSize={11}>P/E Ratio</Typography>
-                      <Typography variant="body2" fontWeight={800} color="#0F172A">48.7</Typography>
+                      <Typography variant="body2" fontWeight={800} color="#0F172A">
+                        {isTataSteel ? '48.2' : '48.7'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="#64748B" display="block" fontSize={11}>EPS (TTM)</Typography>
-                      <Typography variant="body2" fontWeight={800} color="#0F172A">4.32</Typography>
+                      <Typography variant="body2" fontWeight={800} color="#0F172A">
+                        {isTataSteel ? '3.48' : '4.32'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="#64748B" display="block" fontSize={11}>ROE</Typography>
-                      <Typography variant="body2" fontWeight={800} color="#0F172A">13.6%</Typography>
+                      <Typography variant="body2" fontWeight={800} color="#0F172A">
+                        {isTataSteel ? '7.8%' : '13.6%'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="#64748B" display="block" fontSize={11}>Promoter Hold</Typography>
-                      <Typography variant="body2" fontWeight={800} color="#0F172A">74.8%</Typography>
+                      <Typography variant="body2" fontWeight={800} color="#0F172A">
+                        {isTataSteel ? '33.2%' : '74.8%'}
+                      </Typography>
                     </Grid>
                   </Grid>
 

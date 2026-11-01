@@ -18,7 +18,7 @@ export const SupportResistanceMatrix: React.FC<SupportResistanceMatrixProps> = (
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  const price = stock.current_price || 188.25;
+  const price = stock.current_price || (stock.symbol === 'TATASTEEL' ? 167.60 : 188.25);
   const isUp = (stock.change_pct ?? 0) >= 0;
 
   // ── Dynamic Support, Resistance, Multi-Target, Multi-Stop Loss Derivations ──

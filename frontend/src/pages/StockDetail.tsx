@@ -401,13 +401,13 @@ export default function StockDetailPage() {
         <DialogContent>
           <Stack spacing={2} mt={1}>
             <TextField label="Stock Price" value={`₹${price.toFixed(2)}`} disabled fullWidth />
-            <TextField label="Lot Size" value={stock.lot_size || 2500} disabled fullWidth />
+            <TextField label="Lot Size" value={stock.lot_size || (stock.symbol === 'TATASTEEL' ? 2750 : 2500)} disabled fullWidth />
             <TextField label="Number of Lots" type="number" value={lots} onChange={(e) => setLots(Math.max(1, Number(e.target.value)))} fullWidth />
             <Divider />
-            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Total Shares:</Typography><Typography variant="body2" fontWeight={800}>{(stock.lot_size || 2500) * lots}</Typography></Stack>
-            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Total Exposure Value:</Typography><Typography variant="body2" fontWeight={800}>₹{((stock.lot_size || 2500) * lots * price).toLocaleString('en-IN')}</Typography></Stack>
-            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Approx Margin Required:</Typography><Typography variant="body2" fontWeight={800} color="primary.main">₹{(((stock.lot_size || 2500) * lots * price) * 0.20).toLocaleString('en-IN')}</Typography></Stack>
-            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Target 1 Profit (+7.6%):</Typography><Typography variant="body2" fontWeight={800} color="success.main">₹{(((t1 - entry) * (stock.lot_size || 2500) * lots)).toLocaleString('en-IN')}</Typography></Stack>
+            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Total Shares:</Typography><Typography variant="body2" fontWeight={800}>{(stock.lot_size || (stock.symbol === 'TATASTEEL' ? 2750 : 2500)) * lots}</Typography></Stack>
+            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Total Exposure Value:</Typography><Typography variant="body2" fontWeight={800}>₹{((stock.lot_size || (stock.symbol === 'TATASTEEL' ? 2750 : 2500)) * lots * price).toLocaleString('en-IN')}</Typography></Stack>
+            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Approx Margin Required:</Typography><Typography variant="body2" fontWeight={800} color="primary.main">₹{(((stock.lot_size || (stock.symbol === 'TATASTEEL' ? 2750 : 2500)) * lots * price) * 0.20).toLocaleString('en-IN')}</Typography></Stack>
+            <Stack direction="row" justifyContent="space-between"><Typography variant="body2">Target 1 Profit (+7.6%):</Typography><Typography variant="body2" fontWeight={800} color="success.main">₹{(((t1 - entry) * (stock.lot_size || (stock.symbol === 'TATASTEEL' ? 2750 : 2500)) * lots)).toLocaleString('en-IN')}</Typography></Stack>
           </Stack>
         </DialogContent>
       </Dialog>

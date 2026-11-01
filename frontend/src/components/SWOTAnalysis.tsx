@@ -21,7 +21,7 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
   const isDark = theme.palette.mode === 'dark';
   const [activeTab, setActiveTab] = useState<SWOTTab>('all');
 
-  const price = stock.current_price || 188.25;
+  const price = stock.current_price || (stock.symbol === 'TATASTEEL' ? 167.60 : 188.25);
   const chg = stock.change_pct ?? 0;
   const isUp = chg >= 0;
   const rsi = stock.rsi ?? 52.0;

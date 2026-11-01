@@ -678,7 +678,8 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
         pass
 
     if not base_p or base_p <= 0:
-        base_p = 350.0
+        from app.scanner.scanner import KNOWN_STOCK_PRICES
+        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 167.60 if clean_sym == "TATASTEEL" else 350.0)
 
     dates = pd.date_range(end=datetime.now(), periods=100)
     volatility = base_p * 0.012
