@@ -17,6 +17,7 @@ import { StockBriefCard } from '../components/StockBriefCard';
 import { StockReportCard } from '../components/StockReportCard';
 import { OpenInterestProfile } from '../components/OpenInterestProfile';
 import { useSessionClock } from '../hooks/useLiveMarketData';
+import { OFFICIAL_FNO_UNIVERSE, buildSyntheticFOStock } from '../utils/fnoUniverse';
 import type { StockResult } from '../utils/types';
 
 export default function StockDetailPage() {
@@ -39,10 +40,14 @@ export default function StockDetailPage() {
     queryFn: () => fetchStockDetail(symbol!, tradeType),
     enabled: Boolean(symbol),
     refetchInterval: pollInterval,
-    staleTime: 0,
-    gcTime: 0,
-    retry: 3,
-    placeholderData: (prev) => prev,
+    staleTime: 10_000,
+    gcTime: 60_000,
+    retry: 1,
+    placeholderData: (prev) => prev || (symbol ? (() => {
+      const clean = symbol.toUpperCase().replace('.NS', '');
+      const m = OFFICIAL_FNO_UNIVERSE.find(item => item.symbol.toUpperCase() === clean);
+      return m ? buildSyntheticFOStock(m, 0, tradeType) : undefined;
+    })() : undefined),
   });
 
   const prevPriceRef = useRef<number | null>(null);

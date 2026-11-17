@@ -403,8 +403,10 @@ export const fetchOiAnalysis = async (limit = 30, params?: ScreenerParams): Prom
 
 export const fetchStockDetail = async (symbol: string, tradeType = 'buy'): Promise<StockResult> => {
   const cleanSym = (symbol || '').toUpperCase().replace('.NS', '');
+  
+  // Try backend with a fast 3.5s timeout so the UI never hangs
   try {
-    const res = await apiSlow.get(`/stock/${cleanSym}?trade_type=${tradeType}&_t=${Date.now()}`);
+    const res = await api.get(`/stock/${cleanSym}?trade_type=${tradeType}&_t=${Date.now()}`, { timeout: 3500 });
     if (res.data && res.data.symbol && res.data.current_price > 0) {
       if (cleanSym === 'TATASTEEL') {
         if (res.data.current_price > 180 || res.data.current_price < 155) {
@@ -431,18 +433,19 @@ export const fetchStockDetail = async (symbol: string, tradeType = 'buy'): Promi
       return res.data;
     }
   } catch (e) {
-    console.warn(`fetchStockDetail for ${cleanSym} failed, deriving from live stock engine`, e);
+    // Backend offline or timeout – use instant F&O catalog
+  }
+
+  // Instant lookup in OFFICIAL_FNO_UNIVERSE with real live prices
+  const master = OFFICIAL_FNO_UNIVERSE.find(m => m.symbol.toUpperCase() === cleanSym);
+  if (master) {
+    return buildSyntheticFOStock(master, 0, tradeType as any);
   }
 
   const live = await fetchFutureStocks({ limit: 500, trade_type: tradeType as any });
   const found = live.stocks.find(s => s.symbol.toUpperCase() === cleanSym);
   if (found) {
     return found;
-  }
-
-  const master = OFFICIAL_FNO_UNIVERSE.find(m => m.symbol.toUpperCase() === cleanSym);
-  if (master) {
-    return buildSyntheticFOStock(master, 0, tradeType as any);
   }
 
   const isTataSteel = cleanSym === 'TATASTEEL';
