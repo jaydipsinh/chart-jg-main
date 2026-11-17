@@ -230,7 +230,7 @@ export default function DashboardPage() {
         <DataSourceSelector />
         {!isMarketOpen && (
           <Chip
-            label={dataMode === 'eod' ? "Today's EOD" : 'Prev Close'}
+            label="Today's Closing Data"
             size="small"
             sx={{ fontWeight: 700, height: 20, fontSize: '0.65rem', bgcolor: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)' }}
           />

@@ -14,7 +14,7 @@ import {
   FormControl, InputLabel, Select, MenuItem, Slider, Divider,
 } from '@mui/material';
 import {
-  Search, Refresh, Download, FilterList, ExpandMore, ExpandLess,
+  Search, Refresh, Download, FilterList, CalendarToday, ExpandMore, ExpandLess,
   Clear, Bookmark, BookmarkBorder, TrendingUp, TrendingDown,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -361,6 +361,13 @@ export default function AllStocksPage() {
         <Chip label="NSE / BSE" size="small" color="primary" sx={{ fontWeight: 800 }} />
         <Chip label="4000+ Stocks" size="small" color="secondary" sx={{ fontWeight: 700 }} />
         <Chip label="Live Data" size="small" color="success" variant="outlined" sx={{ fontWeight: 700 }} />
+        <Chip
+          data-allstocks-date="true"
+          icon={<CalendarToday sx={{ fontSize: '12px !important' }} />}
+          label={`Latest Data: ${new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`}
+          size="small"
+          sx={{ fontWeight: 800, bgcolor: 'rgba(56,189,248,0.15)', color: '#0284c7', border: '1px solid rgba(56,189,248,0.3)' }}
+        />
       </Stack>
       <Typography variant="body2" color="text.secondary" mb={2}>
         Complete NSE/BSE stock universe. Search by name, symbol or sector. Use <strong>Ctrl+K</strong> to focus search instantly.
@@ -596,7 +603,7 @@ export default function AllStocksPage() {
 
       <Typography variant="caption" color="text.secondary" mt={1} display="block">
         Page {page + 1} • {totalCount.toLocaleString()} total stocks • Refreshes every 5 min •{' '}
-        Last updated: {(data as any)?.timestamp ?? '—'}
+        Last updated: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}, {new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} IST
       </Typography>
     </Box>
   );

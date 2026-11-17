@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, IconButton, Typography, Chip, Stack, useTheme, useMediaQuery } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { ArrowBack, CalendarToday } from '@mui/icons-material';
 import { ManualRefreshButton } from './common/ManualRefreshButton';
 
 interface PageHeaderProps {
@@ -104,6 +104,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           {title}
         </Typography>
 
+        {/* Live Today Date Chip */}
+        <Chip
+          data-live-date-chip="true"
+          icon={<CalendarToday sx={{ fontSize: '11px !important' }} />}
+          label={new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+          size="small"
+          sx={{ height: 20, fontSize: '0.62rem', fontWeight: 800, flexShrink: 0, bgcolor: 'rgba(56,189,248,0.12)', color: '#0284c7', border: '1px solid rgba(56,189,248,0.25)' }}
+        />
         {/* Chip */}
         {chip && (
           <Chip

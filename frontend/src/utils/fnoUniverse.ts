@@ -427,6 +427,8 @@ export function buildSyntheticFOStock(m: FNOStockMaster, index: number, tradeTyp
     holding_period: '2-4 Weeks',
     trend: isBuy ? 'Strong Uptrend' : 'Weak Downtrend',
     momentum: isBuy ? 'Strong' : 'Weak',
+    scanned_at: new Date().toISOString(),
+    timestamp: new Date().toISOString(),
   } as any;
 }
 

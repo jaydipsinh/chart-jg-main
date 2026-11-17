@@ -163,7 +163,7 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
                   </Stack>
 
                   <Typography variant="caption" color="#94A3B8" fontSize={11} display="block" mt={0.2}>
-                    Last Updated: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}, {clock.istTime} IST • <span style={{ color: clock.sessionColor, fontWeight: 700 }}>{clock.isMarketOpen ? 'Market Open 🟢' : 'Market Closed 🔴'}</span> ({clock.dataModeLabel})
+                    Latest Session: {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}, {clock.istTime} IST • <span style={{ color: clock.sessionColor, fontWeight: 700 }}>{clock.isMarketOpen ? 'Market Open 🟢' : 'Market Closed 🔴'}</span> ({clock.dataModeLabel})
                   </Typography>
                 </Box>
               </Stack>
@@ -580,7 +580,7 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
               </Typography>
 
               <Grid container spacing={1} mb={1.5}>
-                {Object.entries(stock.macro_impact || { "USDINR": "₹83.4 (Favorable)", "Brent Crude": "$82.5 (Stable)", "India VIX": "13.2 (Safe)", "US 10Y Yield": "4.2% (Neutral)" }).map(([key, val]) => (
+                {Object.entries(stock.macro_impact || { "USDINR": "₹83.4 (Favorable)", "Brent Crude": "$82.5 (Stable)", "India VIX": "17.70 (Safe)", "US 10Y Yield": "4.2% (Neutral)" }).map(([key, val]) => (
                   <Grid item xs={6} key={key}>
                     <Typography variant="caption" color="#64748B" display="block" fontSize={10}>{key}</Typography>
                     <Typography variant="caption" fontWeight={800} color="#0F172A" fontSize={11}>{val}</Typography>
@@ -592,8 +592,8 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
 
               <Typography variant="caption" color="#64748B" fontWeight={800} display="block" mb={0.5}>UPCOMING CORPORATE EVENTS</Typography>
               {(stock.upcoming_events || [
-                { event: "Q1 Earnings Board Meeting", date: "28 Jul 2026", impact: "High" },
-                { event: "Interim Dividend Ex-Date", date: "12 Aug 2026", impact: "Medium" }
+                { event: "Q3 Earnings Board Meeting", date: new Date(Date.now() + 11 * 86400000).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), impact: "High" },
+                { event: "Interim Dividend Ex-Date", date: new Date(Date.now() + 25 * 86400000).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), impact: "Medium" }
               ]).map((ev, idx) => (
                 <Stack key={idx} direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
                   <Typography variant="caption" fontWeight={700} color="#334155" fontSize={11}>📅 {ev.event}</Typography>

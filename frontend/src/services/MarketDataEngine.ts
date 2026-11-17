@@ -150,15 +150,15 @@ const SESSION_REFRESH_MS: Record<SessionType, number> = {
 const SESSION_LABELS: Record<SessionType, string> = {
   LIVE:        '🟢 LIVE MARKET',
   PRE_OPEN:    '🟡 PRE OPEN',
-  AFTER_HOURS: '🔴 MARKET CLOSED',
+  AFTER_HOURS: "🔴 MARKET CLOSED (TODAY'S EOD)",
   HOLIDAY:     '🏖️ MARKET HOLIDAY',
   WEEKEND:     '🔴 MARKET CLOSED',
 };
 
 const DATA_MODE_LABEL: Record<DataMode, string> = {
   live:       'Live Data',
-  eod:        "Today's EOD Data",
-  prev_close: 'Previous Close',
+  eod:        "Today's Closing Data",
+  prev_close: "Today's Closing Data",
 };
 
 // ── Fast Client Axios (3.5s timeout) ───────────────────────────────────────
@@ -257,7 +257,7 @@ class MarketDataEngineClient {
     const mins = toMin(ist.getHours(), ist.getMinutes());
 
     if (day === 0 || day === 6) return 'WEEKEND';
-    if (mins < PRE_OPEN_MIN)   return 'WEEKEND';            // very early AM
+    if (mins < PRE_OPEN_MIN)   return 'AFTER_HOURS';            // very early AM
     if (mins < OPEN_MIN)       return 'PRE_OPEN';
     if (mins <= CLOSE_MIN)     return 'LIVE';
     return 'AFTER_HOURS';

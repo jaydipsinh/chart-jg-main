@@ -62,7 +62,7 @@ export default function StockDetailPage() {
     try {
       const scannedTime = new Date(stock.scanned_at).getTime();
       const ageSec = (Date.now() - scannedTime) / 1000;
-      return ageSec > 60;
+      return ageSec > 360;
     } catch {
       return false;
     }

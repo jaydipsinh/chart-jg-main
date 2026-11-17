@@ -320,10 +320,17 @@ export const MarketStatusBar: React.FC = () => {
           spacing={0.5}
           sx={{ display: { xs: 'none', sm: 'flex' }, flexShrink: 0, mx: 1 }}
         >
+          <CalendarToday sx={{ fontSize: 11, color: '#38bdf8' }} />
+          <Typography variant="caption" sx={{ fontSize: 10, color: '#e0f2fe', fontFamily: 'monospace', fontWeight: 800 }}>
+            {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+          </Typography>
+          <Typography variant="caption" sx={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', mx: 0.5 }}>
+            •
+          </Typography>
           <Typography variant="caption" sx={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace' }}>
             IST
           </Typography>
-          <Typography variant="caption" sx={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', fontWeight: 700 }}>
+          <Typography variant="caption" sx={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontFamily: 'monospace', fontWeight: 800 }}>
             {clock.istTime}
           </Typography>
         </Stack>

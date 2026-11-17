@@ -303,6 +303,7 @@ export const fetchFutureStocks = async (params?: ScreenerParams): Promise<Stocks
     total: mergedStocks.length,
     page: params?.page || 1,
     limit: params?.limit || mergedStocks.length,
+    timestamp: new Date().toISOString(),
   };
 };
 
@@ -362,7 +363,7 @@ export const fetchTopBuy = async (limit = 25, tradeType = 'buy', params?: Screen
   }
   const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
   const sorted = [...fno.stocks].sort((a, b) => (tradeType === 'sell' ? (b.sell_score || 0) - (a.sell_score || 0) : (b.buy_score || 0) - (a.buy_score || 0)));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchTopBuyers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -374,7 +375,7 @@ export const fetchTopBuyers = async (limit = 25, params?: ScreenerParams): Promi
   }
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const sorted = [...fno.stocks].sort((a, b) => (b.real_buy_pressure_pct || b.delivery_pct || 0) - (a.real_buy_pressure_pct || a.delivery_pct || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchTopSellers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -386,7 +387,7 @@ export const fetchTopSellers = async (limit = 25, params?: ScreenerParams): Prom
   }
   const fno = await fetchFutureStocks({ trade_type: 'sell', limit: 500, ...params });
   const sorted = [...fno.stocks].sort((a, b) => (b.sell_score || 0) - (a.sell_score || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchVolumeBest = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -398,7 +399,7 @@ export const fetchVolumeBest = async (limit = 25, params?: ScreenerParams): Prom
   }
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const sorted = [...fno.stocks].sort((a, b) => (b.volume_ratio || 0) - (a.volume_ratio || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchSwingBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
@@ -411,7 +412,7 @@ export const fetchSwingBuy = async (limit = 25, tradeType = 'buy', params?: Scre
   const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.rsi || 50) >= 50 && (s.rsi || 50) <= 70);
   const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchWeeklyBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
@@ -424,7 +425,7 @@ export const fetchWeeklyBuy = async (limit = 25, tradeType = 'buy', params?: Scr
   const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.current_price || 0) >= (s.ema50 || 0));
   const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchMonthlyBuy = async (limit = 25, tradeType = 'buy', params?: ScreenerParams): Promise<StocksResponse> => {
@@ -437,7 +438,7 @@ export const fetchMonthlyBuy = async (limit = 25, tradeType = 'buy', params?: Sc
   const fno = await fetchFutureStocks({ trade_type: tradeType as any, limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.current_price || 0) >= (s.ema200 || 0));
   const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchBreakout = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -450,7 +451,7 @@ export const fetchBreakout = async (limit = 25, params?: ScreenerParams): Promis
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.volume_ratio || 1) >= 1.25 || (s.change_pct || 0) >= 1.5);
   const sorted = [...filtered].sort((a, b) => (b.volume_ratio || 0) - (a.volume_ratio || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchMomentum = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -463,7 +464,7 @@ export const fetchMomentum = async (limit = 25, params?: ScreenerParams): Promis
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.adx || 20) >= 22 || (s.rsi || 50) >= 55);
   const sorted = [...filtered].sort((a, b) => (b.rsi || 0) - (a.rsi || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchLongBuildup = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -476,7 +477,7 @@ export const fetchLongBuildup = async (limit = 25, params?: ScreenerParams): Pro
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.change_pct || 0) > 0);
   const sorted = [...filtered].sort((a, b) => (b.change_pct || 0) - (a.change_pct || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchShortCovering = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -489,7 +490,7 @@ export const fetchShortCovering = async (limit = 25, params?: ScreenerParams): P
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.change_pct || 0) > 0);
   const sorted = [...filtered].sort((a, b) => (b.change_pct || 0) - (a.change_pct || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchVolumeShockers = async (limit = 25, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -501,7 +502,7 @@ export const fetchVolumeShockers = async (limit = 25, params?: ScreenerParams): 
   }
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const sorted = [...fno.stocks].sort((a, b) => (b.volume_ratio || 0) - (a.volume_ratio || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchEmaScreener = async (limit = 30, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -514,7 +515,7 @@ export const fetchEmaScreener = async (limit = 30, params?: ScreenerParams): Pro
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const filtered = fno.stocks.filter(s => (s.ema9 || 0) >= (s.ema20 || 0) && (s.ema20 || 0) >= (s.ema50 || 0));
   const sorted = [...filtered].sort((a, b) => (b.buy_score || 0) - (a.buy_score || 0));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchOiAnalysis = async (limit = 30, params?: ScreenerParams): Promise<StocksResponse> => {
@@ -526,7 +527,7 @@ export const fetchOiAnalysis = async (limit = 30, params?: ScreenerParams): Prom
   }
   const fno = await fetchFutureStocks({ limit: 500, ...params });
   const sorted = [...fno.stocks].sort((a, b) => (b.pcr || 1) - (a.pcr || 1));
-  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit };
+  return { stocks: sorted.slice(0, limit), total: sorted.length, page: params?.page || 1, limit, timestamp: new Date().toISOString() };
 };
 
 export const fetchStockDetail = async (symbol: string, tradeType = 'buy'): Promise<StockResult> => {
