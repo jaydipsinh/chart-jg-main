@@ -680,13 +680,13 @@ async def get_market():
     res = overview.dict()
     # Guarantee fallback non-null values for UI indicators
     if not res.get("nifty_price") or res.get("nifty_price") == 0:
-        res["nifty_price"] = 24155.80
+        res["nifty_price"] = 25413.00
         res["nifty_change_pct"] = -0.40
     if not res.get("banknifty_price") or res.get("banknifty_price") == 0:
-        res["banknifty_price"] = 57751.60
+        res["banknifty_price"] = 62322.85
         res["banknifty_change_pct"] = -0.02
     if not res.get("vix") or res.get("vix") == 0:
-        res["vix"] = 11.14
+        res["vix"] = 17.70
         res["vix_safe"] = True
     if not res.get("market_trend"):
         res["market_trend"] = "bullish"
@@ -725,10 +725,10 @@ async def get_engine_index(ticker: str):
     if live:
         return live
     if "NSEBANK" in ticker:
-        return {"price": 57751.60, "prev_close": 57761.95, "change_pct": -0.02, "source": "fallback"}
+        return {"price": 62322.85, "prev_close": 57761.95, "change_pct": -0.02, "source": "fallback"}
     if "VIX" in ticker:
-        return {"price": 11.14, "prev_close": 11.20, "change_pct": -0.58, "source": "fallback"}
-    return {"price": 24155.80, "prev_close": 24252.00, "change_pct": -0.40, "source": "fallback"}
+        return {"price": 17.70, "prev_close": 11.20, "change_pct": -0.58, "source": "fallback"}
+    return {"price": 25413.00, "prev_close": 24252.00, "change_pct": -0.40, "source": "fallback"}
 
 
 @router.post("/engine/batch", tags=["market"])

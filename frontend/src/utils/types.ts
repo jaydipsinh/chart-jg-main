@@ -42,9 +42,6 @@ export interface StockData {
   sell_vol_qty?: string;
   buy_pressure_pct?: number;
   sell_pressure_pct?: number;
-  target1?: number;
-  target2?: number;
-  target3?: number;
 
   // Price
   current_price: number;
@@ -78,6 +75,8 @@ export interface StockData {
   ema100?: number;
   ema200?: number;
   rsi?: number;
+  stoch_rsi?: number;
+  score?: number;
   macd?: number;
   macd_signal_line?: number;
   macd_histogram?: number;
@@ -164,7 +163,6 @@ export interface StockData {
   buy_zone?: string;
   sell_zone?: string;
   add_on_dips?: number;
-  trailing_sl?: number;
   holding_period?: string;
 }
 
@@ -217,7 +215,9 @@ export interface StocksResponse {
   results?: StockData[];
   total: number;
   scanned?: number;
-  timestamp: string;
+  page?: number;
+  limit?: number;
+  timestamp?: string;
 }
 
 export interface WatchlistItem {

@@ -528,7 +528,7 @@ async def get_market_overview():
         bnifty_snap  = fetch_live_index("^NSEBANK")
         vix_snap     = fetch_live_index("^INDIAVIX")
 
-        nifty_price      = nifty_snap["price"]      if nifty_snap  else 24614.9
+        nifty_price      = nifty_snap["price"]      if nifty_snap  else 25413.00
         nifty_prev       = nifty_snap["prev_close"] if nifty_snap  else nifty_price
         nifty_change     = round(nifty_price - nifty_prev, 2)
         nifty_change_pct = nifty_snap["change_pct"] if nifty_snap  else round((nifty_change / nifty_prev * 100) if nifty_prev else 0, 2)
@@ -538,7 +538,7 @@ async def get_market_overview():
         bnifty_change     = round(bnifty_price - bnifty_prev, 2) if bnifty_price and bnifty_prev else None
         bnifty_change_pct = bnifty_snap["change_pct"] if bnifty_snap else None
 
-        vix_price        = vix_snap["price"] if vix_snap else 12.15
+        vix_price        = vix_snap["price"] if vix_snap else 17.70
 
         result = {
             "nifty_price":          round(nifty_price, 2),
@@ -566,13 +566,13 @@ async def get_market_overview():
     except Exception as exc:
         logger.warning("market-overview live fetch failed: %s", exc)
         return {
-            "nifty_price":          24614.9,
-            "nifty_change":         -159.4,
-            "nifty_change_pct":     -0.64,
-            "banknifty_price":      52100.0,
-            "banknifty_change":     -312.5,
-            "banknifty_change_pct": -0.60,
-            "vix":                  12.15,
+            "nifty_price":          25413.00,
+            "nifty_change":         121.90,
+            "nifty_change_pct":     0.48,
+            "banknifty_price":      62322.85,
+            "banknifty_change":     746.95,
+            "banknifty_change_pct": 1.21,
+            "vix":                  17.70,
             "vix_safe":             True,
             "market_trend":         "bearish",
             # When live fetch fails, data is definitely not live
