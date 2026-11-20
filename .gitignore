@@ -45,6 +45,7 @@ backend/app/scanner/watchlist_store.json
 backend/app/scanner/notifications_store.json
 
 # Temp / debug files
+scratch/
 backend/temp_*.json
 backend/temp_*.txt
 temp_*.json
