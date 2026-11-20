@@ -639,7 +639,7 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
 
     if not base_p or base_p <= 0:
         from app.scanner.scanner import KNOWN_STOCK_PRICES
-        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 167.60 if clean_sym == "TATASTEEL" else 187.60)
+        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 178.00 if clean_sym == "TATASTEEL" else 187.60)
         prev_p = 169.46 if clean_sym == "TATASTEEL" else (base_p + 0.41)
 
     if not prev_p or prev_p <= 0:
@@ -680,13 +680,13 @@ async def get_market():
     res = overview.dict()
     # Guarantee fallback non-null values for UI indicators
     if not res.get("nifty_price") or res.get("nifty_price") == 0:
-        res["nifty_price"] = 25413.00
+        res["nifty_price"] = 25800.60
         res["nifty_change_pct"] = -0.40
     if not res.get("banknifty_price") or res.get("banknifty_price") == 0:
-        res["banknifty_price"] = 62322.85
+        res["banknifty_price"] = 64635.20
         res["banknifty_change_pct"] = -0.02
     if not res.get("vix") or res.get("vix") == 0:
-        res["vix"] = 17.70
+        res["vix"] = 16.45
         res["vix_safe"] = True
     if not res.get("market_trend"):
         res["market_trend"] = "bullish"
@@ -725,10 +725,10 @@ async def get_engine_index(ticker: str):
     if live:
         return live
     if "NSEBANK" in ticker:
-        return {"price": 62322.85, "prev_close": 57761.95, "change_pct": -0.02, "source": "fallback"}
+        return {"price": 64635.20, "prev_close": 57761.95, "change_pct": -0.02, "source": "fallback"}
     if "VIX" in ticker:
-        return {"price": 17.70, "prev_close": 11.20, "change_pct": -0.58, "source": "fallback"}
-    return {"price": 25413.00, "prev_close": 24252.00, "change_pct": -0.40, "source": "fallback"}
+        return {"price": 16.45, "prev_close": 11.20, "change_pct": -0.58, "source": "fallback"}
+    return {"price": 25800.60, "prev_close": 24252.00, "change_pct": -0.40, "source": "fallback"}
 
 
 @router.post("/engine/batch", tags=["market"])
@@ -1510,7 +1510,7 @@ async def get_target_matrix(
         "M&M": {"price": 3425.0, "rsi": 69.75, "smc": "INSTITUTIONAL BUY FLOW", "action": "BUY / ACCUMULATE", "sl": 3119.00, "t1": 3516.22, "t2": 3607.45, "t3": 3701.43},
         "INFY": {"price": 1169.1, "rsi": 63.46, "smc": "INSTITUTIONAL BUY FLOW", "action": "BUY / ACCUMULATE", "sl": 1013.90, "t1": 1180.96, "t2": 1192.83, "t3": 1205.05},
         "TCS": {"price": 2393.9, "rsi": 61.00, "smc": "INSTITUTIONAL BUY FLOW", "action": "BUY / ACCUMULATE", "sl": 2193.60, "t1": 2414.21, "t2": 2434.52, "t3": 2455.44},
-        "TATASTEEL": {"price": 167.60, "rsi": 43.80, "smc": "INSTITUTIONAL BUY FLOW", "action": "BUY / ACCUMULATE", "sl": 163.50, "t1": 174.50, "t2": 182.00, "t3": 195.00},
+        "TATASTEEL": {"price": 178.00, "rsi": 43.80, "smc": "INSTITUTIONAL BUY FLOW", "action": "BUY / ACCUMULATE", "sl": 163.50, "t1": 174.50, "t2": 182.00, "t3": 195.00},
         "ICICIBANK": {"price": 1456.0, "rsi": 58.43, "smc": "RETAIL CONSOLIDATION", "action": "BUY / ACCUMULATE", "sl": 1403.57, "t1": 1471.42, "t2": 1486.84, "t3": 1502.73},
         "KOTAKBANK": {"price": 396.2, "rsi": 57.61, "smc": "RETAIL CONSOLIDATION", "action": "BUY / ACCUMULATE", "sl": 375.70, "t1": 401.58, "t2": 406.96, "t3": 412.51},
         "ITC": {"price": 284.9, "rsi": 57.22, "smc": "INSTITUTIONAL BUY FLOW", "action": "SELL / BOOK PROFIT", "sl": 277.27, "t1": 288.22, "t2": 291.54, "t3": 294.97},

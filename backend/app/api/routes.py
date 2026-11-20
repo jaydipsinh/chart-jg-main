@@ -528,7 +528,7 @@ async def get_market_overview():
         bnifty_snap  = fetch_live_index("^NSEBANK")
         vix_snap     = fetch_live_index("^INDIAVIX")
 
-        nifty_price      = nifty_snap["price"]      if nifty_snap  else 25413.00
+        nifty_price      = nifty_snap["price"]      if nifty_snap  else 25800.60
         nifty_prev       = nifty_snap["prev_close"] if nifty_snap  else nifty_price
         nifty_change     = round(nifty_price - nifty_prev, 2)
         nifty_change_pct = nifty_snap["change_pct"] if nifty_snap  else round((nifty_change / nifty_prev * 100) if nifty_prev else 0, 2)
@@ -538,7 +538,7 @@ async def get_market_overview():
         bnifty_change     = round(bnifty_price - bnifty_prev, 2) if bnifty_price and bnifty_prev else None
         bnifty_change_pct = bnifty_snap["change_pct"] if bnifty_snap else None
 
-        vix_price        = vix_snap["price"] if vix_snap else 17.70
+        vix_price        = vix_snap["price"] if vix_snap else 16.45
 
         result = {
             "nifty_price":          round(nifty_price, 2),
@@ -566,13 +566,13 @@ async def get_market_overview():
     except Exception as exc:
         logger.warning("market-overview live fetch failed: %s", exc)
         return {
-            "nifty_price":          25413.00,
-            "nifty_change":         121.90,
-            "nifty_change_pct":     0.48,
-            "banknifty_price":      62322.85,
-            "banknifty_change":     746.95,
-            "banknifty_change_pct": 1.21,
-            "vix":                  17.70,
+            "nifty_price":          25800.60,
+            "nifty_change":         286.30,
+            "nifty_change_pct":     1.12,
+            "banknifty_price":      64635.20,
+            "banknifty_change":     1572.20,
+            "banknifty_change_pct": 2.49,
+            "vix":                  16.45,
             "vix_safe":             True,
             "market_trend":         "bearish",
             # When live fetch fails, data is definitely not live
@@ -679,7 +679,7 @@ async def get_stock_detail(symbol: str, trade_type: str = Query("buy")):
 
     if not base_p or base_p <= 0:
         from app.scanner.scanner import KNOWN_STOCK_PRICES
-        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 167.60 if clean_sym == "TATASTEEL" else 350.0)
+        base_p = KNOWN_STOCK_PRICES.get(clean_sym, 178.00 if clean_sym == "TATASTEEL" else 350.0)
 
     dates = pd.date_range(end=datetime.now(), periods=100)
     volatility = base_p * 0.012

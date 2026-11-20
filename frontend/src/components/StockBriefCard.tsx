@@ -35,7 +35,7 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
 
 
   const isTataSteel = stock.symbol === 'TATASTEEL';
-  const price = stock.current_price || (isTataSteel ? 167.60 : 187.60);
+  const price = stock.current_price || (isTataSteel ? 178.00 : 187.60);
   const prevClose = stock.prev_close || (isTataSteel ? 169.46 : (price > 0 ? price / (1 + (stock.change_pct || 0) / 100) : price));
   const changeVal = stock.change ?? (prevClose > 0 ? (price - prevClose) : (isTataSteel ? -1.86 : 0));
   const changePct = stock.change_pct ?? (prevClose > 0 ? (((price - prevClose) / prevClose) * 100) : (isTataSteel ? -1.10 : 0));
@@ -43,7 +43,7 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
   const isBull = !isBear;
 
   // Key Trade Targets
-  const entryPrice = stock.entry_price || (isTataSteel ? 167.60 : (price * 1.013));
+  const entryPrice = stock.entry_price || (isTataSteel ? 178.00 : (price * 1.013));
   const supportPrice = stock.support1 || (price * 0.995);
   const target1 = stock.target1 || (isTataSteel ? 174.50 : (price * 1.164));
   const target2 = stock.target2 || (isTataSteel ? 182.00 : (price * 1.24));
@@ -59,17 +59,17 @@ export const StockBriefCard: React.FC<StockBriefCardProps> = ({
 
   // Mock chart data generation for 1D timeline
   const chartData = isTataSteel ? [
-    { time: '09:15', price: 168.50 },
-    { time: '09:45', price: 168.65 },
-    { time: '10:30', price: 168.69 },
-    { time: '11:15', price: 168.20 },
-    { time: '11:45', price: 167.80 },
-    { time: '12:30', price: 167.45 },
-    { time: '01:00', price: 167.21 },
-    { time: '01:45', price: 167.35 },
-    { time: '02:15', price: 167.50 },
-    { time: '03:00', price: 167.55 },
-    { time: '03:30', price: 167.60 },
+    { time: '09:15', price: 181.20 },
+    { time: '09:45', price: 181.50 },
+    { time: '10:30', price: 181.80 },
+    { time: '11:15', price: 180.90 },
+    { time: '11:45', price: 180.10 },
+    { time: '12:30', price: 179.40 },
+    { time: '01:00', price: 178.80 },
+    { time: '01:45', price: 177.50 },
+    { time: '02:15', price: 178.20 },
+    { time: '03:00', price: 178.10 },
+    { time: '03:30', price: 178.00 },
   ] : [
     { time: '09:15', price: price * 1.012 },
     { time: '09:45', price: price * 1.025 },

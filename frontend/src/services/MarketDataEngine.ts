@@ -199,17 +199,17 @@ function buildFallbackStockSnapshot(symbol: string, mode: DataMode = 'live', ses
     name: clean,
     sector: 'Diversified',
     cap_category: 'Large Cap',
-    defaultPrice: clean === 'TATASTEEL' ? 167.60 : 350.0,
+    defaultPrice: clean === 'TATASTEEL' ? 178.00 : 350.0,
     lot_size: 1000,
   };
 
   const ltp = def.defaultPrice;
-  const prevClose = clean === 'TATASTEEL' ? 169.46 : Math.round(ltp * 0.992 * 100) / 100;
+  const prevClose = clean === 'TATASTEEL' ? 180.89 : Math.round(ltp * 0.992 * 100) / 100;
   const change = Math.round((ltp - prevClose) * 100) / 100;
   const changePct = prevClose ? Math.round((change / prevClose) * 10000) / 100 : 0;
-  const open = clean === 'TATASTEEL' ? 168.50 : Math.round(ltp * 0.998 * 100) / 100;
-  const high = clean === 'TATASTEEL' ? 168.69 : Math.round(Math.max(ltp, open) * 1.012 * 100) / 100;
-  const low = clean === 'TATASTEEL' ? 167.21 : Math.round(Math.min(ltp, open) * 0.988 * 100) / 100;
+  const open = clean === 'TATASTEEL' ? 181.20 : Math.round(ltp * 0.998 * 100) / 100;
+  const high = clean === 'TATASTEEL' ? 181.80 : Math.round(Math.max(ltp, open) * 1.012 * 100) / 100;
+  const low = clean === 'TATASTEEL' ? 177.50 : Math.round(Math.min(ltp, open) * 0.988 * 100) / 100;
 
   return {
     symbol: clean,
@@ -447,13 +447,13 @@ class MarketDataEngineClient {
       fallbackIndex = {
         symbol: '^NSEBANK',
         name: 'BANK NIFTY',
-        price: 62322.85,
-        open: 61600.00,
-        high: 62450.00,
-        low: 61500.00,
-        prev_close: 61575.90,
-        change: 746.95,
-        change_pct: 1.21,
+        price: 64635.20,
+        open: 63200.00,
+        high: 64750.00,
+        low: 63100.00,
+        prev_close: 63063.00,
+        change: 1572.20,
+        change_pct: 2.49,
         volume: 150000000,
         data_source: 'live',
         session_type: this.getSessionType(),
@@ -463,13 +463,13 @@ class MarketDataEngineClient {
       fallbackIndex = {
         symbol: '^INDIAVIX',
         name: 'INDIA VIX',
-        price: 17.70,
-        open: 17.85,
-        high: 18.20,
-        low: 17.40,
-        prev_close: 17.85,
-        change: -0.15,
-        change_pct: -0.84,
+        price: 16.45,
+        open: 16.90,
+        high: 17.10,
+        low: 16.30,
+        prev_close: 16.90,
+        change: -0.45,
+        change_pct: -2.66,
         volume: 0,
         data_source: 'live',
         session_type: this.getSessionType(),
@@ -479,13 +479,13 @@ class MarketDataEngineClient {
       fallbackIndex = {
         symbol: '^NSEI',
         name: 'NIFTY 50',
-        price: 25413.00,
-        open: 25300.00,
-        high: 25440.00,
-        low: 25280.00,
-        prev_close: 25291.10,
-        change: 121.90,
-        change_pct: 0.48,
+        price: 25800.60,
+        open: 25550.00,
+        high: 25840.00,
+        low: 25520.00,
+        prev_close: 25514.30,
+        change: 286.30,
+        change_pct: 1.12,
         volume: 185000000,
         data_source: 'live',
         session_type: this.getSessionType(),
@@ -515,13 +515,13 @@ class MarketDataEngineClient {
     }
 
     const fallback: EngineMarketOverview = {
-      nifty_price:          25413.00,
-      nifty_change:         121.90,
-      nifty_change_pct:     0.48,
-      banknifty_price:      62322.85,
-      banknifty_change:     746.95,
-      banknifty_change_pct: 1.21,
-      vix:                  17.70,
+      nifty_price:          25800.60,
+      nifty_change:         286.30,
+      nifty_change_pct:     1.12,
+      banknifty_price:      64635.20,
+      banknifty_change:     1572.20,
+      banknifty_change_pct: 2.49,
+      vix:                  16.45,
       vix_safe:             true,
       data_mode:            this.getDataMode(),
       session_type:         this.getSessionType(),

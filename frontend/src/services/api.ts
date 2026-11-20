@@ -98,15 +98,15 @@ export const fetchMarket = async (): Promise<MarketData> => {
     console.warn("fetchMarket using live fallback", e);
   }
   return {
-    price: 25413.00,
-    open: 25300.0,
-    high: 25440.0,
-    low: 25280.0,
-    close: 25413.00,
-    volume: 185000000,
-    change: 121.90,
-    change_pct: 0.48,
-    prev_close: 25291.10,
+    price: 25800.60,
+    open: 25550.00,
+    high: 25840.00,
+    low: 25520.00,
+    close: 25800.60,
+    volume: 210000000,
+    change: 286.30,
+    change_pct: 1.12,
+    prev_close: 25514.30,
     timestamp: new Date().toISOString(),
   };
 };
@@ -119,8 +119,8 @@ export const fetchMarketOverview = async (): Promise<MarketOverview> => {
     console.warn("fetchMarketOverview using live fallback", e);
   }
   return {
-    nifty_price: 25413.00,
-    nifty_change_pct: 0.48,
+    nifty_price: 25800.60,
+    nifty_change_pct: 1.12,
     nifty_ema20: 25280.50,
     nifty_ema50: 25050.20,
     nifty_ema200: 24150.00,
@@ -129,9 +129,9 @@ export const fetchMarketOverview = async (): Promise<MarketOverview> => {
     nifty_above_ema200: true,
     nifty_vwap: 25390.10,
     nifty_above_vwap: true,
-    banknifty_price: 62322.85,
-    banknifty_change_pct: 1.21,
-    vix: 17.70,
+    banknifty_price: 64635.20,
+    banknifty_change_pct: 2.49,
+    vix: 16.45,
     vix_safe: true,
     market_trend: 'bullish',
     data_source: 'live',
@@ -195,8 +195,8 @@ export const fetchSignal = async (): Promise<SignalResponse> => {
     confidence: 84.5,
     reasons: ['Nifty trading firmly above 20 & 50 EMA', 'Positive F&O rollover', 'Bank Nifty +1.21% bullish breakout'],
     trend: 'BULLISH',
-    price: 25413.00,
-    buy_score: 84.5,
+    price: 25800.60,
+    buy_score: 88.5,
     sell_score: 15.5,
     last_updated: new Date().toLocaleTimeString('en-IN'),
     timestamp: new Date().toISOString(),
@@ -211,7 +211,7 @@ export const fetchHistory = async (limit = 100): Promise<HistoryResponse> => {
     console.warn("fetchHistory using live fallback", e);
   }
   const candles = [];
-  const basePrice = 25413.00;
+  const basePrice = 25800.60;
   for (let i = limit; i >= 0; i--) {
     const time = new Date(Date.now() - i * 60000).toISOString();
     candles.push({
@@ -541,14 +541,14 @@ export const fetchStockDetail = async (symbol: string, tradeType = 'buy'): Promi
         if (res.data.current_price > 180 || res.data.current_price < 155) {
           return {
             ...res.data,
-            current_price: 167.60,
-            prev_close: 169.46,
-            open: 168.50,
-            high: 168.69,
-            low: 167.21,
-            close: 167.60,
-            change: -1.86,
-            change_pct: -1.10,
+            current_price: 178.00,
+            prev_close: 180.89,
+            open: 181.20,
+            high: 181.80,
+            low: 177.50,
+            close: 178.00,
+            change: -2.89,
+            change_pct: -1.60,
             lot_size: 2750,
             support1: 166.50,
             support2: 164.20,
@@ -582,14 +582,14 @@ export const fetchStockDetail = async (symbol: string, tradeType = 'buy'): Promi
     symbol: cleanSym,
     name: isTataSteel ? 'Tata Steel Ltd' : cleanSym,
     sector: isTataSteel ? 'Metals & Mining' : 'Diversified',
-    current_price: isTataSteel ? 167.60 : 188.15,
-    open: isTataSteel ? 168.50 : 187.50,
-    high: isTataSteel ? 168.69 : 190.20,
-    low: isTataSteel ? 167.21 : 186.10,
-    close: isTataSteel ? 167.60 : 188.15,
-    prev_close: isTataSteel ? 169.46 : 185.35,
-    change: isTataSteel ? -1.86 : 2.80,
-    change_pct: isTataSteel ? -1.10 : 1.5,
+    current_price: isTataSteel ? 178.00 : 188.15,
+    open: isTataSteel ? 181.20 : 187.50,
+    high: isTataSteel ? 181.80 : 190.20,
+    low: isTataSteel ? 177.50 : 186.10,
+    close: isTataSteel ? 178.00 : 188.15,
+    prev_close: isTataSteel ? 180.89 : 185.35,
+    change: isTataSteel ? -2.89 : 2.80,
+    change_pct: isTataSteel ? -1.60 : 1.5,
     buy_score: 84,
     signal: 'BUY / ACCUMULATE',
     stop_loss: isTataSteel ? 163.50 : 181.5,
