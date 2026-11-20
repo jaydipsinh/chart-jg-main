@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import {
   Refresh, RadioButtonChecked, TrendingUp, TrendingDown,
-  Schedule, InfoOutlined, Close, WifiOff,
+  Schedule, CalendarToday, InfoOutlined, Close, WifiOff,
 } from '@mui/icons-material';
 import { keyframes } from '@mui/system';
 import { useSessionClock, useEngineStatus, useEngineOverview, useMarketEngine } from '../hooks/useLiveMarketData';
