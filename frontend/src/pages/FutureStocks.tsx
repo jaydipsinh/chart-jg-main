@@ -276,6 +276,12 @@ export default function FutureStocksPage() {
                 variant="outlined"
                 sx={{ fontWeight: 800, fontSize: '0.68rem', height: 22 }}
               />
+              <Chip
+                icon={<TableChart sx={{ fontSize: 14 }} />}
+                label="Fixed Header on Scroll: Active"
+                size="small"
+                sx={{ fontWeight: 900, fontSize: '0.68rem', height: 22, bgcolor: 'rgba(56,189,248,0.15)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)' }}
+              />
             </Stack>
 
             <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -0.5, mb: 0.5 }}>
@@ -610,20 +616,50 @@ export default function FutureStocksPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           THE 209 F&O COMPREHENSIVE INDICATOR TABLE WITH VIBRANT HIGHLIGHTING
          ══════════════════════════════════════════════════════════════════════ */}
-      <TableContainer
-        component={Paper}
+      <Paper
         elevation={0}
         sx={{
           borderRadius: 3.5,
           border: '1.5px solid',
           borderColor: 'divider',
           background: isDark ? 'rgba(11,17,32,0.85)' : '#ffffff',
-          overflowX: 'auto',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.04)',
         }}
       >
-        <Table size="small" stickyHeader>
-          <TableHead>
-            <TableRow sx={{ '& th': { bgcolor: isDark ? '#0f172a' : '#f8faff', fontWeight: 900, fontSize: '0.75rem', py: 1.4 } }}>
+        <TableContainer
+          sx={{
+            maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+            overflowX: 'auto',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          <Table size="small" stickyHeader sx={{ borderCollapse: 'separate' }}>
+            <TableHead
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: isDark
+                  ? '0 3px 8px rgba(0,0,0,0.6)'
+                  : '0 3px 8px rgba(0,0,0,0.06)',
+                '& th': {
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  bgcolor: isDark ? '#0f172a !important' : '#f8faff !important',
+                  fontWeight: 900,
+                  fontSize: '0.75rem',
+                  py: 1.4,
+                  borderBottom: '2px solid',
+                  borderColor: isDark ? 'rgba(56,189,248,0.3)' : 'rgba(56,189,248,0.4)',
+                },
+              }}
+            >
+              <TableRow>
               {/* Column 1: Stock & Sector */}
               <TableCell sx={{ minWidth: 160 }}>
                 <TableSortLabel
@@ -1253,22 +1289,28 @@ export default function FutureStocksPage() {
             })}
           </TableBody>
         </Table>
-
-        {/* Table Pagination */}
-        <TablePagination
-          rowsPerPageOptions={[25, 50, 100, 209, { label: 'All 209', value: -1 }]}
-          component="div"
-          count={filteredStocks.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          sx={{ borderTop: '1px solid', borderColor: 'divider' }}
-        />
       </TableContainer>
+
+      {/* Table Pagination - permanently visible at bottom of table card */}
+      <TablePagination
+        rowsPerPageOptions={[25, 50, 100, 209, { label: 'All 209', value: -1 }]}
+        component="div"
+        count={filteredStocks.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
+        sx={{
+          borderTop: '1.5px solid',
+          borderColor: 'divider',
+          bgcolor: isDark ? '#0f172a' : '#f8faff',
+          fontWeight: 800,
+        }}
+      />
+    </Paper>
 
       {/* Footer Disclaimer */}
       <Typography variant="caption" color="text.secondary" mt={2} display="block">
