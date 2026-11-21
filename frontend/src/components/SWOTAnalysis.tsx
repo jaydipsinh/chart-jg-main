@@ -9,6 +9,7 @@ import {
   FlashOn, Shield, Verified, ArrowForward, HelpOutline,
 } from '@mui/icons-material';
 import type { StockResult } from '../utils/types';
+import livePricesMap from '../utils/live_prices.json';
 
 interface SWOTAnalysisProps {
   stock: StockResult;
@@ -21,7 +22,7 @@ export const SWOTAnalysis: React.FC<SWOTAnalysisProps> = ({ stock }) => {
   const isDark = theme.palette.mode === 'dark';
   const [activeTab, setActiveTab] = useState<SWOTTab>('all');
 
-  const price = stock.current_price || (stock.symbol === 'TATASTEEL' ? 178.00 : 188.25);
+  const price = stock.current_price || (livePricesMap as Record<string, number>)[stock.symbol] || (stock.symbol === 'TATASTEEL' ? 178.00 : (stock.symbol === 'BANKBARODA' ? 287.00 : 250.00));
   const chg = stock.change_pct ?? 0;
   const isUp = chg >= 0;
   const rsi = stock.rsi ?? 52.0;

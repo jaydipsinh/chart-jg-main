@@ -9,6 +9,7 @@ import {
   Shield, MyLocation, Flag, ShowChart, Layers,
 } from '@mui/icons-material';
 import type { StockResult } from '../utils/types';
+import livePricesMap from '../utils/live_prices.json';
 
 interface SupportResistanceMatrixProps {
   stock: StockResult;
@@ -18,7 +19,7 @@ export const SupportResistanceMatrix: React.FC<SupportResistanceMatrixProps> = (
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  const price = stock.current_price || (stock.symbol === 'TATASTEEL' ? 178.00 : 188.25);
+  const price = stock.current_price || (livePricesMap as Record<string, number>)[stock.symbol] || (stock.symbol === 'TATASTEEL' ? 178.00 : (stock.symbol === 'BANKBARODA' ? 287.00 : 250.00));
   const isUp = (stock.change_pct ?? 0) >= 0;
 
   // ── Dynamic Support, Resistance, Multi-Target, Multi-Stop Loss Derivations ──

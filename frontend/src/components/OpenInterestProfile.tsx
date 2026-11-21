@@ -9,6 +9,7 @@ import {
   Layers, TableChart, Warning, Lightbulb,
 } from '@mui/icons-material';
 import type { StockResult } from '../utils/types';
+import livePricesMap from '../utils/live_prices.json';
 
 interface OpenInterestProfileProps {
   stock: StockResult;
@@ -31,7 +32,7 @@ export const OpenInterestProfile: React.FC<OpenInterestProfileProps> = ({ stock 
   const isDark = theme.palette.mode === 'dark';
   const [profileView, setProfileView] = useState<'split' | 'stacked' | 'change'>('split');
 
-  const price = stock.current_price || (stock.symbol === 'TATASTEEL' ? 178.00 : 188.25);
+  const price = stock.current_price || (livePricesMap as Record<string, number>)[stock.symbol] || (stock.symbol === 'TATASTEEL' ? 178.00 : (stock.symbol === 'BANKBARODA' ? 287.00 : 250.00));
   const isUp = (stock.change_pct ?? 0) >= 0;
 
   // Determine dynamic strike step interval based on stock price
