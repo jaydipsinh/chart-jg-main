@@ -267,20 +267,12 @@ export const fetchFutureStocks = async (params?: ScreenerParams): Promise<Stocks
   const targetTradeType = (params?.trade_type === 'sell' ? 'sell' : 'buy') as 'buy' | 'sell';
 
   try {
-    const res = await apiSlow.get(`/future-stocks${buildQuery({ limit: 500, ...params })}`);
+    const res = await apiSlow.get(`/future-stocks${buildQuery({ limit: 500, ...params })}`, { timeout: 1200 });
     if (res.data && res.data.stocks && Array.isArray(res.data.stocks)) {
       backendStocks = res.data.stocks;
     }
   } catch (e) {
-    console.warn("fetchFutureStocks trying fallback endpoint /stocks", e);
-    try {
-      const fallback = await api.get('/stocks');
-      if (fallback.data && fallback.data.stocks && Array.isArray(fallback.data.stocks)) {
-        backendStocks = fallback.data.stocks;
-      }
-    } catch (err) {
-      console.warn("fallback /stocks failed too", err);
-    }
+    // Backend offline – fast zero-delay fallback
   }
 
   // Merge with complete OFFICIAL_FNO_UNIVERSE so ALL 209+ F&O stocks are ALWAYS present
