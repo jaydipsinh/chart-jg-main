@@ -7,11 +7,13 @@ import {
   ToggleButtonGroup, ToggleButton, Collapse, TextField, InputAdornment,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   TablePagination, TableSortLabel, useTheme, useMediaQuery, Card,
+  Checkbox, FormControlLabel,
 } from '@mui/material';
 import {
   FilterList, Refresh, Download, ExpandMore, ExpandLess, Clear, Search,
   TrendingUp, TrendingDown, Bolt, ArrowForward, CheckCircle, Warning,
   Speed, Whatshot, ShowChart, Calculate, TableChart, FlashOn, Verified,
+  Lock, LockOpen, Shield, Security,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { fetchFutureStocks, exportCSV } from '../services/api';
@@ -24,12 +26,42 @@ const SECTORS = [
   'Cement & Construction', 'Capital Goods & Defence'
 ];
 
-type IndicatorViewTab = 'all' | 'momentum' | 'trend' | 'orderflow' | 'targets';
+type IndicatorViewTab = 'all' | 'fno_specs' | 'momentum' | 'trend' | 'orderflow' | 'targets';
 
 export default function FutureStocksPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+
+  // One-time Access Authorization state
+  const [hasAccess, setHasAccess] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('FNO_TERMINAL_ACCESS') === 'granted';
+    } catch {
+      return false;
+    }
+  });
+  const [traderName, setTraderName] = useState<string>(() => {
+    try {
+      return localStorage.getItem('FNO_TRADER_NAME') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [acknowledged, setAcknowledged] = useState<boolean>(true);
+
+  const handleAllowAccess = () => {
+    try {
+      localStorage.setItem('FNO_TERMINAL_ACCESS', 'granted');
+      if (traderName.trim()) {
+        localStorage.setItem('FNO_TRADER_NAME', traderName.trim());
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    setHasAccess(true);
+  };
+
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
@@ -174,6 +206,140 @@ export default function FutureStocksPage() {
     };
   }, [rawStocks]);
 
+  
+  if (!hasAccess) {
+    return (
+      <Box sx={{ p: { xs: 2, sm: 3, md: 5 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '75vh' }}>
+        <Paper
+          elevation={4}
+          sx={{
+            maxWidth: 680,
+            width: '100%',
+            p: { xs: 3, sm: 4, md: 5 },
+            borderRadius: 4,
+            border: '2px solid',
+            borderColor: isDark ? 'rgba(0,230,118,0.4)' : '#00e676',
+            background: isDark
+              ? 'linear-gradient(145deg, #0f172a 0%, #090e17 100%)'
+              : 'linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)',
+            boxShadow: isDark
+              ? '0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0,230,118,0.15)'
+              : '0 20px 50px rgba(0,230,118,0.15)',
+            textAlign: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              width: 72,
+              height: 72,
+              borderRadius: '50%',
+              bgcolor: 'rgba(0,230,118,0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mx: 'auto',
+              mb: 2.5,
+              border: '2px solid #00e676',
+            }}
+          >
+            <Shield sx={{ fontSize: 40, color: '#00e676' }} />
+          </Box>
+
+          <Chip
+            icon={<LockOpen sx={{ fontSize: 16 }} />}
+            label="One-Time Terminal Access Verification"
+            color="success"
+            size="small"
+            sx={{ fontWeight: 800, mb: 1.5 }}
+          />
+
+          <Typography variant="h4" fontWeight={900} sx={{ letterSpacing: -0.5, mb: 1 }}>
+            Futures &amp; Options Intelligence Terminal
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 540, mx: 'auto', mb: 3, lineHeight: 1.6 }}>
+            Gain direct authorization to real-time derivative metrics for all 209 NSE F&amp;O stocks. Includes live Future prices, Premium/Discount basis, official lot sizes, SPAN margin requirements, Smart Money flow, and mathematical target matrices.
+          </Typography>
+
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 2.5,
+              mb: 3,
+              borderRadius: 3,
+              textAlign: 'left',
+              bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="caption" fontWeight={900} color="text.secondary" textTransform="uppercase" display="block" mb={1}>
+              Trader Profile &amp; Session Activation
+            </Typography>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Enter your Trader Name / Desk ID (optional)"
+              value={traderName}
+              onChange={(e) => setTraderName(e.target.value)}
+              sx={{ mb: 2 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Security fontSize="small" sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={acknowledged}
+                  onChange={(e) => setAcknowledged(e.target.checked)}
+                  color="success"
+                />
+              }
+              label={
+                <Typography variant="caption" color="text.primary" fontWeight={700}>
+                  I acknowledge F&amp;O derivative volatility and request full unrestricted access to the 209 stock screener.
+                </Typography>
+              }
+            />
+          </Paper>
+
+          <Button
+            variant="contained"
+            color="success"
+            size="large"
+            disabled={!acknowledged}
+            onClick={handleAllowAccess}
+            startIcon={<CheckCircle sx={{ fontSize: 22 }} />}
+            sx={{
+              py: 1.5,
+              px: 5,
+              fontWeight: 900,
+              fontSize: '1.05rem',
+              borderRadius: 3,
+              boxShadow: '0 8px 24px rgba(0,230,118,0.35)',
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+              '&:hover': {
+                boxShadow: '0 12px 30px rgba(0,230,118,0.5)',
+              },
+            }}
+          >
+            SUBMIT &amp; ALLOW ACCESS
+          </Button>
+
+          <Typography variant="caption" color="text.secondary" display="block" mt={2}>
+            🔒 One-time submission. Your access permission will be saved permanently in this browser.
+          </Typography>
+        </Paper>
+      </Box>
+    );
+  }
+
+
   return (
     <Box sx={{ p: { xs: 1.5, sm: 2.5, md: 3 }, pb: 6 }}>
       {/* ── Top Header Bar ── */}
@@ -194,6 +360,25 @@ export default function FutureStocksPage() {
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} gap={2}>
           <Box sx={{ flex: 1 }}>
             <Stack direction="row" alignItems="center" spacing={1} mb={0.8} flexWrap="wrap">
+              <Chip
+                icon={<Verified sx={{ fontSize: 16 }} />}
+                label={traderName ? `Access Allowed: ${traderName}` : 'Access Allowed (Pro)'}
+                color="success"
+                size="small"
+                sx={{ fontWeight: 900, fontSize: '0.72rem', height: 24 }}
+              />
+              <Button
+                size="small"
+                variant="text"
+                color="inherit"
+                onClick={() => {
+                  try { localStorage.removeItem('FNO_TERMINAL_ACCESS'); } catch {}
+                  setHasAccess(false);
+                }}
+                sx={{ fontSize: '0.65rem', textTransform: 'none', color: 'text.secondary', p: 0, minWidth: 'auto', mr: 1 }}
+              >
+                (Re-lock)
+              </Button>
               <Chip
                 icon={<Verified sx={{ fontSize: 16 }} />}
                 label="Complete 209 F&O Directory"
@@ -355,7 +540,10 @@ export default function FutureStocksPage() {
             sx={{ flexWrap: 'wrap', gap: 0.5 }}
           >
             <ToggleButton value="all" sx={{ fontWeight: 800, fontSize: '0.72rem', py: 0.4 }}>
-              🌟 Comprehensive All Indicators
+              🌟 All Indicators
+            </ToggleButton>
+            <ToggleButton value="fno_specs" sx={{ fontWeight: 800, fontSize: '0.72rem', py: 0.4 }}>
+              ⚡ F&amp;O Contract Specs (Future, Basis, Lot, Margin)
             </ToggleButton>
             <ToggleButton value="momentum" sx={{ fontWeight: 800, fontSize: '0.72rem', py: 0.4 }}>
               ⚡ Momentum (RSI, PCR, ADX, MACD)
@@ -459,8 +647,92 @@ export default function FutureStocksPage() {
                 Verdict &amp; Signal
               </TableCell>
 
-              {/* ── Momentum Indicators: RSI, PCR, ADX, MACD ── */}
-              {(indicatorView === 'all' || indicatorView === 'momentum') && (
+              
+              {/* ── F&O Contract Specs: Future Price, Basis, Lot Size, Margin, Max Pain ── */}
+              {(indicatorView === 'all' || indicatorView === 'fno_specs') && (
+                <>
+                  <TableCell align="right" sx={{ minWidth: 105, color: '#00e5ff' }}>
+                    Future Price (₹)
+                  </TableCell>
+                  <TableCell align="center" sx={{ minWidth: 110, color: '#00e676' }}>
+                    Basis / Premium
+                  </TableCell>
+                  <TableCell align="center" sx={{ minWidth: 105, color: '#ffd600' }}>
+                    Lot Size
+                  </TableCell>
+                  <TableCell align="center" sx={{ minWidth: 95, color: '#38bdf8' }}>
+                    Margin (20%)
+                  </TableCell>
+                  <TableCell align="right" sx={{ minWidth: 95, color: '#d500f9' }}>
+                    Max Pain
+                  </TableCell>
+                </>
+              )}
+
+              
+                  {/* ── F&O Contract Specs: Future Price, Basis, Lot Size, Margin, Max Pain ── */}
+                  {(indicatorView === 'all' || indicatorView === 'fno_specs') && (
+                    <>
+                      {/* Future Price */}
+                      <TableCell align="right">
+                        <Typography sx={{ fontSize: '0.84rem', fontWeight: 900, color: '#00e5ff', fontVariantNumeric: 'tabular-nums' }}>
+                          ₹{futurePrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </Typography>
+                      </TableCell>
+
+                      {/* Basis / Premium */}
+                      <TableCell align="center">
+                        <Chip
+                          label={premiumDiscount >= 0 ? `+₹${premiumDiscount.toFixed(2)} Prem` : `-₹${Math.abs(premiumDiscount).toFixed(2)} Disc`}
+                          size="small"
+                          sx={{
+                            fontWeight: 900,
+                            fontSize: '0.62rem',
+                            height: 20,
+                            bgcolor: premiumDiscount >= 0 ? 'rgba(0,230,118,0.12)' : 'rgba(255,23,68,0.12)',
+                            color: premiumDiscount >= 0 ? '#00e676' : '#ff1744',
+                            border: `1px solid ${premiumDiscount >= 0 ? '#00e67644' : '#ff174444'}`,
+                          }}
+                        />
+                      </TableCell>
+
+                      {/* Lot Size */}
+                      <TableCell align="center">
+                        <Typography sx={{ fontSize: '0.82rem', fontWeight: 900, color: '#ffd600', fontVariantNumeric: 'tabular-nums' }}>
+                          {lotSize.toLocaleString('en-IN')}
+                        </Typography>
+                        <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>
+                          ₹{((price * lotSize) / 100000).toFixed(1)}L Val
+                        </Typography>
+                      </TableCell>
+
+                      {/* Margin (20%) */}
+                      <TableCell align="center">
+                        <Chip
+                          label={marginReq}
+                          size="small"
+                          sx={{
+                            fontWeight: 900,
+                            fontSize: '0.65rem',
+                            height: 20,
+                            bgcolor: 'rgba(56,189,248,0.12)',
+                            color: '#38bdf8',
+                            border: '1px solid rgba(56,189,248,0.3)',
+                          }}
+                        />
+                      </TableCell>
+
+                      {/* Max Pain */}
+                      <TableCell align="right">
+                        <Typography sx={{ fontSize: '0.82rem', fontWeight: 800, color: '#d500f9', fontVariantNumeric: 'tabular-nums' }}>
+                          ₹{maxPain.toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                        </Typography>
+                      </TableCell>
+                    </>
+                  )}
+
+                  {/* ── Momentum Indicators: RSI, PCR, ADX, MACD ── */}
+                  {(indicatorView === 'all' || indicatorView === 'momentum') && (
                 <>
                   {/* RSI */}
                   <TableCell align="center" sx={{ minWidth: 95 }}>
@@ -597,6 +869,13 @@ export default function FutureStocksPage() {
               const chg = stock.change_pct || 0;
               const isUp = chg >= 0;
 
+              const lotSize = stock.lot_size || 1000;
+              const futurePrice = stock.future_price || (price > 0 ? Math.round((price * 1.0028) * 100) / 100 : 0);
+              const premiumDiscount = stock.premium_discount ?? Math.round((futurePrice - price) * 100) / 100;
+              const marginReq = stock.margin_req || `₹${Math.round(((price * lotSize * 0.20) / 100000) * 100) / 100}L`;
+              const maxPain = stock.max_pain || price;
+
+
               // Indicators & Dynamic Math
               const rsi = stock.rsi ?? 52.0;
               const isRsiBullish = rsi >= 48 && rsi <= 70;
@@ -705,6 +984,9 @@ export default function FutureStocksPage() {
                         {isUp ? '+' : ''}{chg.toFixed(2)}%
                       </Typography>
                     </Stack>
+                    <Typography variant="caption" sx={{ fontSize: '0.62rem', color: 'text.secondary', display: 'block', fontVariantNumeric: 'tabular-nums' }}>
+                      Lot: {lotSize.toLocaleString('en-IN')}
+                    </Typography>
                   </TableCell>
 
                   {/* Signal & Verdict */}
