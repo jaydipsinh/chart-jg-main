@@ -552,9 +552,36 @@ export default function LatestEventsPage() {
           )}
 
           {viewMode === 'table' && (
-            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-              <Table size="small">
-                <TableHead sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8faff' }}>
+            <TableContainer
+              component={Paper}
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                border: '1px solid',
+                borderColor: 'divider',
+                maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+                overflowX: 'auto',
+                overflowY: 'auto',
+                position: 'relative',
+              }}
+            >
+              <Table size="small" stickyHeader sx={{ borderCollapse: 'separate' }}>
+                <TableHead
+                  sx={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    boxShadow: isDark ? '0 3px 8px rgba(0,0,0,0.6)' : '0 3px 8px rgba(0,0,0,0.06)',
+                    '& th': {
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      bgcolor: isDark ? '#0f172a !important' : '#f8faff !important',
+                      borderBottom: '2px solid',
+                      borderColor: isDark ? 'rgba(56,189,248,0.3)' : 'rgba(56,189,248,0.4)',
+                    },
+                  }}
+                >
                   <TableRow>
                     <TableCell sx={{ fontWeight: 900 }}>Symbol &amp; Company</TableCell>
                     <TableCell sx={{ fontWeight: 900 }}>Category &amp; Sector</TableCell>

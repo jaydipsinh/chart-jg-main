@@ -302,20 +302,47 @@ export default function Volume7DShockersPage() {
       </Paper>
 
       {/* ── Master 7D Volume Shockers Table ── */}
-      <TableContainer
-        component={Paper}
+      <Paper
         elevation={0}
         sx={{
           borderRadius: 2.5,
           border: '1px solid',
           borderColor: 'divider',
           overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.04)',
         }}
       >
-        {isLoading && <LinearProgress color="success" />}
-        <Table size="small">
-          <TableHead sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
-            <TableRow>
+        <TableContainer
+          sx={{
+            maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+            overflowX: 'auto',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          {isLoading && <LinearProgress color="success" />}
+          <Table size="small" stickyHeader sx={{ borderCollapse: 'separate' }}>
+            <TableHead
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: isDark ? '0 3px 8px rgba(0,0,0,0.6)' : '0 3px 8px rgba(0,0,0,0.06)',
+                '& th': {
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  bgcolor: isDark ? '#10172a !important' : '#f8fafc !important',
+                  fontWeight: 800,
+                  fontSize: 11,
+                  borderBottom: '2px solid',
+                  borderColor: isDark ? 'rgba(0,230,118,0.35)' : 'rgba(0,230,118,0.4)',
+                },
+              }}
+            >
+              <TableRow>
               <TableCell sx={{ fontWeight: 800, fontSize: 11, width: 50 }}>RANK</TableCell>
               <TableCell sx={{ fontWeight: 800, fontSize: 11, cursor: 'pointer' }} onClick={() => handleSort('symbol')}>
                 STOCK {sortField === 'symbol' && (sortAsc ? '▲' : '▼')}
@@ -450,17 +477,24 @@ export default function Volume7DShockersPage() {
             })}
           </TableBody>
         </Table>
-
-        <TablePagination
-          component="div"
-          count={sorted.length}
-          page={page}
-          onPageChange={(_, p) => setPage(p)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-          rowsPerPageOptions={[10, 25, 50, 100]}
-        />
       </TableContainer>
+
+      <TablePagination
+        component="div"
+        count={sorted.length}
+        page={page}
+        onPageChange={(_, p) => setPage(p)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        sx={{
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          bgcolor: isDark ? '#10172a' : '#f8fafc',
+          fontWeight: 800,
+        }}
+      />
+    </Paper>
 
       {/* ── Stock Detail Drawer ── */}
       <Drawer

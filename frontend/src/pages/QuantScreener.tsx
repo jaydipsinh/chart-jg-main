@@ -408,11 +408,35 @@ export default function QuantScreenerPage() {
         </Box>
 
         {/* ── Table of Stocks ── */}
-        <TableContainer sx={{ maxHeight: 600 }}>
+        <TableContainer
+          sx={{
+            maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+            overflowX: 'auto',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
           {isLoading && <LinearProgress color="primary" />}
-          <Table size="small" stickyHeader>
-            <TableHead>
-              <TableRow sx={{ '& th': { bgcolor: isDark ? '#10172a' : '#f8fafc', fontWeight: 900, fontSize: 11 } }}>
+          <Table size="small" stickyHeader sx={{ borderCollapse: 'separate' }}>
+            <TableHead
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: isDark ? '0 3px 8px rgba(0,0,0,0.6)' : '0 3px 8px rgba(0,0,0,0.06)',
+                '& th': {
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  bgcolor: isDark ? '#10172a !important' : '#f8fafc !important',
+                  fontWeight: 900,
+                  fontSize: 11,
+                  borderBottom: '2px solid',
+                  borderColor: isDark ? 'rgba(56,189,248,0.3)' : 'rgba(56,189,248,0.4)',
+                },
+              }}
+            >
+              <TableRow>
                 <TableCell sx={{ width: 50 }}>RANK</TableCell>
                 <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('symbol')}>
                   STOCK {sortField === 'symbol' && (sortAsc ? '▲' : '▼')}

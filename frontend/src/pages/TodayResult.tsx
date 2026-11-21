@@ -446,17 +446,42 @@ export default function TodayResult() {
           </Typography>
         </Stack>
 
-        <TableContainer sx={{ maxHeight: 580, overflowX: 'auto' }}>
-          <Table stickyHeader size="small" sx={{ minWidth: 1100 }}>
-            <TableHead>
+        <TableContainer
+          sx={{
+            maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+            overflowX: 'auto',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          <Table stickyHeader size="small" sx={{ minWidth: 1100, borderCollapse: 'separate' }}>
+            <TableHead
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: isDark ? '0 3px 8px rgba(0,0,0,0.6)' : '0 3px 8px rgba(0,0,0,0.06)',
+              }}
+            >
               <TableRow>
                 {COLS.map(col => (
                   <TableCell key={col.id} align={col.align || 'left'}
-                    sx={{ minWidth: col.minWidth, fontWeight: 900, fontSize: '0.68rem',
-                      letterSpacing: 0.6, textTransform: 'uppercase',
-                      bgcolor: isDark ? '#0b1120' : '#f4f7ff', whiteSpace: 'nowrap',
-                      borderBottom: '2px solid', borderColor: isDark ? 'rgba(0,176,255,0.25)' : 'rgba(21,101,192,0.18)',
-                      py: 1.5 }}>
+                    sx={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      minWidth: col.minWidth,
+                      fontWeight: 900,
+                      fontSize: '0.68rem',
+                      letterSpacing: 0.6,
+                      textTransform: 'uppercase',
+                      bgcolor: isDark ? '#0b1120 !important' : '#f4f7ff !important',
+                      whiteSpace: 'nowrap',
+                      borderBottom: '2px solid',
+                      borderColor: isDark ? 'rgba(0,176,255,0.35)' : 'rgba(21,101,192,0.25)',
+                      py: 1.5,
+                    }}
+                  >
                     <TableSortLabel
                       active={orderBy === col.id}
                       direction={orderBy === col.id ? order : 'asc'}

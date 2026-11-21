@@ -517,9 +517,23 @@ export default function AllStocksPage() {
 
       {/* ── Table ── */}
       <Paper elevation={2} sx={{ overflow: 'hidden', borderRadius: 2 }}>
-        <TableContainer sx={{ maxHeight: 620 }}>
-          <Table stickyHeader size="small">
-            <TableHead>
+        <TableContainer
+          sx={{
+            maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+            overflowX: 'auto',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          <Table stickyHeader size="small" sx={{ borderCollapse: 'separate' }}>
+            <TableHead
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 3px 8px rgba(0,0,0,0.6)' : '0 3px 8px rgba(0,0,0,0.06)',
+              }}
+            >
               <TableRow>
                 {[
                   { id: 'symbol',      label: 'Company / Symbol',   sortKey: 'symbol' },
@@ -534,7 +548,18 @@ export default function AllStocksPage() {
                   { id: 'signal',      label: 'Signal',              sortKey: null },
                   { id: 'wl',          label: '★',                  sortKey: null },
                 ].map(col => (
-                  <TableCell key={col.id} sx={{ fontWeight: 800, bgcolor: 'background.default' }}>
+                  <TableCell
+                    key={col.id}
+                    sx={{
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                      fontWeight: 800,
+                      bgcolor: (theme) => theme.palette.mode === 'dark' ? '#0f172a !important' : '#f8faff !important',
+                      borderBottom: '2px solid',
+                      borderColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(56,189,248,0.3)' : 'rgba(56,189,248,0.4)',
+                    }}
+                  >
                     {col.sortKey ? (
                       <TableSortLabel
                         active={sortBy === col.sortKey}

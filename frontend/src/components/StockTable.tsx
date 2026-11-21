@@ -522,24 +522,43 @@ export const StockTable: React.FC<Props> = ({ data, loading, compact, lastUpdate
     >
       <MarketStatusBar marketOpen={marketOpen} lastUpdated={lastUpdated} isDark={isDark} />
 
-      <TableContainer sx={{ maxHeight: 620, overflowX: 'auto' }}>
-        <Table stickyHeader size="small" sx={{ minWidth: 1050 }}>
+      <TableContainer
+        sx={{
+          maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+          overflowX: 'auto',
+          overflowY: 'auto',
+          position: 'relative',
+        }}
+      >
+        <Table stickyHeader size="small" sx={{ minWidth: 1050, borderCollapse: 'separate' }}>
           {/* ── Header ── */}
-          <TableHead>
+          <TableHead
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
+              boxShadow: isDark
+                ? '0 3px 8px rgba(0,0,0,0.6)'
+                : '0 3px 8px rgba(0,0,0,0.06)',
+            }}
+          >
             <TableRow>
               {COLUMNS.map(col => (
                 <TableCell
                   key={col.id}
                   align={col.align || 'left'}
                   sx={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
                     minWidth: col.minWidth,
                     fontWeight: 900,
                     fontSize: '0.68rem',
                     letterSpacing: 0.6,
                     textTransform: 'uppercase',
-                    bgcolor: isDark ? '#0b1120' : '#f4f7ff',
+                    bgcolor: isDark ? '#0b1120 !important' : '#f4f7ff !important',
                     borderBottom: '2px solid',
-                    borderColor: isDark ? 'rgba(0,176,255,0.25)' : 'rgba(21,101,192,0.18)',
+                    borderColor: isDark ? 'rgba(0,176,255,0.35)' : 'rgba(21,101,192,0.25)',
                     whiteSpace: 'nowrap',
                     py: 1.5,
                   }}

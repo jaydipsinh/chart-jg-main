@@ -216,28 +216,45 @@ export default function TargetMatrixPage() {
       </Paper>
 
       {/* ── Exact Screenshot Spreadsheet Format Table ── */}
-      <TableContainer
-        component={Paper}
+      <Paper
         elevation={0}
         sx={{
           borderRadius: 2.5,
           border: '1px solid',
           borderColor: 'divider',
           overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.04)',
         }}
       >
-        {isLoading && <LinearProgress color="warning" />}
-        <Table size="small" sx={{ minWidth: 900 }}>
-          <TableHead
-            sx={{
-              background: isDark
-                ? 'linear-gradient(180deg, rgba(255,214,0,0.25) 0%, rgba(255,214,0,0.12) 100%)'
-                : 'linear-gradient(180deg, #fff59d 0%, #fff176 100%)',
-              borderBottom: '2px solid',
-              borderColor: '#ffd600',
-            }}
-          >
-            <TableRow>
+        <TableContainer
+          sx={{
+            maxHeight: { xs: '68vh', sm: '74vh', md: '78vh' },
+            overflowX: 'auto',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          {isLoading && <LinearProgress color="warning" />}
+          <Table size="small" stickyHeader sx={{ minWidth: 900, borderCollapse: 'separate' }}>
+            <TableHead
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                boxShadow: isDark ? '0 3px 8px rgba(0,0,0,0.6)' : '0 3px 8px rgba(0,0,0,0.06)',
+                '& th': {
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  bgcolor: isDark ? '#1a1805 !important' : '#fff9c4 !important',
+                  borderBottom: '2px solid',
+                  borderColor: '#ffd600',
+                },
+              }}
+            >
+              <TableRow>
               <TableCell sx={{ fontWeight: 900, fontSize: 12, color: isDark ? '#ffd600' : '#212121', cursor: 'pointer' }} onClick={() => handleSort('symbol')}>
                 Stock Ticker {sortField === 'symbol' && (sortAsc ? '▲' : '▼')}
               </TableCell>
@@ -343,17 +360,24 @@ export default function TargetMatrixPage() {
             })}
           </TableBody>
         </Table>
-
-        <TablePagination
-          component="div"
-          count={sorted.length}
-          page={page}
-          onPageChange={(_, p) => setPage(p)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-          rowsPerPageOptions={[10, 20, 25, 50, 100]}
-        />
       </TableContainer>
+
+      <TablePagination
+        component="div"
+        count={sorted.length}
+        page={page}
+        onPageChange={(_, p) => setPage(p)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+        rowsPerPageOptions={[10, 20, 25, 50, 100]}
+        sx={{
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          bgcolor: isDark ? '#1a1805' : '#fff9c4',
+          fontWeight: 800,
+        }}
+      />
+    </Paper>
     </Box>
   );
 }

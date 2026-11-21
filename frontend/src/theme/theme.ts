@@ -266,6 +266,9 @@ const components = {
       },
       stickyHeader: {
         backgroundImage: 'none',
+        backgroundColor: mode === 'dark' ? '#0f172a' : '#f8faff',
+        zIndex: 10,
+        boxShadow: mode === 'dark' ? '0 2px 6px rgba(0,0,0,0.5)' : '0 2px 6px rgba(0,0,0,0.06)',
       },
     },
   },
