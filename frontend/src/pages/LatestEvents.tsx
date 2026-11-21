@@ -19,6 +19,11 @@ import {
   fetchLatestEvents, fetchUpcomingEvents, fetchStockNews,
   StockEventItem, UpcomingEventItem, StockNewsItem,
 } from '../services/api';
+import {
+  FALLBACK_LATEST_EVENTS,
+  FALLBACK_UPCOMING_EVENTS,
+  FALLBACK_STOCK_NEWS,
+} from '../data/latestEventsData';
 
 export default function LatestEventsPage() {
   const navigate = useNavigate();
@@ -36,6 +41,23 @@ export default function LatestEventsPage() {
   const { data: catalystData, isLoading: loadingCatalysts } = useQuery({
     queryKey: ['latest-events', selectedCategory],
     queryFn: () => fetchLatestEvents({ category: selectedCategory }),
+    placeholderData: {
+      events: selectedCategory === 'All'
+        ? FALLBACK_LATEST_EVENTS
+        : FALLBACK_LATEST_EVENTS.filter(e => e.category.toLowerCase() === selectedCategory.toLowerCase()),
+      total: FALLBACK_LATEST_EVENTS.length,
+      all_categories: [
+        'All',
+        'Work Orders & Contracts',
+        'Positive Earnings / +ve Results',
+        'FII / DII Accumulation',
+        'Promoter Buying & Pledge',
+        'Monsoon & Agro Season',
+        'Winter & Wedding Boom',
+        'Summer & Power Capex',
+      ],
+      timestamp: new Date().toISOString(),
+    },
     staleTime: 60000,
   });
 
@@ -43,6 +65,11 @@ export default function LatestEventsPage() {
   const { data: upcomingData, isLoading: loadingUpcoming } = useQuery({
     queryKey: ['upcoming-events'],
     queryFn: () => fetchUpcomingEvents({}),
+    placeholderData: {
+      upcoming_events: FALLBACK_UPCOMING_EVENTS,
+      total: FALLBACK_UPCOMING_EVENTS.length,
+      timestamp: new Date().toISOString(),
+    },
     staleTime: 60000,
   });
 
@@ -50,6 +77,17 @@ export default function LatestEventsPage() {
   const { data: newsData, isLoading: loadingNews } = useQuery({
     queryKey: ['stock-news', selectedNewsType],
     queryFn: () => fetchStockNews({ news_type: selectedNewsType }),
+    placeholderData: {
+      news: selectedNewsType === 'All'
+        ? FALLBACK_STOCK_NEWS
+        : selectedNewsType === 'Positive'
+        ? FALLBACK_STOCK_NEWS.filter(n => n.sentiment === 'positive')
+        : selectedNewsType === 'Negative'
+        ? FALLBACK_STOCK_NEWS.filter(n => n.sentiment === 'negative')
+        : FALLBACK_STOCK_NEWS.filter(n => n.news_type.toLowerCase().includes('order')),
+      total: FALLBACK_STOCK_NEWS.length,
+      timestamp: new Date().toISOString(),
+    },
     staleTime: 60000,
   });
 
@@ -198,7 +236,7 @@ export default function LatestEventsPage() {
         <Grid container spacing={1.5} mt={0.5}>
           {[
             { label: 'Tracked Catalysts', value: '20 Stocks', color: '#00e5ff', icon: <EventAvailable /> },
-            { label: 'Upcoming Earnings', value: '6 Major Dates', color: '#ffd600', icon: <CalendarMonth /> },
+            { label: 'Upcoming Events', value: '8 Major Dates', color: '#ffd600', icon: <CalendarMonth /> },
             { label: '+ve Results Surge', value: '+130% PAT (Trent)', color: '#00e676', icon: <TrendingUp /> },
             { label: '-ve Margin Caution', value: 'IndusInd, Asian Paints', color: '#ff1744', icon: <TrendingDown /> },
             { label: 'Highest Work Order', value: '₹28,500+ Cr (L&T)', color: '#d500f9', icon: <BusinessCenter /> },
@@ -249,7 +287,7 @@ export default function LatestEventsPage() {
           }}
         >
           <Tab icon={<EventAvailable sx={{ fontSize: 18 }} />} iconPosition="start" label="🎯 Catalyst Directory &amp; Mega Work Orders (20)" />
-          <Tab icon={<CalendarMonth sx={{ fontSize: 18 }} />} iconPosition="start" label="📅 Upcoming Events &amp; Earnings Calendar (6)" />
+          <Tab icon={<CalendarMonth sx={{ fontSize: 18 }} />} iconPosition="start" label="📅 Upcoming Events &amp; Earnings Calendar (8)" />
           <Tab icon={<Feed sx={{ fontSize: 18 }} />} iconPosition="start" label="📰 Stock News Analysis Feed (+ve &amp; -ve News)" />
         </Tabs>
 

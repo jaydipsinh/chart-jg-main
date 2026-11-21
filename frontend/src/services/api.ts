@@ -12,6 +12,11 @@ import {
   generatePriceShockersFallback, generateVolumeShockersFallback,
   generateQuantScreenerFallback, generateTargetMatrixFallback,
 } from '../utils/fnoUniverse';
+import {
+  FALLBACK_LATEST_EVENTS,
+  FALLBACK_UPCOMING_EVENTS,
+  FALLBACK_STOCK_NEWS,
+} from '../data/latestEventsData';
 import livePricesMap from '../utils/live_prices.json';
 
 const round2 = (num: number) => Math.round(num * 100) / 100;
@@ -973,10 +978,37 @@ export interface LatestEventsResponse {
 }
 
 export const fetchLatestEvents = async (params?: { category?: string }): Promise<LatestEventsResponse> => {
-  const q = new URLSearchParams();
-  if (params?.category && params.category !== 'All') q.set('category', params.category);
-  const qs = q.toString();
-  return (await api.get(`/latest-events${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.category && params.category !== 'All') q.set('category', params.category);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/latest-events${qs ? `?${qs}` : ''}`);
+    if (res.data?.events && res.data.events.length > 0) {
+      return res.data;
+    }
+  } catch (e) {
+    console.warn("fetchLatestEvents network request failed, using instant calibrated fallback data", e);
+  }
+
+  let list = FALLBACK_LATEST_EVENTS;
+  if (params?.category && params.category !== 'All') {
+    list = list.filter(item => item.category.toLowerCase() === params.category!.toLowerCase());
+  }
+  return {
+    events: list,
+    total: list.length,
+    all_categories: [
+      'All',
+      'Work Orders & Contracts',
+      'Positive Earnings / +ve Results',
+      'FII / DII Accumulation',
+      'Promoter Buying & Pledge',
+      'Monsoon & Agro Season',
+      'Winter & Wedding Boom',
+      'Summer & Power Capex',
+    ],
+    timestamp: new Date().toISOString(),
+  };
 };
 
 export interface UpcomingEventItem {
@@ -1004,10 +1036,27 @@ export interface UpcomingEventsResponse {
 }
 
 export const fetchUpcomingEvents = async (params?: { event_type?: string }): Promise<UpcomingEventsResponse> => {
-  const q = new URLSearchParams();
-  if (params?.event_type && params.event_type !== 'All') q.set('event_type', params.event_type);
-  const qs = q.toString();
-  return (await api.get(`/upcoming-events${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.event_type && params.event_type !== 'All') q.set('event_type', params.event_type);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/upcoming-events${qs ? `?${qs}` : ''}`);
+    if (res.data?.upcoming_events && res.data.upcoming_events.length > 0) {
+      return res.data;
+    }
+  } catch (e) {
+    console.warn("fetchUpcomingEvents network request failed, using instant calibrated fallback data", e);
+  }
+
+  let list = FALLBACK_UPCOMING_EVENTS;
+  if (params?.event_type && params.event_type !== 'All') {
+    list = list.filter(item => item.event_type.toLowerCase().includes(params.event_type!.toLowerCase()));
+  }
+  return {
+    upcoming_events: list,
+    total: list.length,
+    timestamp: new Date().toISOString(),
+  };
 };
 
 export interface StockNewsItem {
@@ -1035,10 +1084,33 @@ export interface StockNewsResponse {
 }
 
 export const fetchStockNews = async (params?: { news_type?: string }): Promise<StockNewsResponse> => {
-  const q = new URLSearchParams();
-  if (params?.news_type && params.news_type !== 'All') q.set('news_type', params.news_type);
-  const qs = q.toString();
-  return (await api.get(`/stock-news${qs ? `?${qs}` : ''}`)).data;
+  try {
+    const q = new URLSearchParams();
+    if (params?.news_type && params.news_type !== 'All') q.set('news_type', params.news_type);
+    const qs = q.toString();
+    const res = await apiSlow.get(`/stock-news${qs ? `?${qs}` : ''}`);
+    if (res.data?.news && res.data.news.length > 0) {
+      return res.data;
+    }
+  } catch (e) {
+    console.warn("fetchStockNews network request failed, using instant calibrated fallback data", e);
+  }
+
+  let list = FALLBACK_STOCK_NEWS;
+  if (params?.news_type && params.news_type !== 'All') {
+    if (params.news_type.toLowerCase() === 'positive') {
+      list = list.filter(item => item.sentiment === 'positive');
+    } else if (params.news_type.toLowerCase() === 'negative') {
+      list = list.filter(item => item.sentiment === 'negative');
+    } else {
+      list = list.filter(item => item.news_type.toLowerCase().includes(params.news_type!.toLowerCase()));
+    }
+  }
+  return {
+    news: list,
+    total: list.length,
+    timestamp: new Date().toISOString(),
+  };
 };
 
 
